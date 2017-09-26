@@ -59,6 +59,8 @@ public class LoginDAO {
         } catch (SQLException e) {
 
             e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
         }
         return "Invalid user credentials"; // Just returning appropriate message otherwise
         
