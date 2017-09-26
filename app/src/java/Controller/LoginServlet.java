@@ -81,7 +81,7 @@ public class LoginServlet extends HttpServlet {
         {
             request.setAttribute("userName", userName); //with setAttribute() you can define a "key" and value pair so that you can get it in future using getAttribute("key")
             request.getRequestDispatcher("/Home.jsp").forward(request, response);//RequestDispatcher is used to send the control to the invoked page.
-        } else if(userValidate.equals("ADMIN"))  {
+        } else if (userValidate.equals("ADMIN")) {
             request.getRequestDispatcher("/Admin.jsp").forward(request, response);
 
         } else {

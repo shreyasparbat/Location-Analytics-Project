@@ -16,6 +16,12 @@ import java.sql.Statement;
  * @author amanda
  */
 public class LoginDAO {
+        private AdminDAO adminDAO;
+        
+        
+    public LoginDAO(){
+        adminDAO = new AdminDAO();
+    }
 
     public String authenticateUser(String userName, String password) {
 
@@ -27,14 +33,17 @@ public class LoginDAO {
         String userNameSub = ""; // username from substring 
         int indexAtChar=0;
         
-        if(userName.equals("Admin") && password.equals("AdminPW")){
+        // uses adminDAO to check for admin validality
+        boolean isAdmin = adminDAO.isAdmin(userName,password);
+        
+        if(isAdmin){
             return "ADMIN";
         }
        
         try {
             con = DBConnection.createConnection(); //establishing connection
             statement = con.createStatement(); //Statement is used to write queries. Read more about it.
-            resultSet = statement.executeQuery("select * from student "); //Here table name is users and userName,password are columns. fetching all the records and storing in a resultSet.
+            resultSet = statement.executeQuery("select * from demograph "); //Here table name is users and userName,password are columns. fetching all the records and storing in a resultSet.
             while (resultSet.next()) { // Until next row is present otherwise it return false
                 
                 String email = resultSet.getString("email");

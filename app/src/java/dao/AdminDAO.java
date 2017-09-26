@@ -7,26 +7,22 @@ import model.*;
  * @author Joel Tay
  */
 public class AdminDAO{
-    private Admin admin;
+    private final String AID = "Admin";
+    private final String APWD = "AdminPW";
     
-    /**
-     *  Default deconstructor
-     */
-    public AdminDAO(){
-        admin = new Admin();
-    }
     
     //checks for admin credentials
 
     /**
      * Returns the value of Administrator check 
      * @param id  the string of the id
+     * @param pw  the string of the password
      * @return true if admin id matches with input id, else false
      */
-    public boolean isAdmin(String id){
+    public boolean isAdmin(String id, String pwd){
         if( id != null){
-            if(id.equals(admin.getUser())){
-                return true;
+            if(id.equals(AID)){
+                return authenticateAdminPassword(pwd);
             }
         }
         return false;
@@ -42,7 +38,7 @@ public class AdminDAO{
      */
     public boolean authenticateAdminPassword(String pwd){
         if(pwd != null){
-            if(admin.getPassword().equals(pwd)){
+            if(pwd.equals(APWD)){
                 return true;
             }
         }
