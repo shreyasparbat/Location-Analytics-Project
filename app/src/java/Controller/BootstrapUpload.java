@@ -141,6 +141,7 @@ public class BootstrapUpload extends HttpServlet {
                     try {
                         switch (fileName) {
                             case "location.csv":
+                                DBConnection.addLoca(arr);
                                 break;
                             case "demographics.csv":
                                 DBConnection.addDemo(arr);

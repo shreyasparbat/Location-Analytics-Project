@@ -109,4 +109,17 @@ public class DBConnection {
         conn.close();
     }
 
+    public static void addLoca(String[] arr) throws SQLException, ClassNotFoundException {
+        Connection conn = createConnection();
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO location VALUES(?, ?,?)");
+        stmt.setTimestamp(1, Timestamp.valueOf(arr[0]));
+        stmt.setString(2, arr[1]);
+        stmt.setInt(3, Integer.parseInt(arr[2]));
+
+        stmt.executeUpdate();
+        //out.println("Number of records inserted" + numRecordUpdated);
+        stmt.close();
+        conn.close();
+    }
+
 }
