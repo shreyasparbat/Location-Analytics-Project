@@ -3,18 +3,19 @@
     Created on : 23 Sep, 2017, 1:13:59 AM
     Author     : amanda
 --%>
-
+<%@include file="protect.jsp" %>>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<!DOCTYPE html
+    
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Home Page</title>
     </head>
     <body>
         <h1>Hello 
             <%
-                String name = (String) request.getAttribute("userName");
+                String name = (String) session.getAttribute("userName");
                 out.println(name);
             %>
             !
