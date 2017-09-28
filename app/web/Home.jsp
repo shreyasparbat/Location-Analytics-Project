@@ -6,19 +6,21 @@
 <%@include file="protect.jsp" %>>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html
-    
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Home Page</title>
-    </head>
-    <body>
-        <h1>Hello 
-            <%
-                String name = (String) session.getAttribute("userName");
-                out.println(name);
-            %>
-            !
-        </h1>
-    </body>
+
+    <html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Home Page</title>
+</head>
+<body>
+    <h1>Hello 
+        <%                String name = (String) session.getAttribute("userName");
+            out.println(name);
+        %>
+        !
+    </h1>
+    <br>
+    <br>
+    <a href="logout.jsp">Click here to logout</a>
+</body>
 </html>

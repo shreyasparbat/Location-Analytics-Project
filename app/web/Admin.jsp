@@ -13,8 +13,8 @@
         <title>Administrator Bootstrap Page</title>
     </head>
     <body>
-        
-        
+
+
         <form method="post" action="uploadFile" name="upform" enctype="multipart/form-data">
             <table width="60%" border="0" cellspacing="1" cellpadding="1" align="center" class="style1">
                 <tr>
@@ -37,5 +37,8 @@
                 </tr>
             </table>
         </form>
+        <br>
+        <br>
+        <a href="logout.jsp">Click here to logout</a>
     </body>
 </html>
