@@ -7,6 +7,7 @@ package Controller;
 
 import Util.DBConnection;
 import com.opencsv.CSVReader;
+import dao.ValidatorDAO;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +38,8 @@ import javazoom.upload.MultipartFormDataRequest;
  */
 @WebServlet(name = "BootstrapUpload", urlPatterns = {"/uploadFile"})
 public class BootstrapUpload extends HttpServlet {
+
+    private final HashMap<String, List<String[]>> map = new HashMap<>();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -122,39 +125,15 @@ public class BootstrapUpload extends HttpServlet {
             // name of the file in the zip folder
             String fileName = new File(entry.getName()).getName();
             if (fileName.endsWith(".csv")) {
-                String[] header = csvr.readNext();
-                //clear header buffer
-                //validate header
-                for (String s : header) {
-                    out.print(s + "  ");
-                }
                 out.println();
-                String[] arr;
-
-                while ((arr = csvr.readNext()) != null) {
-                    for (String s : arr) {
-                        out.print(s);
-                        out.print("             ");
-
-                    }
-                    out.println();
-                    try {
-                        switch (fileName) {
-                            case "location.csv":
-                                DBConnection.addLoca(arr);
-                                break;
-                            case "demographics.csv":
-                                DBConnection.addDemo(arr);
-                                break;
-                            case "location-lookup.csv":
-                                DBConnection.addLL(arr);
-                                break;
-                        }
-                    } catch (SQLException ex) {
-                        Logger.getLogger(BootstrapUpload.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                List<String[]> allList = csvr.readAll();
+                map.put(fileName, allList);
             }
+            ValidatorDAO validDAO = new ValidatorDAO(map);
+            validDAO.validating();
+            out.println("Reach Validator " + map.size());
+            
+            
 
         }
     }
