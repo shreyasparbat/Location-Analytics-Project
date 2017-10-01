@@ -13,7 +13,8 @@
     <title>Home Page</title>
 </head>
 <body>
-    <h1>Hello 
+    <h1>
+        Hello 
         <%                String name = (String) session.getAttribute("userName");
             out.println(name);
         %>

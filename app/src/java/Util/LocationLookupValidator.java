@@ -29,9 +29,18 @@ public class LocationLookupValidator {
         while (iter.hasNext()) {
             String[] row = iter.next();
             ArrayList<String> errorMsgs = new ArrayList<>();
-            boolean locationIdCheck = checkLocationID(row[0]);
-            boolean semanticPlaceCheck = checkSemanticPlace(row[1]);
-
+            boolean locationIdCheck = true;
+            boolean semanticPlaceCheck = true;
+            try {
+                locationIdCheck = checkLocationID(row[0]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                locationIdCheck = false;
+            }
+            try {
+                semanticPlaceCheck = checkSemanticPlace(row[1]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                semanticPlaceCheck = false;
+            }
             if (!locationIdCheck) {
                 errorMsgs.add("invalid location id");
             }

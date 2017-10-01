@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.lang.*;
 
 /**
  *
@@ -38,11 +39,33 @@ public class DemographicsValidator {
         }
         while (iter.hasNext()) {
             ArrayList<String> errorMsgs = new ArrayList<>();
+
             String[] row = iter.next();
-            boolean macAddressCheck = checkMacAddress(row[0].trim());
-            boolean passwordCheck = checkPassword(row[2].trim());
-            boolean emailCheck = checkEmail(row[3].trim(), row[1].trim());
-            boolean genderCheck = checkGender(row[4].trim());
+            boolean macAddressCheck=true;
+            boolean passwordCheck=true;
+            boolean emailCheck=true;
+            boolean genderCheck=true;
+            
+            try {
+                macAddressCheck = checkMacAddress(row[0].trim());
+            } catch (ArrayIndexOutOfBoundsException e) {
+                macAddressCheck=false;
+            }
+            try {
+                passwordCheck = checkPassword(row[2].trim());
+            } catch (ArrayIndexOutOfBoundsException e) {
+                passwordCheck=false;
+            }
+            try {
+                emailCheck = checkEmail(row[3].trim(), row[1].trim());
+            } catch (ArrayIndexOutOfBoundsException e) {
+                emailCheck=false;
+            }
+            try {
+                genderCheck = checkGender(row[4].trim());
+            } catch (ArrayIndexOutOfBoundsException e) {
+                genderCheck=false;
+            }
 
             if (macAddressCheck && passwordCheck && emailCheck && genderCheck) {
                 correctList.add(row);
@@ -59,10 +82,11 @@ public class DemographicsValidator {
             if (!genderCheck) {
                 errorMsgs.add("invalid gender");
             }
-            if (macAddressCheck != true || passwordCheck != true || emailCheck != true || genderCheck == true) {
+            if (macAddressCheck != true || passwordCheck != true || emailCheck != true || genderCheck != true) {
                 demographErrors.put(index, errorMsgs);
             }
             index++;
+
         }
 
         return correctList;

@@ -32,9 +32,24 @@ public class LocationValidator {
         while (iter.hasNext()) {
             ArrayList<String> errorMsgs = new ArrayList<>();
             String[] row = iter.next();
-            boolean timeCheck = checkTime(row[0]);
-            boolean locationCheck = checkLocation(row[2]);
-            boolean macAddressCheck = checkMacAddress(row[1]);
+            boolean timeCheck = true;
+            boolean locationCheck = true;
+            boolean macAddressCheck = true;
+            try {
+                timeCheck = checkTime(row[0]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                timeCheck = false;
+            }
+            try {
+                locationCheck = checkLocation(row[2]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                locationCheck = false;
+            }
+            try {
+                macAddressCheck = checkMacAddress(row[1]);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                macAddressCheck = false;
+            }
             boolean duplicateRow = false; //initially false
             if (timeCheck && locationCheck && macAddressCheck) {
                 String key = row[1] + row[2];
@@ -83,7 +98,7 @@ public class LocationValidator {
     }
 
     public static boolean checkLocation(String location) {
-        
+
         return LocationLookupValidator.locationIDList.contains(location);
 
     }
