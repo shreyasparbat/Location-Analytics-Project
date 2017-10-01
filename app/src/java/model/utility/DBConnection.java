@@ -84,6 +84,40 @@ public class DBConnection {
             }
         }
     }
+    
+    /**
+     * close the given connection, statement and resultset
+     *
+     * @param conn the connection object to be closed
+     * @param stmt the statement object to be closed
+     * @param rs the resultset object to be closed
+     */
+    public static void close(Connection conn, Statement stmt, ResultSet rs) {
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.WARNING,
+                    "Unable to close ResultSet", ex);
+        }
+        try {
+            if (stmt != null) {
+                stmt.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.WARNING,
+                    "Unable to close Statement", ex);
+        }
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.WARNING,
+                    "Unable to close Connection", ex);
+        }
+    }
 
     public static void addDemo(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
