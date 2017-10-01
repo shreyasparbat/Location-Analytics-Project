@@ -87,7 +87,9 @@ public class DBConnection {
 
     public static void addDemo(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO DEMOGRAPH(`macaddress`, `name`, `password`, `email`, `gender`)  VALUES(?, ?, ?,?,?)");
+        PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
+        stmt.executeUpdate();
+        stmt = conn.prepareStatement("INSERT INTO DEMOGRAPH(`macaddress`, `name`, `password`, `email`, `gender`)  VALUES(?, ?, ?,?,?)");
         int index = 1;
         for (String[] row : contents) {
             stmt.setString(1, row[0]);
@@ -111,7 +113,9 @@ public class DBConnection {
 
     public static void addLL(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO locationlookup VALUES(?, ?)");
+        PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE locationlookup;");
+        stmt.executeUpdate();
+        stmt = conn.prepareStatement("INSERT INTO locationlookup VALUES(?, ?)");
         int index = 1;
         for (String[] row : contents) {
             stmt.setInt(1, Integer.parseInt(row[0]));
@@ -133,7 +137,9 @@ public class DBConnection {
 
     public static void addLoca(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO location VALUES(?, ?,?)");
+        PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE location;");
+        stmt.executeUpdate();
+        stmt = conn.prepareStatement("INSERT INTO location VALUES(?, ?,?)");
         int index = 1;
         for (String[] arr : contents) {
             stmt.setTimestamp(1, Timestamp.valueOf(arr[0]));
