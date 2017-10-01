@@ -5,9 +5,10 @@
  */
 package controller;
 
-import model.utility.LocationReports;
+import model.dao.LocationReportsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Time;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -42,25 +43,31 @@ public class BasicLocationReportsServlet extends HttpServlet {
         int hours = Integer.parseInt(request.getParameter("hours"));
         int minutes = Integer.parseInt(request.getParameter("minutes"));
         
+        //SQL Time objs for start and end time of processing window
+        long milliSeconds = hours * 3600000 + minutes * 60000;
+        Time startTime = new Time(milliSeconds - 900000);
+        Time endTime = new Time(milliSeconds);
+        
         switch (function) {
             
             //Breakdown by year and gender
             case "1": 
+                LocationReportsDAO.breakdownByYearAndGender(startTime, endTime);
                 break;
             
             //Top-k popular places
             case "2":
-                LocationReports.topkPopularPlaces(k, hours, minutes);
+                LocationReportsDAO.topkPopularPlaces(k, 10);
                 break;
              
             //Top-k companions
             case "3":
-                //
+                LocationReportsDAO.topkCompanions(k);
                 break;
               
             //Top-k next places
             case "4":
-                //
+                LocationReportsDAO.topkNextPlaces(k);
                 break;
         }
     }

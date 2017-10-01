@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file='Protect.jsp' %>
+<%//@include file='Protect.jsp' %>
 
 <!DOCTYPE html>
 <html>
@@ -59,7 +59,7 @@
             Minutes: 
             <select name="minutes">
                 <% 
-                    for (int i = 0; i <= 59; i++) {
+                    for (int i = 15; i <= 59; i++) {
                 %>
                 <option value="<%=i%>"><%=i%></option>
                 <%
