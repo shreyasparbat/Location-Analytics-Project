@@ -10,6 +10,7 @@ import java.sql.*;
 import java.util.Properties;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -84,41 +85,71 @@ public class DBConnection {
         }
     }
 
-    public static void addDemo(String[] row) throws SQLException, ClassNotFoundException {
+    public static void addDemo(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO DEMOGRAPH(`macaddress`, `name`, `password`, `email`, `gender`)  VALUES(?, ?, ?,?,?)");
-        stmt.setString(1, row[0]);
-        stmt.setString(2, row[1]);
-        stmt.setString(3, row[2]);
-        stmt.setString(4, row[3]);
-        stmt.setString(5, row[4]);
-        stmt.executeUpdate();
-        //out.println("Number of records inserted" + numRecordUpdated);
+        int index = 1;
+        for (String[] row : contents) {
+            stmt.setString(1, row[0]);
+            stmt.setString(2, row[1]);
+            stmt.setString(3, row[2]);
+            stmt.setString(4, row[3]);
+            stmt.setString(5, row[4]);
+            stmt.addBatch();
+            if (index == 100) {
+                stmt.executeBatch();
+                stmt.clearBatch();
+                index = 1;
+            }
+        }
+
+        stmt.executeBatch();
+        stmt.clearBatch();
         stmt.close();
         conn.close();
     }
 
-    public static void addLL(String[] row) throws SQLException, ClassNotFoundException {
+    public static void addLL(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO locationlookup VALUES(?, ?)");
-        stmt.setInt(1, Integer.parseInt(row[0]));
-        stmt.setString(2, row[1]);
-        stmt.executeUpdate();
-        //out.println("Number of records inserted" + numRecordUpdated);
+        int index = 1;
+        for (String[] row : contents) {
+            stmt.setInt(1, Integer.parseInt(row[0]));
+            stmt.setString(2, row[1]);
+            stmt.addBatch();
+            index++;
+            if (index == 100) {
+                stmt.executeBatch();
+                stmt.clearBatch();
+                index = 1;
+            }
+        }
+
+        stmt.executeBatch();
+        stmt.clearBatch();
         stmt.close();
         conn.close();
     }
 
-    public static void addLoca(String[] arr) throws SQLException, ClassNotFoundException {
+    public static void addLoca(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO location VALUES(?, ?,?)");
-        stmt.setTimestamp(1, Timestamp.valueOf(arr[0]));
-         stmt.setString(2, arr[1]);
-        stmt.setInt(3, Integer.parseInt(arr[2]));
-       
+        int index = 1;
+        for (String[] arr : contents) {
+            stmt.setTimestamp(1, Timestamp.valueOf(arr[0]));
+            stmt.setString(2, arr[1]);
+            stmt.setInt(3, Integer.parseInt(arr[2]));
+            stmt.addBatch();
+            index++;
+            if (index == 100) {
+                stmt.executeBatch();
+                stmt.clearBatch();
+                index = 1;
+            }
+        }
 
-        stmt.executeUpdate();
-        //out.println("Number of records inserted" + numRecordUpdated);
+        stmt.executeBatch();
+        stmt.clearBatch();
         stmt.close();
         conn.close();
     }

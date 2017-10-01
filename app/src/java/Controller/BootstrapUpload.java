@@ -6,6 +6,7 @@
 package Controller;
 
 import Util.DBConnection;
+import Util.*;
 import com.opencsv.CSVReader;
 import dao.ValidatorDAO;
 import java.io.BufferedInputStream;
@@ -30,6 +31,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javazoom.upload.MultipartFormDataRequest;
 
 /**
@@ -99,7 +101,7 @@ public class BootstrapUpload extends HttpServlet {
                             out.write("<li>Form field : uploadfile" + "<BR> Uploaded file : " + file.getFileName() + " (" + file.getFileSize() + " bytes)" + "<BR> Content Type : " + file.getContentType());
                             out.println("");
                             ZipInputStream zin = new ZipInputStream(file.getInpuStream());
-                            unzipThis(zin);
+                            unzipThis(request, response, zin);
                         }
                     }
                 }
@@ -114,8 +116,8 @@ public class BootstrapUpload extends HttpServlet {
         response.getWriter().write("Upload Successful");
     }
 
-    protected void unzipThis(ZipInputStream zin) throws IOException, ClassNotFoundException {
-
+    protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin) throws IOException, ClassNotFoundException, SQLException {
+        HttpSession session = request.getSession();
         ZipEntry entry;
         while ((entry = zin.getNextEntry()) != null) { // for every item in the zip file
             //default constructor is CSVReader(new Reader (new InputStreamReader(InputStream())) and Reader is a superclass of InputStreamReader
@@ -129,12 +131,15 @@ public class BootstrapUpload extends HttpServlet {
                 List<String[]> allList = csvr.readAll();
                 map.put(fileName, allList);
             }
-            ValidatorDAO validDAO = new ValidatorDAO(map);
-            validDAO.validating();
-            out.println("Reach Validator " + map.size());
-            
-            
-
         }
+        ValidatorDAO validDAO = new ValidatorDAO(map);
+        validDAO.validating();
+        HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
+        session.setAttribute("location_errors", locationErrors);
+        HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
+        session.setAttribute("ll_errors", locationLookUpErrors);
+        HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
+        session.setAttribute("demographics_errors", demoErrors);
+        response.sendRedirect("Admin.jsp");
     }
 }

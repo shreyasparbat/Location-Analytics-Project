@@ -83,10 +83,8 @@ public class LocationValidator {
     }
 
     public static boolean checkLocation(String location) {
-        //cross check w location-lookup
-
-        //boolean isValid = 
-        return true;
+        
+        return LocationLookupValidator.locationIDList.contains(location);
 
     }
 

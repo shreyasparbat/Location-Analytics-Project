@@ -6,6 +6,8 @@
 package dao;
 
 import Util.DBConnection;
+import Util.DemographicsValidator;
+import Util.LocationLookupValidator;
 import java.util.*;
 import Util.LocationValidator;
 import java.sql.SQLException;
@@ -24,51 +26,34 @@ public class ValidatorDAO {
         this.map = map;
     }
 
-    public void validating() {
+    public void validating() throws SQLException, ClassNotFoundException {
         List<String[]> validLocList;
         List<String[]> validDemoList;
         List<String[]> validllList;
         List<String[]> demoList = map.get("demographics.csv");
         if (demoList != null) {
             //missing validation
-            for (String[] row : demoList) {
-                try {
-                    DBConnection.addDemo(row);
-                } catch (SQLException ex) {
-                    Logger.getLogger(ValidatorDAO.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ValidatorDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            validDemoList = DemographicsValidator.validateDemographic(demoList);
 
-            }
+            DBConnection.addDemo(validDemoList);
+
         }
 
         List<String[]> llList = map.get("location-lookup.csv");
         if (llList != null) {
             //missing validation
-            for (String[] row : llList) {
-                try {
-                    DBConnection.addLL(row);
-                } catch (SQLException ex) {
-                    Logger.getLogger(ValidatorDAO.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ValidatorDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            validllList = LocationLookupValidator.validateLocationLookup(llList);
+            DBConnection.addLL(validllList);
 
-            }
         }
+
         List<String[]> locList = map.get("location.csv");
         if (locList != null) {
             validLocList = LocationValidator.validateLocation(locList);
-            for (String[] row : validLocList) {
-                try {
-                    DBConnection.addLoca(row);
-                } catch (SQLException ex) {
-                    Logger.getLogger(ValidatorDAO.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ValidatorDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+
+            DBConnection.addLoca(validLocList);
+
         }
     }
+
 }

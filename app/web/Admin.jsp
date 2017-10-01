@@ -4,6 +4,7 @@
     Author     : amanda
 --%>
 
+<%@page import="java.util.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%@include file="protect.jsp" %>
@@ -40,5 +41,29 @@
         <br>
         <br>
         <a href="logout.jsp">Click here to logout</a>
+        
+        
+        <%
+            HashMap<Integer, List<String>> locationErrors = (HashMap<Integer, List<String>>) session.getAttribute("location_errors");
+            String total="";
+            if (locationErrors != null) {
+                Iterator<Integer> iter = locationErrors.keySet().iterator();
+                while (iter.hasNext()) {
+                    out.println("<h2>");
+                    int index = iter.next();
+                    List<String> locationErrorList = locationErrors.get(index);
+                    Iterator<String> leIter = locationErrorList.iterator();
+                    if (leIter.hasNext()) {
+                         total= leIter.next();
+                    }
+                    while(leIter.hasNext()){
+                        total = total+","+leIter.next();
+                    }
+                           
+                    out.println("Errors found in row " + index + " in location.csv: " + total);
+                    out.println("</h2> <br>");
+                }
+            }
+            %>
     </body>
 </html>
