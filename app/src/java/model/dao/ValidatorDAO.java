@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dao;
+package model.dao;
 
-import Util.DBConnection;
-import Util.DemographicsValidator;
-import Util.LocationLookupValidator;
+import model.utility.DBConnection;
+import model.utility.DemographicsValidator;
+import model.utility.LocationLookupValidator;
+import model.utility.LocationValidator;
 import java.util.*;
-import Util.LocationValidator;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

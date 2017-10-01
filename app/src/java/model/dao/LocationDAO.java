@@ -1,5 +1,6 @@
-package dao;
-import model.*;
+package model.dao;
+
+import model.entity.Location;
 import java.util.*;
 
 /**

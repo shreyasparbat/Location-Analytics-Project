@@ -1,4 +1,4 @@
-package model;
+package model.entity;
 
 /**
  * A Location object that stores the information about the semanticPlace and locationID

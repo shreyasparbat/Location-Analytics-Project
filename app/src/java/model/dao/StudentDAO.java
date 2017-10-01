@@ -1,4 +1,5 @@
-package dao;
+package model.dao;
+import model.entity.Student;
 import java.util.*;
 import model.*;
 

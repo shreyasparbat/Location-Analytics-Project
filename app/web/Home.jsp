@@ -3,7 +3,7 @@
     Created on : 23 Sep, 2017, 1:13:59 AM
     Author     : amanda
 --%>
-<%@include file="protect.jsp" %>>
+<%@include file="Protect.jsp" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html
 
@@ -22,6 +22,8 @@
     </h1>
     <br>
     <br>
-    <a href="logout.jsp">Click here to logout</a>
+    <a href="BasicLocationReports.jsp">Basic Location Reports</a>
+    <br/>
+    <a href="Logout.jsp">Click here to logout</a>
 </body>
 </html>

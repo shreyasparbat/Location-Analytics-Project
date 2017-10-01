@@ -1,4 +1,4 @@
-package model;
+package model.entity;
 
 /**
  * A Student object that stores the information about the macAddress, name, password, email and gender
