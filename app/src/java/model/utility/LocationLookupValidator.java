@@ -12,12 +12,21 @@ import java.util.List;
 
 /**
  *
- * @author Joel Tay
+ * @author Joleen Mok
  */
 public class LocationLookupValidator {
 
     public static HashMap<Integer, List<String>> llErrors = new HashMap<>();
     public static ArrayList<String> locationIDList = new ArrayList<String>();
+    private static ArrayList<String> locationLevels = new ArrayList<String>();
+
+    static {
+        locationLevels.add("10");
+        locationLevels.add("20");
+        locationLevels.add("30");
+        locationLevels.add("40");
+        locationLevels.add("50");
+    }
 
     public static List<String[]> validateLocationLookup(List<String[]> list) {
         List<String[]> correctList = new ArrayList<>();
@@ -37,7 +46,7 @@ public class LocationLookupValidator {
                 locationIdCheck = false;
             }
             try {
-                semanticPlaceCheck = checkSemanticPlace(row[1]);
+                semanticPlaceCheck = checkSemanticPlace(row[1], row[0]);
             } catch (ArrayIndexOutOfBoundsException e) {
                 semanticPlaceCheck = false;
             }
@@ -59,9 +68,12 @@ public class LocationLookupValidator {
         return correctList;
     }
 
-    private static boolean checkLocationID(String string) {
+    private static boolean checkLocationID(String locatID) {
         try {
-            int locID = Integer.parseInt(string);
+            if (locatID.length() != 10) {
+                return false;
+            }
+            int locID = Integer.parseInt(locatID);
             if (locID > 0) {
                 return true;
             } else {
@@ -73,7 +85,32 @@ public class LocationLookupValidator {
 
     }
 
-    private static boolean checkSemanticPlace(String string) {
-        return true;
+    private static boolean checkSemanticPlace(String semanticPlace, String locationID) {
+        // if contains other than numbers and alphabets
+
+        if (semanticPlace.indexOf("SMUSISL") == 0 || semanticPlace.indexOf("SMUSISB") == 0) {
+            //semantic location places are input as SMUSISL1NearSubway or SMUSISB1NearLiftLobby
+            // either way need to verify the level within the string of semantic place B_ or L_ 
+            // with locationID
+            String level = semanticPlace.substring(7, 8);
+            String locationIDlevelCheck = locationID.substring(4, 6);
+
+            if (semanticPlace.indexOf("SMUSISL") == 0) {
+                //1010100013 id is coded as 1010 (SIS), 10/20/30/40/50 (level), rest is id
+
+                if (locationLevels.contains(locationIDlevelCheck) && level.equals(locationID.substring(4, 5))) {
+                    return true;
+                }
+            } else {
+                //1010110063 is a basement location. 1010(SIS), 11 indicates basement
+                //but we care about the second 1
+
+                if (locationIDlevelCheck.equals("11") && level.equals(locationID.substring(5, 6))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
