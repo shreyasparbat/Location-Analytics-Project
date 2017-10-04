@@ -120,5 +120,10 @@
                 }
             %>
         </p>
+        <br/>
+        <br/>
+        <p>
+            Or, visit the <a href="Home.jsp">home page</a>.
+        </p>
     </body>
 </html>
