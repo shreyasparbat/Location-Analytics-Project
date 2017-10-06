@@ -16,7 +16,7 @@ public class AdminDAO{
     /**
      * Returns the value of Administrator check 
      * @param id  the string of the id
-     * @param pw  the string of the password
+     * @param pwd  the string of the password
      * @return true if admin id matches with input id, else false
      */
     public boolean isAdmin(String id, String pwd){

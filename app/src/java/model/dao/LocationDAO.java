@@ -15,7 +15,7 @@ public class LocationDAO{
     //constructors
 
     /**
-     * Default constructor
+     * Initializes a newly created LocationDAO object
      */
     public LocationDAO(){
         locationList = new ArrayList<Location>();

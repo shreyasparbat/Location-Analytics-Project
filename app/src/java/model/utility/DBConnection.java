@@ -30,6 +30,12 @@ public class DBConnection {
         readDatabaseProperties();
     }
 
+    /**
+     * creates connection to the database
+     * @return Connection 
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public static Connection createConnection() throws SQLException, ClassNotFoundException {
         Connection conn = null;
         Class.forName(JDBC_DRIVER);
@@ -42,6 +48,9 @@ public class DBConnection {
         return conn;
     }
 
+    /**
+     * Reads the database properties from the properties file
+     */
     private static void readDatabaseProperties() {
         InputStream is = null;
         try {
@@ -119,6 +128,12 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Bootstraps demographics data into the database under the table demographics
+     * @param contents the contents of the demographic
+     * @throws SQLException SQL exception to database
+     * @throws ClassNotFoundException
+     */
     public static void addDemo(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
@@ -145,6 +160,12 @@ public class DBConnection {
         conn.close();
     }
 
+    /**
+     * Bootstraps Location data into the database under the table locationlookup
+     * @param contents the contents of the locationlookup.csv
+     * @throws SQLException SQL exception to database
+     * @throws ClassNotFoundException
+     */
     public static void addLL(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE locationlookup;");
@@ -169,6 +190,12 @@ public class DBConnection {
         conn.close();
     }
 
+    /**
+     * Bootstraps location data into the database under the table location
+     * @param contents the contents of the location
+     * @throws SQLException SQL exception to database
+     * @throws ClassNotFoundException
+     */
     public static void addLoca(List<String[]> contents) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
         PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE location;");

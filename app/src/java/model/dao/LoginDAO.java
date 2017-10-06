@@ -18,11 +18,21 @@ import java.sql.Statement;
 public class LoginDAO {
         private AdminDAO adminDAO;
         
-        
+    /**
+     * Initiates a default loginDAO object and calls a new AdminDAO object
+     */
     public LoginDAO(){
         adminDAO = new AdminDAO();
     }
 
+    /**
+     * Authenticates the username and password input with the database. Returns 
+     * the status of the authentication. "Invalid user credentials" if fails, "ADMIN" if admin logins
+     * and "SUCCESS" if successful login
+     * @param userName input of username 
+     * @param password input of password
+     * @return String of the login authentic status
+     */
     public String authenticateUser(String userName, String password) {
 
         Connection con = null;

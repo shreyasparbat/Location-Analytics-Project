@@ -88,11 +88,11 @@ public class TimeUtility {
     /**
      * Returns a string that can be used with <code>Timestamp.valueOf(String)</code> without errors.
      * 
-     * @param mins
-     * @param hrs
-     * @param days
-     * @param months
-     * @param years
+     * @param mins the minutes in int
+     * @param hrs the hours in int 
+     * @param days the number of days in int
+     * @param months the month in int 1-12
+     * @param years the year in int
      * @return a string that can be used with <code>Timestamp.valueOf(String)</code> without errors.
      */
     public static String getDateTimeString (int mins, int hrs, int days, int months, int years) {
