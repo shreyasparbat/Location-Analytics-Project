@@ -18,13 +18,22 @@ import java.util.List;
  */
 public class LocationValidator {
 
+   
+    /**
+     * A map of error messages where key is the row and values are the error messages related to the row
+     */
     public static HashMap<Integer, List<String>> locationErrors = new HashMap<>();
 
+    /**
+     * Validates the contents of the location.csv file
+     * @param list the list of content from the file
+     * @return the correct list of content from the file
+     */
     public static List<String[]> validateLocation(List<String[]> list) {
         List<String[]> correctList = new ArrayList<>();
         HashMap<String, String[]> mapCheck = new HashMap<>();
         Iterator<String[]> iter = list.iterator();
-
+        locationErrors.clear();
         int index = 1;
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
@@ -86,7 +95,12 @@ public class LocationValidator {
 
     }
 
-    public static boolean checkTime(String time) {
+    /**
+     * Validates the time format is in TimeStamp format
+     * @param time time input in string
+     * @return true if the time is valid, else false
+     */
+    private static boolean checkTime(String time) {
         try {
             Timestamp ts = Timestamp.valueOf(time);
 
@@ -96,14 +110,24 @@ public class LocationValidator {
         return true; //means correct format
 
     }
-
-    public static boolean checkLocation(String location) {
+    /**
+     * Validates the location according to the format
+     *
+     * @param location location input
+     * @return true if location is valid, false if not
+     */
+    private static boolean checkLocation(String location) {
 
         return LocationLookupValidator.locationIDList.contains(location);
 
     }
 
-    public static boolean checkMacAddress(String mcAdd) {
+    /**
+     * Validates the MacAddress according to the format
+     * @param mcAddress macAddress input
+     * @return true if mac address is valid, false if not
+     */
+    private static boolean checkMacAddress(String mcAdd) {
 
         return mcAdd.matches("[a-fA-F0-9]{40}");
 

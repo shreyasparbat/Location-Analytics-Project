@@ -38,25 +38,7 @@ public class StudentDAO {
     public ArrayList<Student> getAllStudents(){
         return sList;
     }
-    
-    
-
-    /**
-     * Returns the result of the authentication process 
-     * @param email -the string of the email
-     * @param pwd - the string of the password
-     * @return returns true if password and email matched in database. Else, false
-     */
-    public boolean authenticateStudentPassword(String email, String pwd){
-        if(email != null && pwd != null){
-            for(Student s: sList){
-                if(s.getEmail().equals(email) && s.getPassword().equals(pwd)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+   
     
     //
 

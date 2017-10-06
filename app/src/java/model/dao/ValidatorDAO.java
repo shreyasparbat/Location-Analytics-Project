@@ -22,10 +22,19 @@ public class ValidatorDAO {
 
     HashMap<String, List<String[]>> map = new HashMap<>();
 
+    /**
+     * Initiates a new ValidatorDAO object with a hashmap containing file names and values
+     * @param map map where key is the document name and value is the contents of the document
+     */
     public ValidatorDAO(HashMap<String, List<String[]>> map) {
         this.map = map;
     }
 
+    /**
+     * Validates the files in map of the validator 
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public void validating() throws SQLException, ClassNotFoundException {
         List<String[]> validLocList;
         List<String[]> validDemoList;

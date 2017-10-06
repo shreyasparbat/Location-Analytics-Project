@@ -90,6 +90,15 @@ public class BootstrapServlet extends HttpServlet {
         response.getWriter().write("Upload Successful");
     }
     
+    /**
+     *
+     * @param request HttpServletRequest Object
+     * @param response HttpServletResponse Object
+     * @param zin zip input stream object of the contents that needs to be read
+     * @throws IOException 
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin) throws IOException, ClassNotFoundException, SQLException {
         HttpSession session = request.getSession();
         ZipEntry entry;

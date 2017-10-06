@@ -16,8 +16,19 @@ import java.util.List;
  */
 public class LocationLookupValidator {
 
+    /**
+     * A map of error messages where key is the row and values are the error messages related to the row
+     */
     public static HashMap<Integer, List<String>> llErrors = new HashMap<>();
+
+    /**
+     * A list of valid location IDs
+     */
     public static ArrayList<String> locationIDList = new ArrayList<String>();
+    
+    /**
+     * A list of location levels to check the id of location based on levels
+     */
     private static ArrayList<String> locationLevels = new ArrayList<String>();
 
     static {
@@ -28,9 +39,15 @@ public class LocationLookupValidator {
         locationLevels.add("50");
     }
 
+    /**
+     * Validates the contents of the locationlookup 
+     * @param list the contents of the locationlookup.csv
+     * @return a list of the processed location lookup data
+     */
     public static List<String[]> validateLocationLookup(List<String[]> list) {
         List<String[]> correctList = new ArrayList<>();
         Iterator<String[]> iter = list.iterator();
+        locationLevels.clear();
         int index = 1;
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
@@ -68,6 +85,11 @@ public class LocationLookupValidator {
         return correctList;
     }
 
+    /**
+     * validates the location id based on the requirements
+     * @param locatID input of locatID
+     * @return return true if locatID is valid,else false
+     */
     private static boolean checkLocationID(String locatID) {
         try {
             if (locatID.length() != 10) {
@@ -85,6 +107,12 @@ public class LocationLookupValidator {
 
     }
 
+    /**
+     * validates the semantic place based on the requirements
+     * @param semanticPlace input of semantic place
+     * @param locationID input of location id
+     * @return true if the semantic place is valid, else false
+     */
     private static boolean checkSemanticPlace(String semanticPlace, String locationID) {
         // if contains other than numbers and alphabets
 
