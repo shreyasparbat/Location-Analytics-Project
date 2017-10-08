@@ -1,3 +1,6 @@
 /app/nbproject/private/
 /app/build/
 /app/dist/
+/app/app/build/
+/app/app/dist/
+/app/app/nbproject/private/
