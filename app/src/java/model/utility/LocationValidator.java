@@ -6,11 +6,13 @@
 package model.utility;
 
 import java.io.PrintWriter;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -60,12 +62,32 @@ public class LocationValidator {
                 macAddressCheck = false;
             }
             boolean duplicateRow = false; //initially false
+            boolean invalidRow = false;
             if (timeCheck && locationCheck && macAddressCheck) {
                 String key = row[1] + row[2];
                 if (mapCheck.containsKey(key)) {
                     duplicateRow = true;
+                } else {
+                    try {
+                        Connection conn = DBConnection.createConnection();
+                        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM location WHERE macaddress = ? and locationid = ? ");
+                        stmt.setString(1, row[1]);
+                        stmt.setInt(2, Integer.parseInt(row[2]));
+                        ResultSet rs = stmt.executeQuery();
+                        if (rs.next() == true) {
+                            invalidRow = true;
+                        }
+                        stmt.close();
+                        conn.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(LocationValidator.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(LocationValidator.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
-                mapCheck.put(key, row);
+                if (invalidRow == false) {
+                    mapCheck.put(key, row);
+                }
             }
             if (!timeCheck) {
                 errorMsgs.add("invalid timestamp");
@@ -117,9 +139,19 @@ public class LocationValidator {
      * @return true if location is valid, false if not
      */
     private static boolean checkLocation(String location) {
-
-        return LocationLookupValidator.locationIDList.contains(location);
-
+        try {
+            Connection conn = DBConnection.createConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM locationlookup WHERE locationid = " + Integer.parseInt(location));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() == true) {
+                return true;
+            }
+            stmt.close();
+            conn.close();
+        } catch (Exception ex) {
+            return false;
+        }
+        return false;
     }
 
     /**

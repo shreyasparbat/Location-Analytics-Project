@@ -39,28 +39,28 @@ public class ValidatorDAO {
         List<String[]> validLocList;
         List<String[]> validDemoList;
         List<String[]> validllList;
-        List<String[]> demoList = map.get("demographics.csv");
-        if (demoList != null) {
-            //missing validation
-            validDemoList = DemographicsValidator.validateDemographic(demoList);
-
-            DBConnection.addDemo(validDemoList);
-
-        }
-
-        List<String[]> llList = map.get("location-lookup.csv");
+        boolean addFile = false; 
+        
+         List<String[]> llList = map.get("location-lookup.csv");
         if (llList != null) {
             //missing validation
             validllList = LocationLookupValidator.validateLocationLookup(llList);
             DBConnection.addLL(validllList);
+            addFile = true;
+        }
+        List<String[]> demoList = map.get("demographics.csv");
+        
+        if (demoList != null) {
+            //missing validation
+            validDemoList = DemographicsValidator.validateDemographic(demoList);
+
+            DBConnection.addDemo(validDemoList, addFile);
 
         }
-
         List<String[]> locList = map.get("location.csv");
         if (locList != null) {
             validLocList = LocationValidator.validateLocation(locList);
-
-            DBConnection.addLoca(validLocList);
+            DBConnection.addLoca(validLocList, addFile);
 
         }
     }

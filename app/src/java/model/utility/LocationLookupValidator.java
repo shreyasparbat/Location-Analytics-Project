@@ -21,10 +21,6 @@ public class LocationLookupValidator {
      */
     public static HashMap<Integer, List<String>> llErrors = new HashMap<>();
 
-    /**
-     * A list of valid location IDs
-     */
-    public static ArrayList<String> locationIDList = new ArrayList<String>();
     
     /**
      * A list of location levels to check the id of location based on levels
@@ -47,7 +43,7 @@ public class LocationLookupValidator {
     public static List<String[]> validateLocationLookup(List<String[]> list) {
         List<String[]> correctList = new ArrayList<>();
         Iterator<String[]> iter = list.iterator();
-        locationLevels.clear();
+        llErrors.clear();
         int index = 1;
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
@@ -75,7 +71,6 @@ public class LocationLookupValidator {
             }
             if (locationIdCheck && semanticPlaceCheck) {
                 correctList.add(row);
-                locationIDList.add(row[0]);
             } else {
                 llErrors.put(index, errorMsgs);
             }

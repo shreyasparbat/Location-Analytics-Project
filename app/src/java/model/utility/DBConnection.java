@@ -134,10 +134,13 @@ public class DBConnection {
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addDemo(List<String[]> contents) throws SQLException, ClassNotFoundException {
+    public static void addDemo(List<String[]> contents, boolean bootstrap) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
-        stmt.executeUpdate();
+        PreparedStatement stmt;
+        if (bootstrap==true){
+            stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
+            stmt.executeUpdate();
+        }
         stmt = conn.prepareStatement("INSERT INTO DEMOGRAPH(`macaddress`, `name`, `password`, `email`, `gender`)  VALUES(?, ?, ?,?,?)");
         int index = 1;
         for (String[] row : contents) {
@@ -196,10 +199,13 @@ public class DBConnection {
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addLoca(List<String[]> contents) throws SQLException, ClassNotFoundException {
+    public static void addLoca(List<String[]> contents, boolean bootstrap) throws SQLException, ClassNotFoundException {
         Connection conn = createConnection();
-        PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE location;");
-        stmt.executeUpdate();
+        PreparedStatement stmt;
+        if (bootstrap==true){
+            stmt = conn.prepareStatement("TRUNCATE TABLE location;");
+            stmt.executeUpdate();
+        }
         stmt = conn.prepareStatement("INSERT INTO location VALUES(?, ?,?)");
         int index = 1;
         for (String[] arr : contents) {
