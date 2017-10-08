@@ -129,11 +129,12 @@ public class DemographicsValidator {
     /**
      * Validates the email to see if it's valid
      *
-     * @param email Email input
+     * @param studEmail Email input
      * @param name name of student
      * @return true if email is valid, false if email is invalid
      */
-    private static boolean checkEmail(String email, String name) {
+    private static boolean checkEmail(String studEmail, String name) {
+        String email = studEmail.toLowerCase();
         boolean isStudentValid = true;
         boolean isSchoolValid = true;
         boolean isYearValid = true;

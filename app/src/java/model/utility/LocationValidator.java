@@ -20,23 +20,25 @@ import java.util.logging.Logger;
  */
 public class LocationValidator {
 
-   
     /**
-     * A map of error messages where key is the row and values are the error messages related to the row
+     * A map of error messages where key is the row and values are the error
+     * messages related to the row
      */
     public static HashMap<Integer, List<String>> locationErrors = new HashMap<>();
 
     /**
      * Validates the contents of the location.csv file
+     *
      * @param list the list of content from the file
      * @return the correct list of content from the file
      */
-    public static List<String[]> validateLocation(List<String[]> list) {
+    public static List<String[]> validateLocation(List<String[]> list) throws ClassNotFoundException, SQLException {
         List<String[]> correctList = new ArrayList<>();
         HashMap<String, String[]> mapCheck = new HashMap<>();
         Iterator<String[]> iter = list.iterator();
         locationErrors.clear();
         int index = 1;
+        Connection conn = DBConnection.createConnection();
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
         }
@@ -52,7 +54,7 @@ public class LocationValidator {
                 timeCheck = false;
             }
             try {
-                locationCheck = checkLocation(row[2]);
+                locationCheck = checkLocation(row[2],conn);
             } catch (ArrayIndexOutOfBoundsException e) {
                 locationCheck = false;
             }
@@ -68,22 +70,17 @@ public class LocationValidator {
                 if (mapCheck.containsKey(key)) {
                     duplicateRow = true;
                 } else {
-                    try {
-                        Connection conn = DBConnection.createConnection();
-                        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM location WHERE macaddress = ? and locationid = ? ");
-                        stmt.setString(1, row[1]);
-                        stmt.setInt(2, Integer.parseInt(row[2]));
-                        ResultSet rs = stmt.executeQuery();
-                        if (rs.next() == true) {
-                            invalidRow = true;
-                        }
-                        stmt.close();
-                        conn.close();
-                    } catch (SQLException ex) {
-                        Logger.getLogger(LocationValidator.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (ClassNotFoundException ex) {
-                        Logger.getLogger(LocationValidator.class.getName()).log(Level.SEVERE, null, ex);
+
+                    PreparedStatement stmt = conn.prepareStatement("SELECT * FROM location WHERE macaddress = ? and locationid = ? ");
+                    stmt.setString(1, row[1]);
+                    stmt.setInt(2, Integer.parseInt(row[2]));
+                    ResultSet rs = stmt.executeQuery();
+                    if (rs.next() == true) {
+                        invalidRow = true;
+                        duplicateRow = true;
                     }
+                    stmt.close();
+
                 }
                 if (invalidRow == false) {
                     mapCheck.put(key, row);
@@ -112,13 +109,14 @@ public class LocationValidator {
         while (correctRow.hasNext()) {
             correctList.add(mapCheck.get(correctRow.next()));
         }
-
+        conn.close();
         return correctList;
 
     }
 
     /**
      * Validates the time format is in TimeStamp format
+     *
      * @param time time input in string
      * @return true if the time is valid, else false
      */
@@ -132,30 +130,28 @@ public class LocationValidator {
         return true; //means correct format
 
     }
+
     /**
      * Validates the location according to the format
      *
      * @param location location input
      * @return true if location is valid, false if not
      */
-    private static boolean checkLocation(String location) {
-        try {
-            Connection conn = DBConnection.createConnection();
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM locationlookup WHERE locationid = " + Integer.parseInt(location));
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next() == true) {
-                return true;
-            }
-            stmt.close();
-            conn.close();
-        } catch (Exception ex) {
-            return false;
+    private static boolean checkLocation(String location, Connection conn) throws SQLException {
+        
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM locationlookup WHERE locationid = " + Integer.parseInt(location));
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next() == true) {
+            return true;
         }
+        stmt.close();
+
         return false;
     }
 
     /**
      * Validates the MacAddress according to the format
+     *
      * @param mcAddress macAddress input
      * @return true if mac address is valid, false if not
      */

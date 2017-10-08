@@ -23,15 +23,19 @@ public class ValidatorDAO {
     HashMap<String, List<String[]>> map = new HashMap<>();
 
     /**
-     * Initiates a new ValidatorDAO object with a hashmap containing file names and values
-     * @param map map where key is the document name and value is the contents of the document
+     * Initiates a new ValidatorDAO object with a hashmap containing file names
+     * and values
+     *
+     * @param map map where key is the document name and value is the contents
+     * of the document
      */
     public ValidatorDAO(HashMap<String, List<String[]>> map) {
         this.map = map;
     }
 
     /**
-     * Validates the files in map of the validator 
+     * Validates the files in map of the validator
+     *
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -39,26 +43,30 @@ public class ValidatorDAO {
         List<String[]> validLocList;
         List<String[]> validDemoList;
         List<String[]> validllList;
-        boolean addFile = false; 
-        
-         List<String[]> llList = map.get("location-lookup.csv");
-        if (llList != null) {
+        boolean addFile = false;
+
+        if (map.containsKey("location-lookup.csv")) {
             //missing validation
+            List<String[]> llList = map.get("location-lookup.csv");
+
             validllList = LocationLookupValidator.validateLocationLookup(llList);
             DBConnection.addLL(validllList);
+            System.out.println(addFile);
             addFile = true;
+            System.out.println(addFile);
         }
-        List<String[]> demoList = map.get("demographics.csv");
-        
-        if (demoList != null) {
-            //missing validation
-            validDemoList = DemographicsValidator.validateDemographic(demoList);
 
+        System.out.println(addFile);
+        if (map.containsKey("demographics.csv")) {
+            //missing validation
+            List<String[]> demoList = map.get("demographics.csv");
+            validDemoList = DemographicsValidator.validateDemographic(demoList);
             DBConnection.addDemo(validDemoList, addFile);
 
         }
-        List<String[]> locList = map.get("location.csv");
-        if (locList != null) {
+
+        if (map.containsKey("location.csv")) {
+            List<String[]> locList = map.get("location.csv");
             validLocList = LocationValidator.validateLocation(locList);
             DBConnection.addLoca(validLocList, addFile);
 
