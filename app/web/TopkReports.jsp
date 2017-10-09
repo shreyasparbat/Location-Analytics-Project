@@ -41,7 +41,7 @@
 
             <!-- Navbar brand (to be changed)-->
             <a class="navbar-brand" href="#">
-                <img src="https://images.vexels.com/media/users/3/139221/isolated/preview/687e1be6fe067f0b44800ac61b259816-circle-lion-logo-safari-by-vexels.png" height="30" alt="">
+                <img src="assets/logo.jpg" height="30" alt="">
             </a> 
 
             <!-- Collapse button -->
@@ -98,7 +98,7 @@
         <!-- SCRIPTS
         ================================================== -->
         <!-- JQuery -->
-        <script type="text/javascript" src="assets/js/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!-- Bootstrap tooltips -->
         <script type="text/javascript" src="assets/js/popper.min.js"></script>
         <!-- Bootstrap core JavaScript -->

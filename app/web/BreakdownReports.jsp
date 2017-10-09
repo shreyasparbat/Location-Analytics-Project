@@ -41,7 +41,7 @@
 
             <!-- Navbar brand (to be changed)-->
             <a class="navbar-brand" href="#">
-                <img src="https://images.vexels.com/media/users/3/139221/isolated/preview/687e1be6fe067f0b44800ac61b259816-circle-lion-logo-safari-by-vexels.png" height="30" alt="">
+                <img src="assets/logo.jpg" height="30" alt="">
             </a> 
 
             <!-- Collapse button -->
@@ -79,13 +79,57 @@
             <!-- Collapsible content -->
         </nav>
         <!--/.Navbar-->
-        
+
         <br/>
         <br/>
-        
+
         <div class="container">
 
-            
+            <div class="row">
+
+                <div class="col-md-4"></div>
+
+                <div class="jumbotron col-md-4 centre-of-page">
+
+                    <!-- Form get table -->
+
+                    <p class="h5 text-center mb-4">Get Breakdown Report</p>
+
+                    <form action="basic-location-reports">
+                        <label for="sel1">Year:</label>
+                        <select class="form-control" id="sel1" name="year">
+                            <option value="2013">2013</option>
+                            <option value="2014">2014</option>
+                            <option value="2015">2015</option>
+                            <option value="2016">2016</option>
+                            <option value="2017">2017</option>
+                        </select>
+                        
+                        <label for="sel2">Gender:</label>
+                        <select class="form-control" id="sel2" name="gender">
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                        
+                        <label for="sel3">School:</label>
+                        <select class="form-control" id="sel3" name="school">
+                            <option value="sis">School of Information Systems</option>
+                            <option value="law">School of Law</option>
+                            <option value="accountancy">School of Accountancy</option>
+                            <option value="economics">School of Economics</option>
+                            <option value="socsc">School of Social Sciences</option>
+                            <option value="business">Lee Kong Chian School of Business</option>
+                        </select>
+                    </form>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
+                    </div>
+                </div>
+
+                <div class="col-md-4"></div>
+
+            </div>
 
             <hr>
 
@@ -98,7 +142,7 @@
         <!-- SCRIPTS
         ================================================== -->
         <!-- JQuery -->
-        <script type="text/javascript" src="assets/js/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!-- Bootstrap tooltips -->
         <script type="text/javascript" src="assets/js/popper.min.js"></script>
         <!-- Bootstrap core JavaScript -->

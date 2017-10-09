@@ -56,4 +56,8 @@ public class StudentDAO {
         }
         return null;
     }
+
+    public Hashtable<String, Student> getAllStudentsTable() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
