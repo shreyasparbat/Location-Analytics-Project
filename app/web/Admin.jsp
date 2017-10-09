@@ -40,7 +40,7 @@
         </form>
         <br>
         <br>
-        <a href="logout.jsp">Click here to logout</a>
+        <a href="Logout.jsp">Click here to logout</a>
 
 
         <%            

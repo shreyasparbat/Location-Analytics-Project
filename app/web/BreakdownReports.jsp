@@ -1,13 +1,10 @@
 <%-- 
-    Document   : Home
-    Created on : 23 Sep, 2017, 1:13:59 AM
-    Author     : amanda
+    Document   : BreakdownReports
+    Created on : 9 Oct, 2017, 5:20:44 PM
+    Author     : shrey
 --%>
-<%@include file="Protect.jsp" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<%    String username = (String) session.getAttribute("userName");
-%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +17,7 @@
         <meta name="author" content="">
         <link rel="icon" href="icon.jpg">
 
-        <title>Home</title>
+        <title>Breakdown Reports</title>
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
@@ -32,7 +29,6 @@
         <link href="assets/css/mdb.min.css" rel="stylesheet">
 
         <!-- Custom styles for this page -->
-        <link href="assets/jumbotron.css" rel="stylesheet">
 
         <!-- Icon -->
         <link rel="icon" href="assets/logo.jpg">
@@ -83,77 +79,13 @@
             <!-- Collapsible content -->
         </nav>
         <!--/.Navbar-->
-
-        <!-- Main jumbotron -->
-        <div class="jumbotron">
-
-            <div class="container">
-
-                <h1 class="display-3">Welcome <%=username%></h1>
-            </div>
-        </div>
-
+        
+        <br/>
+        <br/>
+        
         <div class="container">
 
-            <!-- Row of columns -->
-            <div class="row">
-
-                <div class="col-md-4">
-                    <!--Card 1-->
-                    <div class="card">
-
-                        <!--Card image-->
-                        <img class="img-fluid" src="assets/heatmap.jpg" alt="Card image cap">
-
-                        <!--Card content-->
-                        <div class="card-body text-center">
-                            <!--Title-->
-                            <h4 class="card-title">Heat Maps</h4>
-                            <!--Text-->
-                            <p class="card-text">Get the crowd density of any floor of the SIS building on any given day and time.</p>
-                            <a href="HeatMaps.jsp" class="btn btn-primary">Go</a>
-                        </div>
-                    </div>
-                    <!--/.Card 1-->
-                </div>
-
-                <div class="col-md-4">
-                    <!--Card 2-->
-                    <div class="card">
-                        
-                        <!--Card image-->
-                        <img class="img-fluid" src="assets/groupidentification.jpg" alt="Card image cap">
-
-                        <!--Card content-->
-                        <div class="card-body text-center">
-                            <!--Title-->
-                            <h4 class="card-title">Group Identification</h4>
-                            <!--Text-->
-                            <p class="card-text">Get the list of groups (location of group and composition) at a particular timing.</p>
-                            <a href="AutomaticGroupIdentification.jsp" class="btn btn-primary">Go</a>
-                        </div>
-                    </div>
-                    <!--/.Card 2-->
-                </div>
-
-                <div class="col-md-4">
-                    <!--Card 3-->
-                    <div class="card">
-                        <!--Card image-->
-                        <img class="img-fluid" src="assets/locationreport.jpg" alt="Card image cap">
-
-                        <!--Card content-->
-                        <div class="card-body text-center">
-                            <!--Title-->
-                            <h4 class="card-title">Location Reports</h4>
-                            <!--Text-->
-                            <p class="card-text">Get various location based statistics (for the SIS building) for any given day and time.</p>
-                            <a href="BasicLocationReports.jsp" class="btn btn-primary">Go</a>
-                        </div>
-                    </div>
-                    <!--/.Card 3-->
-                </div>
-            </div>
+            
 
             <hr>
 
