@@ -64,8 +64,8 @@ public class StudentDAO {
      *
      * @return returns a Hashtable of students
      */
-    public Hashtable<String, Student> getAllStudentsTable() {
-        Hashtable<String, Student> studentTable = new Hashtable<>();
+    public HashMap<String, Student> getAllStudentsMap() {
+        HashMap<String, Student> studentTable = new HashMap<>();
         for (Student s : sList) {
             studentTable.put(s.getMacAddress(), s);
         }

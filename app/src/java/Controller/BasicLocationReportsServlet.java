@@ -41,13 +41,25 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
         //retrieve request parameters
         String function = request.getParameter("function");
-        String dateTime = request.getParameter("dateTime");
+        String date = request.getParameter("date");
+        String time = request.getParameter("time");
+        
+        //Make dateTime string of correct format
+        String dateTime = date + " " + time + ":00";
 
         //Obtaining SQL Timestamp objects for start and end time of processing window
-        ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
-        Timestamp startDateTime = processingWindowArrayList.get(0);
-        Timestamp endDateTime = processingWindowArrayList.get(1);
-
+        Timestamp startDateTime = null;
+        Timestamp endDateTime = null;
+        
+        try {
+            ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
+            startDateTime = processingWindowArrayList.get(0);
+            endDateTime = processingWindowArrayList.get(1);
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("errMessage", "Invalid date-time format"); 
+            request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
+        }
+        
         //Creating LocationReportsDAO obj
         LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime);
 
@@ -56,36 +68,41 @@ public class BasicLocationReportsServlet extends HttpServlet {
             //Breakdown by year and gender
             case "breakdownByYearGenderSchool": {
 
-                //Get required parameters
-                String year = request.getParameter("year");
-                String gender = request.getParameter("gender");
-                String school = request.getParameter("school");
+                //Get option parameters
+                String option1 = request.getParameter("option1");
+                String option2 = request.getParameter("option2");
+                String option3 = request.getParameter("option3");
+                
+                if(option1.equals(option2) || option1.equals(option3) || option2.equals(option3)){
+                    request.setAttribute("errMessage", "1 or more options overlapping"); 
+                    request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
+                }
 
                 //Calling relevant function
-                LocationReportsDAO.breakdownByYearAndGender(year, gender, school);
+                LocationReportsDAO.breakdownByYearAndGender(option1, option2, option3);
                 break;
             }
 
             //Top-k popular places
             case "2": {
-            int k = 0;
-            LocationReportsDAO.topkPopularPlaces(k, 10);
-        }
-                break;
+                int k = 0;
+                LocationReportsDAO.topkPopularPlaces(k, 10);
+            }
+            break;
 
             //Top-k companions
             case "3": {
-            int k = 0;
-            LocationReportsDAO.topkCompanions(k);
-        }
-                break;
+                int k = 0;
+                LocationReportsDAO.topkCompanions(k);
+            }
+            break;
 
             //Top-k next places
             case "4": {
-            int k = 0;
-            LocationReportsDAO.topkNextPlaces(k);
-        }
-                break;
+                int k = 0;
+                LocationReportsDAO.topkNextPlaces(k);
+            }
+            break;
         }
     }
 

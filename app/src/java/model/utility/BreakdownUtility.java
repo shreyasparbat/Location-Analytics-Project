@@ -5,6 +5,7 @@
  */
 package model.utility;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import model.dao.StudentDAO;
@@ -18,45 +19,149 @@ import model.entity.Student;
 public class BreakdownUtility {
 
     //standard attributes
-    private String[] yearList = {"2013", "2014", "2015", "2016", "2017"};
-    private char[] genderList = {'M', 'F'};
-    private String[] schoolList = {"sis", "law", "accountancy", "economics", "business", "socsc"};
-    StudentDAO studentDAO = new StudentDAO();
+    private static final String[] YEAR_LIST = {"2013", "2014", "2015", "2016", "2017"};
+    private static final String[] GENDER_LIST = {"M", "F"};
+    private static final String[] SCHOOL_LIST = {"sis", "law", "accountancy", "economics", "business", "socsc"};
+    private static StudentDAO studentDAO = new StudentDAO();
+
+    public static void percentageOneOption(String option, HashMap<String, Student> studentMap) {
+        HashMap<String, Double> percentageList = null;
+        
+        if ("year".equals(option)) {
+            
+        }
+    }
+
+    public static void percentageTwoOptions(String option1, String option2, HashMap<String, Student> studentMap) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public static void percentageAllOptions(String option1, String option2, String option3, HashMap<String, Student> studentMap) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     //returns a hashtable of percentage breakdown in a key value pair
     // key = year, value = percentage
-    public Hashtable<String, Double> byYear() {
-        Hashtable<String, Double> yearPercentile = new Hashtable<>();
-        Hashtable<String, Student> studentList = studentDAO.getAllStudentsTable();
-        double totalStudentNo = studentList.size();
-        for (String year : yearList) {
-            Hashtable<String, Student> yearStud = getStudentsByYear(year, studentList);
+    public HashMap<String, Double> byYear(HashMap<String, Student> studentMap) {
+        HashMap<String, Double> yearPercentage = new HashMap<>();
+        double totalStudentNo = studentMap.size();
+
+        //getting percentage
+        for (String year : YEAR_LIST) {
+            HashMap<String, Student> yearStud = getStudentsByYear(year, studentMap);
             double noStudentsInYear = yearStud.size();
-            double percentile = noStudentsInYear / totalStudentNo;
-            yearPercentile.put(year, percentile);
+            double percentage = (noStudentsInYear / totalStudentNo) * 100;
+            yearPercentage.put(year, percentage);
         }
-        return yearPercentile;
+
+        //returning
+        return yearPercentage;
     }
 
-    public Hashtable<String, Student> getStudentsByYear(String year, Hashtable<String, Student> table) {
+    //returns a hashtable of percentage breakdown by gender in a key value pair
+    // key = gender, value = percentage
+    public HashMap<String, Double> byGender(HashMap<String, Student> studentMap) {
+        HashMap<String, Double> yearPercentage = new HashMap<>();
+        double totalStudentNo = studentMap.size();
+
+        //getting percentage
+        for (String gender : GENDER_LIST) {
+            HashMap<String, Student> genderStud = getStudentsByGender(gender, studentMap);
+            double noStudentsInYear = genderStud.size();
+            double percentage = (noStudentsInYear / totalStudentNo) * 100;
+            yearPercentage.put(gender, percentage);
+        }
+
+        //returning
+        return yearPercentage;
+    }
+
+    //returns a hashtable of percentage breakdown by school in a key value pair
+    // key = school, value = percentage
+    public HashMap<String, Double> bySchool(HashMap<String, Student> studentMap) {
+        HashMap<String, Double> yearPercentage = new HashMap<>();
+        double totalStudentNo = studentMap.size();
+
+        //getting percentage
+        for (String sch : SCHOOL_LIST) {
+            HashMap<String, Student> schoolStud = getStudentsBySchool(sch, studentMap);
+            double noStudentsInSchool = schoolStud.size();
+            double percentage = (noStudentsInSchool / totalStudentNo) * 100;
+            yearPercentage.put(sch, percentage);
+        }
+
+        //returning
+        return yearPercentage;
+    }
+
+    public HashMap<String, Student> getStudentsByYear(String year, HashMap<String, Student> studentMap) {
         //creates new hashtable
-        Hashtable<String, Student> studentsByYear = new Hashtable<>();
-        Iterator<String> iter = table.keySet().iterator();
+        HashMap<String, Student> studentsByYear = new HashMap<>();
+        Iterator<String> iter = studentMap.keySet().iterator();
         String key = "";
+
+        //getting valid students
         while (iter.hasNext()) {
             key = iter.next();
-        }
-        Student student = table.get(key);
-        //if the student is in the desired year && is not in the new hashtable add student in the new hashtable
-        String email = student.getEmail();
-        if (email.indexOf(year) == -1) {
-            if (!studentsByYear.containsKey(student.getMacAddress())) {
-                studentsByYear.put(key, student);
+            Student student = studentMap.get(key);
+            //if the student is in the desired year && is not in the new hashtable add student in the new hashtable
+            String email = student.getEmail();
+            if (!email.contains(year)) {
+                if (!studentsByYear.containsKey(student.getMacAddress())) {
+                    studentsByYear.put(key, student);
+                }
             }
         }
 
         //returns new hashtable
         return studentsByYear;
     }
+    
+    //returns a hashtable of students based on the gender specified.
+    public static HashMap<String, Student> getStudentsByGender(String g, HashMap<String, Student> studentMap) {
+        char requiredGender = g.charAt(0);
+        HashMap<String, Student> studentsByGender = new HashMap<>();
+        Iterator<String> iter = studentMap.keySet().iterator();
+        String key = "";
 
+        //getting valid students
+        while (iter.hasNext()) {
+            key = iter.next();
+            Student student = studentMap.get(key);
+            //if the student has desired gender && is not in the new hashtable add student in the new hashtable
+            char studentGender = student.getGender();
+            if (requiredGender == studentGender) {
+                if (!studentsByGender.containsKey(student.getMacAddress())) {
+                    studentsByGender.put(key, student);
+                }
+            }
+        }
+
+        //returns new hashtable
+        return studentsByGender;
+    }
+
+    //returns a hashtable of students based on the school specified.
+    public static HashMap<String, Student> getStudentsBySchool(String school, HashMap<String, Student> studentMap) {
+        //creates new hashtable
+        HashMap<String, Student> studentsBySchool = new HashMap<>();
+        Iterator<String> iter = studentMap.keySet().iterator();
+        String key = "";
+
+        //getting valid students
+        while (iter.hasNext()) {
+            key = iter.next();
+            Student student = studentMap.get(key);
+            //if the student is in the desired school && is not in the new hashtable add student in the new hashtable
+            String email = student.getEmail();
+            if (email.contains(school)) {
+                if (!studentsBySchool.containsKey(student.getMacAddress())) {
+                    studentsBySchool.put(key, student);
+                }
+            }
+        }
+        //returns new hashtable
+        return studentsBySchool;
+
+    }
 }

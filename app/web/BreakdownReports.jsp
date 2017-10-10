@@ -6,6 +6,14 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<%
+    String message = "";
+    if (request.getAttribute("errMessage") != null) {
+        message = (String) request.getAttribute("errMessage");
+    }
+
+%> 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -96,14 +104,33 @@
                     <p class="h5 text-center mb-4">Get Breakdown Report</p>
 
                     <form action="basic-location-reports">
-                        <div class="checkbox form-group">
-                            <label><input type="checkbox" value="year">Year</label>
+                        <div class="form-group">
+                            Option 1:
+                            <select name="option1">
+                                <option value="year">Year</option>
+                                <option value="gender">Gender</option>
+                                <option value="school">School</option>
+                            </select>
                         </div>
-                        <div class="checkbox form-group">
-                            <label><input type="checkbox" value="gender">Gender</label>
+                        
+                        <div class="form-group">
+                            Option 2:
+                            <select name="option2">
+                                <option value="none2">None</option>
+                                <option value="year">Year</option>
+                                <option value="gender">Gender</option>
+                                <option value="school">School</option>
+                            </select>
                         </div>
-                        <div class="checkbox form-group">
-                            <label><input type="checkbox" value="school">School</label>
+                        
+                        <div class="form-group">
+                            Option 3:
+                            <select name="option3">
+                                <option value="none3">None</option>
+                                <option value="year">Year</option>
+                                <option value="gender">Gender</option>
+                                <option value="school">School</option>
+                            </select>
                         </div>
 
                         <div class="form-group">
@@ -113,12 +140,22 @@
 
                         <div class="form-group">
                             <label>Time: </label>
-                            <input class="form-control" type="time" >
+                            <input class="form-control" type="time" name='time'>
                         </div>
+                        
+                        <input type='hidden' name='function' value="breakdownByYearGenderSchool">
 
                         <div class="text-center">
                             <button type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
                         </div>
+
+                        <%                            
+                            if (!message.equals("")) {
+                        %>
+                        <h4 class="text-center red-text"><%=message%></h4>
+                        <%
+                            }
+                        %>
 
                     </form>
                 </div>

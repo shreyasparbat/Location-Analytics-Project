@@ -5,6 +5,7 @@
  */
 package model.dao;
 
+import com.sun.corba.se.impl.orb.ORBSingleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.entity.Location;
 import model.entity.Student;
+import model.utility.BreakdownUtility;
 import model.utility.DBConnection;
 
 /**
@@ -39,26 +41,27 @@ public class LocationReportsDAO {
      * @param startTime
      * @param endTime
      */
-    public static void breakdownByYearAndGender(String year, String gender, String school) {
+    public static void breakdownByYearAndGender(String option1, String option2, String option3) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        //ArrayListay
+        HashMap<String, Student> studentMap = new HashMap<>();
 
         //Getting Hashtable of all students in the SIS building during processing window
         try {
             conn = DBConnection.createConnection();
             stmt = conn.prepareStatement("select DISTINCT d.macaddress, name, password, email, gender "
                     + "from demograph d, location l, locationlookup llu "
-                    + "where d.macaddress = l.macaddress and time > ? and time < ? "
+                    + "where d.macaddress = l.macaddress and time >= ? and time < ? "
                     + "and l.locationid = llu.locationid");
-            stmt.setTimestamp(0, startDateTime);
-            stmt.setTimestamp(1, endDateTime);
+            stmt.setTimestamp(1, startDateTime);
+            stmt.setTimestamp(2, endDateTime);
 
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                
+                Student student = new Student(rs.getString("macAddress"), rs.getString("name"), rs.getString("password"), rs.getString("email"), rs.getString("gender").charAt(0));
+                studentMap.put(rs.getString("macAddress"), student);
             }
 
         } catch (SQLException ex) {
@@ -67,6 +70,20 @@ public class LocationReportsDAO {
             Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             DBConnection.close(conn, stmt, rs);
+        }
+
+        //Check which function to call
+        if (option2.equals("none2") && option3.equals("none3")) {
+            //calls one value function if only the first option is filled
+            BreakdownUtility.percentageOneOption(option1, studentMap);
+        } else if ((!option2.equals("none2") && option3.equals("none3"))) {
+            //calls 2 option function
+            BreakdownUtility.percentageTwoOptions(option1, option2, studentMap);
+        } else if ((option2.equals("none2") && !option3.equals("none3"))) {
+            BreakdownUtility.percentageTwoOptions(option1, option3, studentMap);
+        } else {
+            //calls 3 function option
+            BreakdownUtility.percentageAllOptions(option1, option2, option3, studentMap);
         }
     }
 

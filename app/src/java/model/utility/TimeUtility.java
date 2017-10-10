@@ -21,7 +21,7 @@ public class TimeUtility {
      * @param dateTime a string containing 
      * @return an ArrayList of Timestamps where timestamp at index 0 is <code>startDateTime</code> and timestamp at index 1 is <code>endDateTime</code>
      */
-    public static ArrayList<Timestamp> getProcessingWindow(String dateTime) {
+    public static ArrayList<Timestamp> getProcessingWindow(String dateTime) throws IllegalArgumentException {
 
         //SQL Timestamp obj for endDateTime of processing window
         Timestamp endDateTime = Timestamp.valueOf(dateTime);
