@@ -96,35 +96,31 @@
                     <p class="h5 text-center mb-4">Get Breakdown Report</p>
 
                     <form action="basic-location-reports">
-                        <label for="sel1">Year:</label>
-                        <select class="form-control" id="sel1" name="year">
-                            <option value="2013">2013</option>
-                            <option value="2014">2014</option>
-                            <option value="2015">2015</option>
-                            <option value="2016">2016</option>
-                            <option value="2017">2017</option>
-                        </select>
-                        
-                        <label for="sel2">Gender:</label>
-                        <select class="form-control" id="sel2" name="gender">
-                            <option value="M">Male</option>
-                            <option value="F">Female</option>
-                        </select>
-                        
-                        <label for="sel3">School:</label>
-                        <select class="form-control" id="sel3" name="school">
-                            <option value="sis">School of Information Systems</option>
-                            <option value="law">School of Law</option>
-                            <option value="accountancy">School of Accountancy</option>
-                            <option value="economics">School of Economics</option>
-                            <option value="socsc">School of Social Sciences</option>
-                            <option value="business">Lee Kong Chian School of Business</option>
-                        </select>
-                    </form>
+                        <div class="checkbox form-group">
+                            <label><input type="checkbox" value="year">Year</label>
+                        </div>
+                        <div class="checkbox form-group">
+                            <label><input type="checkbox" value="gender">Gender</label>
+                        </div>
+                        <div class="checkbox form-group">
+                            <label><input type="checkbox" value="school">School</label>
+                        </div>
 
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
-                    </div>
+                        <div class="form-group">
+                            <label>Date: </label>
+                            <input class="form-control" type="date" name="date">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Time: </label>
+                            <input class="form-control" type="time" >
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
+                        </div>
+
+                    </form>
                 </div>
 
                 <div class="col-md-4"></div>

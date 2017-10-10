@@ -10,7 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.entity.Location;
@@ -23,24 +25,40 @@ import model.utility.DBConnection;
  */
 public class LocationReportsDAO {
 
+    static Timestamp startDateTime;
+    static Timestamp endDateTime;
+
+    public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime) {
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+    }
+
     /**
      * Incomplete
+     *
      * @param startTime
      * @param endTime
      */
-    public static void breakdownByYearAndGender(Time startTime, Time endTime) {
+    public static void breakdownByYearAndGender(String year, String gender, String school) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        //ArrayListay
 
-        //
+        //Getting Hashtable of all students in the SIS building during processing window
         try {
             conn = DBConnection.createConnection();
-            stmt = conn.prepareStatement("");
-            rs = stmt.executeQuery("something");
+            stmt = conn.prepareStatement("select DISTINCT d.macaddress, name, password, email, gender "
+                    + "from demograph d, location l, locationlookup llu "
+                    + "where d.macaddress = l.macaddress and time > ? and time < ? "
+                    + "and l.locationid = llu.locationid");
+            stmt.setTimestamp(0, startDateTime);
+            stmt.setTimestamp(1, endDateTime);
+
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
-
+                
             }
 
         } catch (SQLException ex) {
@@ -53,7 +71,7 @@ public class LocationReportsDAO {
     }
 
     /**
-     * 
+     *
      * Returns the top-k most popular places within a processing window. The
      * popularity of a location is derived from the number of people located
      * there in the specified processing time window.
@@ -92,9 +110,10 @@ public class LocationReportsDAO {
     }
 
     /**
-     * Returns the top-k most companions within a processing window.The
-     * student list is derived from the number of people co-located with a specific user
+     * Returns the top-k most companions within a processing window.The student
+     * list is derived from the number of people co-located with a specific user
      * in the specified processing time window.
+     *
      * @param k the number of companions
      * @return stList List of student objects based on the number specified
      */
@@ -123,10 +142,10 @@ public class LocationReportsDAO {
     }
 
     /**
-     * 
-     * Returns the top-k next places within a processing window. The
-     * popularity of a location is derived from the number of people likely to visit
-     * there in the specified processing time window.
+     *
+     * Returns the top-k next places within a processing window. The popularity
+     * of a location is derived from the number of people likely to visit there
+     * in the specified processing time window.
      *
      * @param k number of list entries to be returned
      * @param milliSeconds to get the sql Timestamp
