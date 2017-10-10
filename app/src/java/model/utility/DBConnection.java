@@ -141,11 +141,12 @@ public class DBConnection {
      * demographics
      *
      * @param contents the contents of the demographic
+     * @param bootstrap whether process is a bootstrap or not
+     * @param conn Connection object
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addDemo(List<String[]> contents, boolean bootstrap) throws SQLException, ClassNotFoundException {
-        Connection conn = createConnection();
+    public static void addDemo(List<String[]> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt;
         if (bootstrap == true) {
             stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
@@ -178,18 +179,17 @@ public class DBConnection {
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
         stmt.execute();
         stmt.close();
-        conn.close();
     }
 
     /**
      * Bootstraps Location data into the database under the table locationlookup
      *
      * @param contents the contents of the locationlookup.csv
+     * @param conn Connection object
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addLL(List<String[]> contents) throws SQLException, ClassNotFoundException {
-        Connection conn = createConnection();
+    public static void addLL(List<String[]> contents, Connection conn) throws SQLException, ClassNotFoundException {        
         PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE locationlookup;");
         stmt.executeUpdate();
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
@@ -217,18 +217,17 @@ public class DBConnection {
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
         stmt.execute();
         stmt.close();
-        conn.close();
     }
 
     /**
      * Bootstraps location data into the database under the table location
      *
      * @param contents the contents of the location
+     * @param conn Connection object
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addLoca(List<String[]> contents, boolean bootstrap) throws SQLException, ClassNotFoundException {
-        Connection conn = createConnection();
+    public static void addLoca(List<String[]> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt;
         if (bootstrap == true) {
             stmt = conn.prepareStatement("TRUNCATE TABLE location;");
@@ -260,7 +259,6 @@ public class DBConnection {
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
         stmt.execute();
         stmt.close();
-        conn.close();
     }
 
 }

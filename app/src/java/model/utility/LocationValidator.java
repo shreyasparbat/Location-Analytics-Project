@@ -31,15 +31,15 @@ public class LocationValidator {
      *
      * @param list the list of content from the file
      * @param bootstrapProcess boolean to check if the process is bootstrap[True] or upload [False]
+     * @param conn Connection object
      * @return the correct list of content from the file
      */
-    public static List<String[]> validateLocation(List<String[]> list, boolean bootstrapProcess) throws ClassNotFoundException, SQLException {
+    public static List<String[]> validateLocation(List<String[]> list, boolean bootstrapProcess, Connection conn) throws ClassNotFoundException, SQLException {
         List<String[]> correctList = new ArrayList<>();
         HashMap<String, String[]> mapCheck = new HashMap<>();
         Iterator<String[]> iter = list.iterator();
         locationErrors.clear();
         int index = 1;
-        Connection conn = DBConnection.createConnection();
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
         }
@@ -110,7 +110,6 @@ public class LocationValidator {
         while (correctRow.hasNext()) {
             correctList.add(mapCheck.get(correctRow.next()));
         }
-        conn.close();
         return correctList;
 
     }
