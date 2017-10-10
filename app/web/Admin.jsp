@@ -74,6 +74,7 @@
                         out.println("Errors found in row " + index + " in demographics.csv: " + total);
                         out.println(" <br>");
                     }
+                    demographErrors.clear();
                 }
             %>
         </p>
@@ -98,6 +99,7 @@
                         out.println("Errors found in row " + index + " in LocationLookup.csv: " + total);
                         out.println(" <br>");
                     }
+                    llErrors.clear();
                 }
             %>
         </p>
@@ -122,6 +124,7 @@
                         out.println("Errors found in row " + index + " in location.csv: " + total);
                         out.println(" <br>");
                     }
+                    locationErrors.clear();
                 }
             %>
         </p>

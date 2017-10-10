@@ -5,6 +5,7 @@
  */
 package model.dao;
 
+import java.sql.Connection;
 import model.utility.DBConnection;
 import model.utility.DemographicsValidator;
 import model.utility.LocationLookupValidator;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static model.utility.DBConnection.createConnection;
 
 /**
  *
@@ -43,34 +45,32 @@ public class ValidatorDAO {
         List<String[]> validLocList;
         List<String[]> validDemoList;
         List<String[]> validllList;
-        boolean addFile = false;
-
+        // checks if process is a bootstrap or update; dependent on the location-lookup file
+        boolean bootstrapProcess = false;
+        Connection conn = createConnection();
         if (map.containsKey("location-lookup.csv")) {
             //missing validation
             List<String[]> llList = map.get("location-lookup.csv");
 
             validllList = LocationLookupValidator.validateLocationLookup(llList);
-            DBConnection.addLL(validllList);
-            System.out.println(addFile);
-            addFile = true;
-            System.out.println(addFile);
+            DBConnection.addLL(validllList, conn);
+            bootstrapProcess = true;
         }
-
-        System.out.println(addFile);
         if (map.containsKey("demographics.csv")) {
             //missing validation
             List<String[]> demoList = map.get("demographics.csv");
             validDemoList = DemographicsValidator.validateDemographic(demoList);
-            DBConnection.addDemo(validDemoList, addFile);
+            DBConnection.addDemo(validDemoList, bootstrapProcess, conn);
 
         }
 
         if (map.containsKey("location.csv")) {
             List<String[]> locList = map.get("location.csv");
-            validLocList = LocationValidator.validateLocation(locList);
-            DBConnection.addLoca(validLocList, addFile);
+            validLocList = LocationValidator.validateLocation(locList,bootstrapProcess,conn);
+            DBConnection.addLoca(validLocList, bootstrapProcess, conn);
 
         }
+        conn.close();
     }
 
 }

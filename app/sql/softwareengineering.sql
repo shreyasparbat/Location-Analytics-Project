@@ -41,7 +41,7 @@ CREATE TABLE `demograph` (
 --
 
 CREATE TABLE `location` (
-  `time` datetime DEFAULT NULL,
+  `time` datetime NOT NULL,
   `macaddress` varchar(40) NOT NULL,
   `locationid` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -54,7 +54,7 @@ CREATE TABLE `location` (
 
 CREATE TABLE `locationlookup` (
   `locationid` int(11) NOT NULL,
-  `semanticplace` varchar(25) DEFAULT NULL
+  `semanticplace` varchar(40) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -71,7 +71,7 @@ ALTER TABLE `demograph`
 -- Indexes for table `location`
 --
 ALTER TABLE `location`
-  ADD PRIMARY KEY (`locationid`,`macaddress`),
+  ADD PRIMARY KEY (`time`,`macaddress`,`locationid`),
   ADD KEY `location_fk2` (`macaddress`);
 
 --

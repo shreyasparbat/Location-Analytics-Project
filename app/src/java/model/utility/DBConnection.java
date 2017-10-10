@@ -25,14 +25,23 @@ public class DBConnection {
     private static String dbUser; //MySQL username
     private static String dbPassword; //MySQL password
     private static final String PROPS_FILENAME = "/connection.properties";
+    private static String osName = System.getProperty("os.name");
+    private static final String COMMA_DELIMITER = ",";
+    private static String newLineSeparator = "\r\n";
+    private static String pathName = "C:/Windows/Temp";
 
     static {
         readDatabaseProperties();
+        if (osName.equals("Linux")){
+            newLineSeparator = "\n";
+            pathName = "/tmp";
+        }
     }
 
     /**
      * creates connection to the database
-     * @return Connection 
+     *
+     * @return Connection
      * @throws SQLException
      * @throws ClassNotFoundException
      */
@@ -66,7 +75,6 @@ public class DBConnection {
             String dbName = props.getProperty("db.name");
             dbUser = props.getProperty("db.user");
             // grab environment variable to check if we are on production environment
-            String osName = System.getProperty("os.name");
             if (osName.equals("Linux")) {
                 // in production environment, use aws.db.password
                 dbPassword = props.getProperty("aws.db.password");
@@ -93,7 +101,7 @@ public class DBConnection {
             }
         }
     }
-    
+
     /**
      * close the given connection, statement and resultset
      *
@@ -129,18 +137,25 @@ public class DBConnection {
     }
 
     /**
-     * Bootstraps demographics data into the database under the table demographics
+     * Bootstraps demographics data into the database under the table
+     * demographics
+     *
      * @param contents the contents of the demographic
+     * @param bootstrap whether process is a bootstrap or not
+     * @param conn Connection object
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addDemo(List<String[]> contents, boolean bootstrap) throws SQLException, ClassNotFoundException {
-        Connection conn = createConnection();
+    public static void addDemo(List<String[]> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt;
-        if (bootstrap==true){
+        if (bootstrap == true) {
             stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
             stmt.executeUpdate();
         }
+        stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
+        stmt.execute();
+        stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
+        stmt.execute();
         stmt = conn.prepareStatement("INSERT INTO DEMOGRAPH(`macaddress`, `name`, `password`, `email`, `gender`)  VALUES(?, ?, ?,?,?)");
         int index = 1;
         for (String[] row : contents) {
@@ -150,7 +165,7 @@ public class DBConnection {
             stmt.setString(4, row[3]);
             stmt.setString(5, row[4]);
             stmt.addBatch();
-            if (index == 100) {
+            if (index == 999) {
                 stmt.executeBatch();
                 stmt.clearBatch();
                 index = 1;
@@ -159,20 +174,28 @@ public class DBConnection {
 
         stmt.executeBatch();
         stmt.clearBatch();
+        stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
+        stmt.execute();
+        stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
+        stmt.execute();
         stmt.close();
-        conn.close();
     }
 
     /**
      * Bootstraps Location data into the database under the table locationlookup
+     *
      * @param contents the contents of the locationlookup.csv
+     * @param conn Connection object
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addLL(List<String[]> contents) throws SQLException, ClassNotFoundException {
-        Connection conn = createConnection();
+    public static void addLL(List<String[]> contents, Connection conn) throws SQLException, ClassNotFoundException {        
         PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE locationlookup;");
         stmt.executeUpdate();
+        stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
+        stmt.execute();
+        stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
+        stmt.execute();
         stmt = conn.prepareStatement("INSERT INTO locationlookup VALUES(?, ?)");
         int index = 1;
         for (String[] row : contents) {
@@ -180,7 +203,7 @@ public class DBConnection {
             stmt.setString(2, row[1]);
             stmt.addBatch();
             index++;
-            if (index == 100) {
+            if (index == 999) {
                 stmt.executeBatch();
                 stmt.clearBatch();
                 index = 1;
@@ -189,23 +212,31 @@ public class DBConnection {
 
         stmt.executeBatch();
         stmt.clearBatch();
+        stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
+        stmt.execute();
+        stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
+        stmt.execute();
         stmt.close();
-        conn.close();
     }
 
     /**
      * Bootstraps location data into the database under the table location
+     *
      * @param contents the contents of the location
+     * @param conn Connection object
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addLoca(List<String[]> contents, boolean bootstrap) throws SQLException, ClassNotFoundException {
-        Connection conn = createConnection();
+    public static void addLoca(List<String[]> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt;
-        if (bootstrap==true){
+        if (bootstrap == true) {
             stmt = conn.prepareStatement("TRUNCATE TABLE location;");
             stmt.executeUpdate();
         }
+        stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
+        stmt.execute();
+        stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
+        stmt.execute();
         stmt = conn.prepareStatement("INSERT INTO location VALUES(?, ?,?)");
         int index = 1;
         for (String[] arr : contents) {
@@ -214,7 +245,7 @@ public class DBConnection {
             stmt.setInt(3, Integer.parseInt(arr[2]));
             stmt.addBatch();
             index++;
-            if (index == 100) {
+            if (index == 5000) {
                 stmt.executeBatch();
                 stmt.clearBatch();
                 index = 1;
@@ -223,8 +254,11 @@ public class DBConnection {
 
         stmt.executeBatch();
         stmt.clearBatch();
+        stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
+        stmt.execute();
+        stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
+        stmt.execute();
         stmt.close();
-        conn.close();
     }
 
 }
