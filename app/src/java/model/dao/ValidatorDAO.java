@@ -43,7 +43,8 @@ public class ValidatorDAO {
         List<String[]> validLocList;
         List<String[]> validDemoList;
         List<String[]> validllList;
-        boolean addFile = false;
+        // checks if process is a bootstrap or update; dependent on the location-lookup file
+        boolean bootstrapProcess = false;
 
         if (map.containsKey("location-lookup.csv")) {
             //missing validation
@@ -51,24 +52,20 @@ public class ValidatorDAO {
 
             validllList = LocationLookupValidator.validateLocationLookup(llList);
             DBConnection.addLL(validllList);
-            System.out.println(addFile);
-            addFile = true;
-            System.out.println(addFile);
+            bootstrapProcess = true;
         }
-
-        System.out.println(addFile);
         if (map.containsKey("demographics.csv")) {
             //missing validation
             List<String[]> demoList = map.get("demographics.csv");
             validDemoList = DemographicsValidator.validateDemographic(demoList);
-            DBConnection.addDemo(validDemoList, addFile);
+            DBConnection.addDemo(validDemoList, bootstrapProcess);
 
         }
 
         if (map.containsKey("location.csv")) {
             List<String[]> locList = map.get("location.csv");
-            validLocList = LocationValidator.validateLocation(locList);
-            DBConnection.addLoca(validLocList, addFile);
+            validLocList = LocationValidator.validateLocation(locList,bootstrapProcess);
+            DBConnection.addLoca(validLocList, bootstrapProcess);
 
         }
     }

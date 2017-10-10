@@ -20,7 +20,11 @@ public class LocationLookupValidator {
      * A map of error messages where key is the row and values are the error messages related to the row
      */
     public static HashMap<Integer, List<String>> llErrors = new HashMap<>();
-
+    
+    /**
+     * A list of location ids that is validated during bootstrap
+     */
+    public static ArrayList<String> locationList = new ArrayList<String>();
     
     /**
      * A list of location levels to check the id of location based on levels
@@ -81,7 +85,7 @@ public class LocationLookupValidator {
     }
 
     /**
-     * validates the location id based on the requirements
+     * validates the location id based on the requirements, adds the valid locationID into the locationList
      * @param locatID input of locatID
      * @return return true if locatID is valid,else false
      */
@@ -92,6 +96,7 @@ public class LocationLookupValidator {
             }
             int locID = Integer.parseInt(locatID);
             if (locID > 0) {
+                locationList.add(locatID);
                 return true;
             } else {
                 return false;
