@@ -26,16 +26,16 @@ public class DBConnection {
     private static String dbPassword; //MySQL password
     private static final String PROPS_FILENAME = "/connection.properties";
     private static String osName = System.getProperty("os.name");
-    //private static final String COMMA_DELIMITER = ",";
-    // private static String newLineSeparator = "\r\n";
-    //private static String pathName = "C:/Windows/Temp";
+    private static final String COMMA_DELIMITER = ",";
+    private static String newLineSeparator = "\r\n";
+    private static String pathName = "C:/Windows/Temp";
 
     static {
         readDatabaseProperties();
-        //if (osName.equals("Linux")){
-        //newLineSeparator = "\n";
-        //pathName = "/tmp";
-        //  }
+        if (osName.equals("Linux")){
+            newLineSeparator = "\n";
+            pathName = "/tmp";
+        }
     }
 
     /**
@@ -165,7 +165,7 @@ public class DBConnection {
             stmt.setString(4, row[3]);
             stmt.setString(5, row[4]);
             stmt.addBatch();
-            if (index == 500) {
+            if (index == 999) {
                 stmt.executeBatch();
                 stmt.clearBatch();
                 index = 1;
@@ -203,7 +203,7 @@ public class DBConnection {
             stmt.setString(2, row[1]);
             stmt.addBatch();
             index++;
-            if (index == 500) {
+            if (index == 999) {
                 stmt.executeBatch();
                 stmt.clearBatch();
                 index = 1;
@@ -245,7 +245,7 @@ public class DBConnection {
             stmt.setInt(3, Integer.parseInt(arr[2]));
             stmt.addBatch();
             index++;
-            if (index == 500) {
+            if (index == 5000) {
                 stmt.executeBatch();
                 stmt.clearBatch();
                 index = 1;
