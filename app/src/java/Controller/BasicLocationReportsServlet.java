@@ -94,15 +94,21 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     //send back to View page
                     request.setAttribute("percentageOneList", percentageOneList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
-                    
+
                 } else if ((!option2.equals("none2") && option3.equals("none3"))) {
                     //calls 2 option function
-                    BreakdownUtility.percentageTwoOptions(option1, option2, studentMap);
-                    
-                } else if ((option2.equals("none2") && !option3.equals("none3"))) {
+                    HashMap<String, HashMap<String, Double>> percentageTwoList = BreakdownUtility.percentageTwoOptions(option1, option2, studentMap);
 
+                    //send back to view  page
+                    request.setAttribute("percentageTwoList", percentageTwoList);
+                    request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
+                } else if ((option2.equals("none2") && !option3.equals("none3"))) {
                     //calls 2 option function
-                    BreakdownUtility.percentageTwoOptions(option1, option3, studentMap);
+                    HashMap<String, HashMap<String, Double>> percentageTwoList = BreakdownUtility.percentageTwoOptions(option1, option3, studentMap);
+                    
+                    //send back to view  page
+                    request.setAttribute("percentageTwoList", percentageTwoList);
+                    request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 } else {
 
                     //calls 3 function option

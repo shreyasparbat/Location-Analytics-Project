@@ -24,8 +24,8 @@ public class BreakdownUtility {
     private static final String[] SCHOOL_LIST = {"sis", "law", "accountancy", "economics", "business", "socsc"};
 
     public static HashMap<String, Double> percentageOneOption(String option, HashMap<String, Student> studentMap) {
-        HashMap<String, Double> percentageOneList = null;
-        
+        HashMap<String, Double> percentageOneList = new HashMap<>();
+
         if ("year".equals(option)) {
             percentageOneList = byYear(studentMap);
         }
@@ -35,12 +35,36 @@ public class BreakdownUtility {
         if ("school".equals(option)) {
             percentageOneList = bySchool(studentMap);
         }
-        
+
         return percentageOneList;
     }
 
-    public static void percentageTwoOptions(String option1, String option2, HashMap<String, Student> studentMap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static HashMap<String, HashMap<String, Double>> percentageTwoOptions(String option1, String option2, HashMap<String, Student> studentMap) {
+        HashMap<String, HashMap<String, Double>> percentageTwoList = new HashMap<>();
+
+        if ("year".equals(option1)) { 
+            //Based on year, first get HashMap of students, then save it in another HashMap with year as key and the
+            //previously obtained HashMap as value
+            for (String year : YEAR_LIST) {
+                percentageTwoList.put(year, percentageOneOption(option2, getStudentsByYear(year, studentMap)));
+            }
+        }
+        if ("gender".equals(option1)) {
+            //Based on gender, first get HashMap of students (which fit option 2), then save it in another HashMap with gender as key and the
+            //previously obtained HashMap as value
+            for (String gender : GENDER_LIST) {
+                percentageTwoList.put(gender, percentageOneOption(option2, getStudentsByYear(gender, studentMap)));
+            }
+        }
+        if ("school".equals(option1)) {
+            //Based on school, first get HashMap of students (which fit option 2), then save it in another HashMap with school as key and the
+            //previously obtained HashMap as value
+            for (String school : SCHOOL_LIST) {
+                percentageTwoList.put(school, percentageOneOption(option2, getStudentsByYear(school, studentMap)));
+            }
+        }
+
+        return percentageTwoList;
     }
 
     public static void percentageAllOptions(String option1, String option2, String option3, HashMap<String, Student> studentMap) {
@@ -114,7 +138,7 @@ public class BreakdownUtility {
             //if the student is in the desired year && is not in the new hashtable add student in the new hashtable
             String email = student.getEmail();
             if (email.contains(year)) {
-                if (!studentsByYear.containsKey(student.getMacAddress())) {
+                if (!studentsByYear.containsKey(student.getMacAddress())) { //why is this required?
                     studentsByYear.put(key, student);
                 }
             }
@@ -123,7 +147,7 @@ public class BreakdownUtility {
         //returns new hashtable
         return studentsByYear;
     }
-    
+
     //returns a hashtable of students based on the gender specified.
     public static HashMap<String, Student> getStudentsByGender(String g, HashMap<String, Student> studentMap) {
         char requiredGender = g.charAt(0);
