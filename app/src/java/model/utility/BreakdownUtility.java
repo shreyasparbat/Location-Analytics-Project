@@ -113,7 +113,7 @@ public class BreakdownUtility {
             Student student = studentMap.get(key);
             //if the student is in the desired year && is not in the new hashtable add student in the new hashtable
             String email = student.getEmail();
-            if (!email.contains(year)) {
+            if (email.contains(year)) {
                 if (!studentsByYear.containsKey(student.getMacAddress())) {
                     studentsByYear.put(key, student);
                 }

@@ -4,6 +4,8 @@
     Author     : shrey
 --%>
 
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.HashMap"%>
@@ -156,7 +158,7 @@
                             <button type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
                         </div>
 
-                        <%                            //printing error message
+                        <%//printing error message
                             if (!message.equals("")) {
                         %>
                         <h4 class="text-center red-text"><%=message%></h4>
@@ -185,14 +187,17 @@
                 if (request.getAttribute("percentageOneList") != null) {
                     percentageOneList = (HashMap<String, Double>) request.getAttribute("percentageOneList");
 
-                    //getting iterator
-                    Iterator<String> iter = percentageOneList.keySet().iterator();
-                    String key = "";
-
+                    //getting iterator and half rounding
+                    Iterator<Double> iter = percentageOneList.values().iterator();
+                    ArrayList<Integer> intList = new ArrayList<>();
+                    while(iter.hasNext()){
+                        intList.add((int)(iter.next()+0.5));
+                    }
+                    
                     //making bar chart
                     try {
                         gsonLabel = new Gson().toJson(percentageOneList.keySet());
-                        gsonData = new Gson().toJson(percentageOneList.values());
+                        gsonData = new Gson().toJson(intList);
                     } catch (IllegalArgumentException e) {
             %>
             <h4 class="text-center red-text">Records Not Found!</h4>
