@@ -22,14 +22,21 @@ public class BreakdownUtility {
     private static final String[] YEAR_LIST = {"2013", "2014", "2015", "2016", "2017"};
     private static final String[] GENDER_LIST = {"M", "F"};
     private static final String[] SCHOOL_LIST = {"sis", "law", "accountancy", "economics", "business", "socsc"};
-    private static StudentDAO studentDAO = new StudentDAO();
 
-    public static void percentageOneOption(String option, HashMap<String, Student> studentMap) {
-        HashMap<String, Double> percentageList = null;
+    public static HashMap<String, Double> percentageOneOption(String option, HashMap<String, Student> studentMap) {
+        HashMap<String, Double> percentageOneList = null;
         
         if ("year".equals(option)) {
-            
+            percentageOneList = byYear(studentMap);
         }
+        if ("gender".equals(option)) {
+            percentageOneList = byGender(studentMap);
+        }
+        if ("school".equals(option)) {
+            percentageOneList = bySchool(studentMap);
+        }
+        
+        return percentageOneList;
     }
 
     public static void percentageTwoOptions(String option1, String option2, HashMap<String, Student> studentMap) {
@@ -42,7 +49,7 @@ public class BreakdownUtility {
 
     //returns a hashtable of percentage breakdown in a key value pair
     // key = year, value = percentage
-    public HashMap<String, Double> byYear(HashMap<String, Student> studentMap) {
+    public static HashMap<String, Double> byYear(HashMap<String, Student> studentMap) {
         HashMap<String, Double> yearPercentage = new HashMap<>();
         double totalStudentNo = studentMap.size();
 
@@ -60,7 +67,7 @@ public class BreakdownUtility {
 
     //returns a hashtable of percentage breakdown by gender in a key value pair
     // key = gender, value = percentage
-    public HashMap<String, Double> byGender(HashMap<String, Student> studentMap) {
+    public static HashMap<String, Double> byGender(HashMap<String, Student> studentMap) {
         HashMap<String, Double> yearPercentage = new HashMap<>();
         double totalStudentNo = studentMap.size();
 
@@ -78,7 +85,7 @@ public class BreakdownUtility {
 
     //returns a hashtable of percentage breakdown by school in a key value pair
     // key = school, value = percentage
-    public HashMap<String, Double> bySchool(HashMap<String, Student> studentMap) {
+    public static HashMap<String, Double> bySchool(HashMap<String, Student> studentMap) {
         HashMap<String, Double> yearPercentage = new HashMap<>();
         double totalStudentNo = studentMap.size();
 
@@ -94,7 +101,7 @@ public class BreakdownUtility {
         return yearPercentage;
     }
 
-    public HashMap<String, Student> getStudentsByYear(String year, HashMap<String, Student> studentMap) {
+    public static HashMap<String, Student> getStudentsByYear(String year, HashMap<String, Student> studentMap) {
         //creates new hashtable
         HashMap<String, Student> studentsByYear = new HashMap<>();
         Iterator<String> iter = studentMap.keySet().iterator();
