@@ -5,10 +5,10 @@
  */
 package model.utility;
 
+import com.google.gson.Gson;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
-import model.dao.StudentDAO;
 import model.entity.Student;
 
 /**
@@ -42,7 +42,7 @@ public class BreakdownUtility {
     public static HashMap<String, HashMap<String, Double>> percentageTwoOptions(String option1, String option2, HashMap<String, Student> studentMap) {
         HashMap<String, HashMap<String, Double>> percentageTwoList = new HashMap<>();
 
-        if ("year".equals(option1)) { 
+        if ("year".equals(option1)) {
             //Based on year, first get HashMap of students, then save it in another HashMap with year as key and the
             //previously obtained HashMap as value
             for (String year : YEAR_LIST) {
@@ -53,22 +53,43 @@ public class BreakdownUtility {
             //Based on gender, first get HashMap of students (which fit option 2), then save it in another HashMap with gender as key and the
             //previously obtained HashMap as value
             for (String gender : GENDER_LIST) {
-                percentageTwoList.put(gender, percentageOneOption(option2, getStudentsByYear(gender, studentMap)));
+                percentageTwoList.put(gender, percentageOneOption(option2, getStudentsByGender(gender, studentMap)));
             }
         }
         if ("school".equals(option1)) {
             //Based on school, first get HashMap of students (which fit option 2), then save it in another HashMap with school as key and the
             //previously obtained HashMap as value
             for (String school : SCHOOL_LIST) {
-                percentageTwoList.put(school, percentageOneOption(option2, getStudentsByYear(school, studentMap)));
+                percentageTwoList.put(school, percentageOneOption(option2, getStudentsBySchool(school, studentMap)));
             }
         }
 
         return percentageTwoList;
     }
 
-    public static void percentageAllOptions(String option1, String option2, String option3, HashMap<String, Student> studentMap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllOptions(String option1, String option2, String option3, HashMap<String, Student> studentMap) {
+        HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList = new HashMap<>();
+
+        if ("year".equals(option1)) {
+            //based on year, first get HashMap<String, HashMap<String, Double>> of options 2 and 3 using the previous 
+            for (String year : YEAR_LIST) {
+                percentageAllList.put(year, percentageTwoOptions(option2, option3, getStudentsByYear(year, studentMap)));
+            }
+        }
+        if ("gender".equals(option1)) {
+            //based on gender, first get HashMap<String, HashMap<String, Double>> of options 2 and 3 using the previous 
+            for (String gender : GENDER_LIST) {
+                percentageAllList.put(gender, percentageTwoOptions(option2, option3, getStudentsByGender(gender, studentMap)));
+            }
+        }
+        if ("school".equals(option1)) {
+            //based on school, first get HashMap<String, HashMap<String, Double>> of options 2 and 3 using the previous 
+            for (String school : SCHOOL_LIST) {
+                percentageAllList.put(school, percentageTwoOptions(option2, option3, getStudentsBySchool(school, studentMap)));
+            }
+        }
+
+        return percentageAllList;
     }
 
     //returns a hashtable of percentage breakdown in a key value pair
@@ -194,5 +215,63 @@ public class BreakdownUtility {
         //returns new hashtable
         return studentsBySchool;
 
+    }
+
+    public static ArrayList<String> printInnerChart(HashMap<String, Double> percentageOneList) throws IllegalArgumentException {
+
+        //strings for charts (innermost layer) to be outputed
+        String gsonInnerLabel = "";
+        String gsonInnerData = "";
+
+        //getting iterator for inner most map
+        Iterator<Double> innerMapValuesIter = percentageOneList.values().iterator();
+        ArrayList<Integer> innerMapPercentage = new ArrayList<>();
+        while (innerMapValuesIter.hasNext()) {
+
+            //checking if the value is 'NaN'
+            double innerMapValue = innerMapValuesIter.next();
+            if (Double.isNaN(innerMapValue)) {
+                throw new IllegalArgumentException();
+            }
+
+            //half rounding values and storing them in a new list
+            innerMapPercentage.add((int) (innerMapValue + 0.5));
+        }
+
+        //Converting to JSON strings
+        gsonInnerLabel = new Gson().toJson(percentageOneList.keySet());
+        gsonInnerData = new Gson().toJson(innerMapPercentage);
+
+        //returning
+        ArrayList<String> toReturnInner = new ArrayList<>();
+        toReturnInner.add(gsonInnerLabel);
+        toReturnInner.add(gsonInnerData);
+        return toReturnInner;
+    }
+
+    public static ArrayList<String> printMiddleChart(HashMap<String, HashMap<String, Double>> percentageTwoList) throws IllegalArgumentException {
+        //strings for charts (innermost layer) to be outputed
+        String gsonMiddleLabel = "";
+        String gsonMiddleData = "[";
+        ArrayList<String> innerGson = new ArrayList<>();
+        
+        //getting inner maps, which can only be accessed within this while loop
+        Iterator<HashMap<String, Double>> middleMapValuesIter = percentageTwoList.values().iterator();
+        while (middleMapValuesIter.hasNext()) {
+            HashMap<String, Double> innerMap = middleMapValuesIter.next();
+            
+            //getting gson data for inner map
+            innerGson = printInnerChart(innerMap);
+            
+            
+            //entering innerGson data into gsonMiddleData string
+            gsonMiddleData += "{label: " + "\"" +   "\"";
+        }
+
+        //returning
+        ArrayList<String> toReturnInner = new ArrayList<>();
+        toReturnInner.add(gsonMiddleLabel);
+        toReturnInner.add(gsonMiddleData);
+        return toReturnInner;
     }
 }

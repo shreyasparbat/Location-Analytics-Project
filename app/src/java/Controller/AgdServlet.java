@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Controller;
+package controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,7 +21,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import model.dao.AgdDAO;
+//import model.dao.AgdDAO;
 
 /**
  *
@@ -49,12 +49,12 @@ public class AgdServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         //out.println(dateTime);
-        AgdDAO agdDao = new AgdDAO();
-        try {
-            HashMap<String, ArrayList<String>> groupList = agdDao.detectGroups(dateTime);  // do request shit from the DAO example Agd Fcuntion requt son
-        } catch (ParseException ex) {
-            Logger.getLogger(AgdServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        AgdDAO agdDao = new AgdDAO();
+//        try {
+//            HashMap<String, ArrayList<String>> groupList = agdDao.detectGroups(dateTime);  // do request shit from the DAO example Agd Fcuntion requt son
+//        } catch (ParseException ex) {
+//            Logger.getLogger(AgdServlet.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
     }
 

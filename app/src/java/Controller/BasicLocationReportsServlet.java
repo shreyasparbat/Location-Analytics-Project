@@ -7,8 +7,6 @@ package controller;
 
 import model.dao.LocationReportsDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +24,7 @@ import model.utility.TimeUtility;
  *
  * @author shrey
  */
-@WebServlet(name = "BasicLocationReportsServlet", urlPatterns = {"/basic-location-reports"})
+@WebServlet(name = "BasicLocationReportsServlet", urlPatterns = {"/BasicLocationReportsServlet"})
 public class BasicLocationReportsServlet extends HttpServlet {
 
     /**
@@ -95,14 +93,14 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     request.setAttribute("percentageOneList", percentageOneList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
 
-                } else if ((!option2.equals("none2") && option3.equals("none3"))) {
+                } else if (!option2.equals("none2") && option3.equals("none3")) {
                     //calls 2 option function
                     HashMap<String, HashMap<String, Double>> percentageTwoList = BreakdownUtility.percentageTwoOptions(option1, option2, studentMap);
 
                     //send back to view  page
                     request.setAttribute("percentageTwoList", percentageTwoList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
-                } else if ((option2.equals("none2") && !option3.equals("none3"))) {
+                } else if (option2.equals("none2") && !option3.equals("none3")) {
                     //calls 2 option function
                     HashMap<String, HashMap<String, Double>> percentageTwoList = BreakdownUtility.percentageTwoOptions(option1, option3, studentMap);
                     
@@ -110,13 +108,14 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     request.setAttribute("percentageTwoList", percentageTwoList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 } else {
-
                     //calls 3 function option
-                    BreakdownUtility.percentageAllOptions(option1, option2, option3, studentMap);
+                    HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList = BreakdownUtility.percentageAllOptions(option1, option2, option3, studentMap);
+                    
+                    //send back to view  page
+                    request.setAttribute("percentageAllList", percentageAllList);
+                    request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 }
 
-                //Calling relevant function
-                //LocationReportsDAO.breakdownByYearAndGender(option1, option2, option3);
                 break;
             }
 
