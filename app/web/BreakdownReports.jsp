@@ -4,9 +4,15 @@
     Author     : shrey
 --%>
 
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.List"%>
+<%@page import="com.google.gson.Gson"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.HashMap"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%
+    //getting error message
     String message = "";
     if (request.getAttribute("errMessage") != null) {
         message = (String) request.getAttribute("errMessage");
@@ -40,6 +46,9 @@
 
         <!-- Icon -->
         <link rel="icon" href="assets/logo.jpg">
+
+        <!-- Chart.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
     </head>
 
     <body>
@@ -112,7 +121,7 @@
                                 <option value="school">School</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             Option 2:
                             <select name="option2">
@@ -122,7 +131,7 @@
                                 <option value="school">School</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             Option 3:
                             <select name="option3">
@@ -142,14 +151,14 @@
                             <label>Time: </label>
                             <input class="form-control" type="time" name='time'>
                         </div>
-                        
+
                         <input type='hidden' name='function' value="breakdownByYearGenderSchool">
 
                         <div class="text-center">
                             <button type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
                         </div>
 
-                        <%                            
+                        <%//printing error message
                             if (!message.equals("")) {
                         %>
                         <h4 class="text-center red-text"><%=message%></h4>
@@ -164,6 +173,42 @@
 
             </div>
 
+            <%
+                //maps
+                HashMap<String, Double> percentageOneList = new HashMap<>();
+                HashMap<String, HashMap<String, Double>> percentageTwoList = new HashMap<>();
+                HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList = new HashMap<>();
+
+                //strings for charts
+                String gsonLabel = "";
+                String gsonData = "";
+
+                //getting hashmap
+                if (request.getAttribute("percentageOneList") != null) {
+                    percentageOneList = (HashMap<String, Double>) request.getAttribute("percentageOneList");
+
+                    //getting iterator and half rounding
+                    Iterator<Double> iter = percentageOneList.values().iterator();
+                    ArrayList<Integer> intList = new ArrayList<>();
+                    while(iter.hasNext()){
+                        intList.add((int)(iter.next()+0.5));
+                    }
+                    
+                    //making bar chart
+                    try {
+                        gsonLabel = new Gson().toJson(percentageOneList.keySet());
+                        gsonData = new Gson().toJson(intList);
+                    } catch (IllegalArgumentException e) {
+            %>
+            <h4 class="text-center red-text">Records Not Found!</h4>
+            <%
+                }
+            %>
+            <canvas id="percentageOneList"></canvas>
+                <%
+                    }
+                %>
+
             <hr>
 
             <footer>
@@ -171,9 +216,50 @@
             </footer>
         </div> <!-- /container -->
 
+        <!-- Bar-chart script -->
+        <script>
+            var ctx = document.getElementById("percentageOneList");
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: <%=gsonLabel%>,
+                    datasets: [{
+                            label: '# of Students',
+                            data: <%=gsonData%>,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255,99,132,1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                    }
+                }
+            });
+        </script>
+
 
         <!-- SCRIPTS
-        ================================================== -->
+        ================================================== -->        
         <!-- JQuery -->
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!-- Bootstrap tooltips -->
@@ -184,3 +270,4 @@
         <script type="text/javascript" src="assets/js/mdb.min.js"></script>
     </body>
 </html>
+
