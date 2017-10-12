@@ -1,7 +1,15 @@
 package model.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import model.entity.Location;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.utility.DBConnection;
 
 /**
  *  Allows the application to access the database and execute CRUD Functions
@@ -18,11 +26,7 @@ public class LocationDAO{
      * Initializes a newly created LocationDAO object
      */
     public LocationDAO(){
-        locationList = new ArrayList<Location>();
-         // hard copy user input
-        locationList.add(new Location("test1", 123 ));
-        locationList.add(new Location("test1", 1256 ));
-        locationList.add(new Location("test2", 1223 ));
+        locationList = new ArrayList<Location>();  
     }
     
     //methods
@@ -44,8 +48,6 @@ public class LocationDAO{
         return null;
     }
     
-    
-
     /**
      * Returns the entire list of available locations
      * @return ArrayList of Location
@@ -69,6 +71,37 @@ public class LocationDAO{
             }
         }
         return semanticList;
+    }
+    
+    public HashMap<String, Student> getAllStudentsWithinProcessingWindow(Timestamp startDateTime, Timestamp endDateTime) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        //Getting HashMap of all students in the SIS building during processing window
+        try {
+            conn = DBConnection.createConnection();
+            stmt = conn.prepareStatement("select DISTINCT d.macaddress, name, password, email, gender "
+                    + "from demograph d, location l, locationlookup llu "
+                    + "where d.macaddress = l.macaddress and time >= ? and time < ? "
+                    + "and l.locationid = llu.locationid");
+            stmt.setTimestamp(1, startDateTime);
+            stmt.setTimestamp(2, endDateTime);
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, "Unable to perform request", ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DBConnection.close(conn, stmt, rs);
+        }
+        
+        return studentMap;
     }
     
 }
