@@ -191,21 +191,6 @@
                 for (int i = 0; i < 6; i++) {
                     gsonStringList.add("");
                 }
-
-//                gsonStringList.add("");
-//                gsonStringList.add("");
-//
-//                //strings for charts (innermost layer)
-//                String gsonLabel = "";
-//                String gsonData = "";
-//
-//                //strings for charts (middle layer)
-//                String gsonMiddleLabel = "";
-//                String gsonMiddleData = "";
-//
-//                //strings for charts (outermost layer)
-//                String gsonOuterLabel = "";
-//                String gsonOuterData = "";
             %>
 
             <!-- Printing chart according number of options requested -->
@@ -215,26 +200,33 @@
 
                     //making bar chart
                     try {
-                        gsonStringList = BreakdownUtility.printInnerChart(percentageOneList);
+                        gsonStringList = BreakdownUtility.printBarChart(percentageOneList);
+                        out.print("<canvas id=\"inner\"></canvas>");
 
-            %>
-            <canvas id="inner"></canvas>
-                <%                    //error handling
-                } catch (IllegalArgumentException e) {
-                %>
-            <h4 class="text-center red-text">Records Not Found!</h4>
-            <%
+                        //error handling
+                    } catch (IllegalArgumentException e) {
+                        out.print("<h4 class=\"text-center red-text\">Records Not Found!</h4>");
                     }
-                } //printing percentageTwoList if it exits
+                } 
+                
+                //printing percentageTwoList if it exits
                 else if (request.getAttribute("percentageTwoList") != null) {
                     percentageTwoList = (HashMap<String, HashMap<String, Double>>) request.getAttribute("percentageTwoList");
 
-                    //making heatmap
+                    //getting out put list
+                    ArrayList<String> outputArrayList = new ArrayList<>();
                     try {
-                        gsonStringList = BreakdownUtility.printMiddleChart(percentageTwoList);
+                        outputArrayList = BreakdownUtility.printMiddle(percentageTwoList);
                     } catch (Exception e) {
+                        out.print("<h4 class=\"text-center red-text\">Records Not Found!</h4>");
+                    }
+
+                    //printing outputList
+                    for (String output : outputArrayList) {
+                        out.print(output);
                     }
                 }
+
             %>
 
             <!-- Bar-chart script -->
@@ -276,53 +268,6 @@
                         }
                     }
                 });
-            </script>
-            
-            <!-- HeatMap script -->
-            <script src='assets/js/Chart.HeatMap.S.min.js'></script>
-            <script>
-                (function () {
-                    function clone(obj) {
-                        return JSON.parse(JSON.stringify(obj));
-                    }
-
-                    function ctx(elementId) {
-                        return document.getElementById(elementId).getContext('2d');
-                    }
-
-                    // completely arbitrary data
-                    var sampleData = {
-                        labels: ['January', 'Feburary', 'March', 'April', 'May', 'June',
-                            'July', 'August', 'September', 'October', 'November', 'December', 'd', 'd', 'd', 'a', 'a'],
-                        datasets: [
-                            {
-                                label: 'Corn',
-                                data: [4, 4, 5.5, 4, 7, 12, 14, 9, 6, 5, 2, 1]
-                            },
-                            {
-                                label: 'Wheat',
-                                data: [8, 2, 1, 0, 0, 0, 1, 3, 8, 12, 11, 10]
-                            },
-                            {
-                                label: 'Rice',
-                                data: [0, 1, 2, 2, 3, 4, 3, 2, 2, 3, 0, 0]
-                            },
-                            {
-                                label: 'Rye',
-                                data: [0, 0, 0, 0, 0, 0, 2, 5, 9, 6, 5, 1]
-                            },
-                            {
-                                label: 'Oats',
-                                data: [0, 3, 2, 3, 6, 3, 4, 1, 2, 4, 8, 2]
-                            }
-                        ]
-                    };
-
-                    var sampleChart = new Chart(ctx('middle')).HeatMap(sampleData, {responsive: true});
-
-                    var colorTestColors = ['red', 'green', 'blue'];
-
-                })();
             </script>
 
             <hr>
