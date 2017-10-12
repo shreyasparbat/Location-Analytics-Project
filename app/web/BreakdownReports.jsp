@@ -207,10 +207,10 @@
                     } catch (IllegalArgumentException e) {
                         out.print("<h4 class=\"text-center red-text\">Records Not Found!</h4>");
                     }
-                } 
-                
+                }
+
                 //printing percentageTwoList if it exits
-                else if (request.getAttribute("percentageTwoList") != null) {
+                if (request.getAttribute("percentageTwoList") != null) {
                     percentageTwoList = (HashMap<String, HashMap<String, Double>>) request.getAttribute("percentageTwoList");
 
                     //getting out put list
@@ -227,6 +227,23 @@
                     }
                 }
 
+                //printing percentageAllList if it exits
+                if (request.getAttribute("percentageAllList") != null) {
+                    percentageAllList = (HashMap<String, HashMap<String, HashMap<String, Double>>>) request.getAttribute("percentageAllList");
+
+                    //getting out put list
+                    ArrayList<String> outputArrayList = new ArrayList<>();
+                    try {
+                        outputArrayList = BreakdownUtility.printOuter(percentageAllList);
+                    } catch (Exception e) {
+                        out.print("<h4 class=\"text-center red-text\">Records Not Found!</h4>");
+                    }
+
+                    //printing outputList
+                    for (String output : outputArrayList) {
+                        out.print(output);
+                    }
+                }
             %>
 
             <!-- Bar-chart script -->

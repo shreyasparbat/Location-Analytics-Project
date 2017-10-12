@@ -101,7 +101,8 @@ public class BreakdownUtility {
 
                 //half rounding
                 int rounded = (int) (percentageList.get(year) + 0.5);
-                percentageAllList.put(year, percentageTwoOptions(option2, option3, getStudentsByYear(year, studentMap)));
+                
+                percentageAllList.put(year + " : " + rounded + "%", percentageTwoOptions(option2, option3, getStudentsByYear(year, studentMap)));
             }
         }
         if ("gender".equals(option1)) {
@@ -113,7 +114,7 @@ public class BreakdownUtility {
                 //half rounding
                 int rounded = (int) (percentageList.get(gender) + 0.5);
 
-                percentageAllList.put(gender, percentageTwoOptions(option2, option3, getStudentsByGender(gender, studentMap)));
+                percentageAllList.put(gender + " : " + rounded + "%", percentageTwoOptions(option2, option3, getStudentsByGender(gender, studentMap)));
             }
         }
         if ("school".equals(option1)) {
@@ -125,7 +126,7 @@ public class BreakdownUtility {
                 //half rounding
                 int rounded = (int) (percentageList.get(school) + 0.5);
 
-                percentageAllList.put(school, percentageTwoOptions(option2, option3, getStudentsBySchool(school, studentMap)));
+                percentageAllList.put(school + " : " + rounded + "%", percentageTwoOptions(option2, option3, getStudentsBySchool(school, studentMap)));
             }
         }
 
@@ -299,7 +300,7 @@ public class BreakdownUtility {
         while (middleMapKeysIter.hasNext()) {
             //store the key into output list
             String middlekey = middleMapKeysIter.next();
-            outputArrayList.add("<li>" + middlekey + "</li>");
+            outputArrayList.add("<li type=\"a\">" + middlekey + "</li>");
 
             //for inner ordered list
             outputArrayList.add("<ol>");
@@ -324,13 +325,36 @@ public class BreakdownUtility {
                 int innerMapPercentageRounded = (int) (innerMapValue + 0.5);
 
                 //store into out put list
-                outputArrayList.add("<li type=\"a\">" + innerKey + " : " + innerMapPercentageRounded + "%</li>");
+                outputArrayList.add("<li type=\"i\">" + innerKey + " : " + innerMapPercentageRounded + "%</li>");
             }
 
             //adding final tag (innerlist)
             outputArrayList.add("</ol>");
         }
 
+        //adding final tag (middle list)
+        outputArrayList.add("</ol>");
+        
+        //returning
+        return outputArrayList;
+    }
+    
+    public static ArrayList<String> printOuter(HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList) throws IllegalArgumentException {
+        //ArrayList to be outputed
+        ArrayList<String> outputArrayList = new ArrayList<>();
+        outputArrayList.add("<ol>");
+        
+        //getting middle maps, which can only be accessed within this while loop
+        Iterator<String> outerMapKeysIter = percentageAllList.keySet().iterator();
+        while (outerMapKeysIter.hasNext()) {
+            //store the key into output list
+            String outerkey = outerMapKeysIter.next();
+            outputArrayList.add("<li>" + outerkey + "</li>");
+            
+            //getting outputlist of middle and inner maps
+            outputArrayList.addAll(printMiddle(percentageAllList.get(outerkey)));
+        }
+        
         //adding final tag (middle list)
         outputArrayList.add("</ol>");
         
