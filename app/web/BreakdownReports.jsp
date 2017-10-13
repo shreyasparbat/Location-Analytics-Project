@@ -169,11 +169,9 @@
 
             </div>
 
-            <%//printing error message (invalid time format)
+            <%  //printing error message
                 if (!message.equals("")) {
-            %>
-            <h4 class="text-center red-text"><%=message%></h4>
-            <%
+                    out.print("<h4 class=\"text-center red-text\">" + message + "</h4>");
                 }
             %>
 

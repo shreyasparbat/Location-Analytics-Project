@@ -8,6 +8,7 @@ public class Location{
     //attributes
     private String semanticPlace;
     private int locationId;
+    private String level;
     
     //constructors
 
@@ -19,6 +20,9 @@ public class Location{
     public Location(String semanticPlace, int locationId){
         this.semanticPlace = semanticPlace;
         this.locationId = locationId;
+        
+        //getting level
+        level = semanticPlace.substring(6, 8);
     }
     
     //getter
@@ -37,5 +41,9 @@ public class Location{
      */
     public int getLocationId(){
         return locationId;
+    }
+    
+    public String getLevel() {
+        return level;
     }
 }
