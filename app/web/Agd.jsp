@@ -16,7 +16,7 @@
 
         <h1>Input request parameters </h1>
 
-        <form method = "post" name ="AgdRequest_form" action="AgdServlet">
+        <form method = "get" name ="AgdRequest_form" action="AgdServlet">
             Date <input type="date" name="date"><br/>
             Time <Input type ="time" name ="time"> 
             Seconds<select name ="seconds">

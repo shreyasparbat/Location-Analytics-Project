@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package Controller;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import static java.lang.System.out;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-//import model.dao.AgdDAO;
+import model.dao.AgdDAO;
+import model.utility.TimeUtility;
 
 /**
  *
@@ -46,15 +48,29 @@ public class AgdServlet extends HttpServlet {
         String time = request.getParameter("time");
         String sec = request.getParameter("seconds");
         String dateTime = date + " " + time + ":" + sec;
-        PrintWriter out = response.getWriter();
+        
+        
+        Timestamp startDateTime = null;
+        Timestamp endDateTime = null;
+
+        try {
+            ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
+            startDateTime = processingWindowArrayList.get(0);
+            endDateTime = processingWindowArrayList.get(1);
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("errMessage", "Invalid date-time format");
+            request.getRequestDispatcher("/Agd.jsp").forward(request, response);
+        }
+
 
         //out.println(dateTime);
-//        AgdDAO agdDao = new AgdDAO();
-//        try {
-//            HashMap<String, ArrayList<String>> groupList = agdDao.detectGroups(dateTime);  // do request shit from the DAO example Agd Fcuntion requt son
-//        } catch (ParseException ex) {
-//            Logger.getLogger(AgdServlet.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        AgdDAO agdDao = new AgdDAO();
+        ArrayList<ArrayList<String>> list = agdDao.getStudentGroups(startDateTime,endDateTime);
+        /*try {
+            HashMap<String, ArrayList<String>> groupList = agdDao.detectGroups(dateTime);  // do request shit from the DAO example Agd Fcuntion requt son
+        } catch (ParseException ex) {
+            Logger.getLogger(AgdServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
 
     }
 
