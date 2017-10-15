@@ -39,24 +39,25 @@ public class HeatMapDAO {
         //Getting HashMap of all students in the SIS building during processing window
         try {
             conn = DBConnection.createConnection();
-            stmt = conn.prepareStatement("select ll.semanticplace, noOfMacAdd from locationlookup ll"
-                    + "left join"
-                    + "("
-                    + "    select uniqueMacAddWithMaxTime.latest_time, count(uniqueMacAddWithMaxTime.macaddress) as noOfMacAdd, l.locationid as locid from location l"
+            stmt = conn.prepareStatement("select ll.locationid, ll.semanticplace, noOfMacAdd from locationlookup ll "
+                    + "left join "
+                    + "( "
+                    + "    select uniqueMacAddWithMaxTime.latest_time, count(uniqueMacAddWithMaxTime.macaddress) as noOfMacAdd, l.locationid as locid from location l "
                     + "    inner join "
-                    + "    ("
-                    + "        select macaddress, max(time) as latest_time"
-                    + "        from location"
-                    + "        group by macaddress"
-                    + "    ) uniqueMacAddWithMaxTime"
-                    + "    on l.macaddress = uniqueMacAddWithMaxTime.macaddress"
-                    + "    where latest_time >= ? and latest_time < ?"
-                    + "    group by l.locationid"
-                    + "    order by l.locationid"
-                    + ") locIdsOfUniqueMacAddWithMaxTime"
-                    + "on ll.locationid = locIdsOfUniqueMacAddWithMaxTime.locid"
+                    + "    ( "
+                    + "        select macaddress, max(time) as latest_time "
+                    + "        from location "
+                    + "        group by macaddress "
+                    + ""
+                    + "    ) uniqueMacAddWithMaxTime "
+                    + "    on l.macaddress = uniqueMacAddWithMaxTime.macaddress "
+                    + "    where latest_time >= ? and latest_time < ? "
+                    + "    group by l.locationid "
+                    + "    order by l.locationid "
+                    + ") locIdsOfUniqueMacAddWithMaxTime "
+                    + "on ll.locationid = locIdsOfUniqueMacAddWithMaxTime.locid "
                     + "order by ll.locationid");
-           
+
             stmt.setTimestamp(1, startDateTime);
             stmt.setTimestamp(2, endDateTime);
 
@@ -64,9 +65,9 @@ public class HeatMapDAO {
 
             while (rs.next()) {
                 //getting query results
-                String semanticPlace = rs.getString(1);
-                int noOfMacAdd = rs.getInt(2); //NOTE: no need to check for null cause getInt() returns 0 if value in table is NULL
-                
+                String semanticPlace = rs.getString("semanticplace");
+                int noOfMacAdd = rs.getInt("noOfMacAdd"); //NOTE: no need to check for null cause getInt() returns 0 if value in table is NULL
+
                 //check if semanticPlace already exists in the map
                 if (semanticPlaceHeat.containsKey(semanticPlace)) {
                     //get the old value, add new value to it then replace in the map

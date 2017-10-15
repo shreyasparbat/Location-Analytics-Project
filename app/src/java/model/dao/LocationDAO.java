@@ -1,15 +1,8 @@
 package model.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import model.entity.Location;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.utility.DBConnection;
+
 
 /**
  *  Allows the application to access the database and execute CRUD Functions
@@ -71,7 +64,5 @@ public class LocationDAO{
             }
         }
         return semanticList;
-    }
-    
-    public 
+    } 
 }

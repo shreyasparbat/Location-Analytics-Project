@@ -5,9 +5,12 @@
  */
 package controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +30,8 @@ import model.utility.TimeUtility;
 @WebServlet(name = "HeatMapServlet", urlPatterns = {"/HeatMapServlet"})
 public class HeatMapServlet extends HttpServlet {
 
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -38,6 +43,8 @@ public class HeatMapServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        PrintWriter out = response.getWriter();
+
         //retrieve request parameters
         String level = request.getParameter("level");
         String date = request.getParameter("date");
@@ -57,7 +64,7 @@ public class HeatMapServlet extends HttpServlet {
             endDateTime = processingWindowArrayList.get(1);
         } catch (IllegalArgumentException e) {
             request.setAttribute("errMessage", "Invalid date-time format");
-            request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
+            request.getRequestDispatcher("/HeatMaps.jsp").forward(request, response);
         }
 
         //get semanticPlaceHeat HashMap and its iterator
@@ -73,44 +80,47 @@ public class HeatMapServlet extends HttpServlet {
         //NOTE: same index means they correspond with each other
         while (semanticPlaceHeatKeysIterator.hasNext()) {
             String semanticPlace = semanticPlaceHeatKeysIterator.next();
-            
+
             //check if level is same
-            if(semanticPlace.contains(level)) {
+            if (semanticPlace.contains(level)) {
                 //add to arraylist
                 semanticPlaceFromSpecifiedFloor.add(semanticPlace);
-                
+
                 //get heat value and add to corresponding arraylist
                 int heatValue = getHeatValue(semanticPlaceHeat.get(semanticPlace));
                 correspondingHeatValue.add(heatValue);
             }
         }
-        
+
         //create Json Array to be used for printing heat map
         JsonArray heatMapJsonArray = new JsonArray();
-        
+
         //read the above created lists and store values in JsonArray
         for (int i = 0; i < semanticPlaceFromSpecifiedFloor.size(); i++) {
+            //making json object to be added to array
             JsonObject jsonObject = new JsonObject();
-            
+
+            //adding required "properties" to jsonObject
+            jsonObject.addProperty("semantic-place", semanticPlaceFromSpecifiedFloor.get(i));
+            jsonObject.addProperty("heat-value", correspondingHeatValue.get(i));
+
+            //adding jsonObject to heatmap json array
+            heatMapJsonArray.add(jsonObject);
         }
-        
-        /*for (String place : semanticPlaces) {
-               JsonObject obj = new JsonObject();
-               obj.addProperty("semantic-place", place);
-               
-               Random rand = new Random();   
-               int numOfPeople = rand.nextInt(50);
-               obj.addProperty("num-people", numOfPeople);
-               obj.addProperty("crowd-density", getDensity(numOfPeople));
-               
-               heatmap.add(obj);
-            }
-            
-            JsonObject reply = new JsonObject();
-            reply.addProperty("status", "success");
-            reply.add("heatmap", heatmap);
-            
-            out.println(gson.toJson(reply));*/
+
+//        //Store array in new "result" jsonObj
+//        JsonObject result = new JsonObject();
+//        result.addProperty("status", "success");
+//        result.add("heatMapJsonArray", heatMapJsonArray);
+
+        //send reply
+        request.setAttribute("level", level);
+        request.setAttribute("heatMapJsonArray", heatMapJsonArray);
+        request.getRequestDispatcher("/HeatMaps.jsp").forward(request, response);
+
+//        //send reply and close PrintWriter
+//        out.println(gson.toJson(heatMapJsonArray));
+//        out.close();
     }
 
     public int getHeatValue(int numOfMacAdd) {
