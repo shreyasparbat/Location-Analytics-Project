@@ -7,7 +7,6 @@
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="com.google.gson.GsonBuilder"%>
 <%@page import="com.google.gson.Gson"%>
-<%@page import="com.google.gson.JsonArray"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%
@@ -46,7 +45,7 @@
 
         <!-- Icon -->
         <link rel="icon" href="assets/logo.jpg">
-        
+
         <!-- JQuery -->
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     </head>
@@ -158,11 +157,13 @@
                     <%
                         //getting reply from servlet
                         String level = (String) request.getAttribute("level");
-                        JsonArray heatMapJsonArray = (JsonArray) request.getAttribute("heatMapJsonArray");
-                        
+                        JsonObject result = (JsonObject) request.getAttribute("result");
+
                         //converting array to json representation
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        String heatMapData = gson.toJson(heatMapJsonArray);
+                        Gson gson = new GsonBuilder().create();
+                        String heatMapData = gson.toJson(result);
+                        
+                        out.print(heatMapData);
 
                         //if map is about to be printed
                         if (level != null) {
@@ -172,21 +173,7 @@
                             //set css colour scheme according to heat values
                     %>
 
-                    <script>
-                        //for colouring
-                        var colors = ['rgb(240,249,232)', 'rgb(204,235,197)', 'rgb(168,221,181)', 'rgb(123,204,196)', 'rgb(78,179,211)', 'rgb(43,140,190)', 'rgb(8,88,158)'];
 
-                        //getting json obj and looping through it
-                        var result = <%=heatMapData%>;
-                        console.log(result);
-                        for (location in result) {
-                            //getting place and heat value
-                            var semanticPlace = location['semantic-place'];
-                            var heatValue = location['heat-value'];
-
-                            $('#' + location).css('fill', colors[heatValue]);
-                        }
-                    </script>
 
                     <%  }
 
@@ -196,7 +183,7 @@
                     <%@include file='assets/maps/B1.svg'%>
 
                     <%  }
-
+                        
                         if ("L1".equals(level)) { %>
 
                     <%@include file='assets/maps/L1.svg'%>
@@ -222,14 +209,31 @@
                     <%@include file='assets/maps/L5.svg'%>
                     <%  }
                     %>
-                    
+
                 </div>
 
                 <div class="col-md-1"></div>
 
                 <%  //printing legends only if map is being printed
-                    if (level
-                            != null) { %>
+                    if (level != null) {%>
+
+                <script>
+                    //for colouring
+                    var colors = ['rgb(240,249,232)', 'rgb(204,235,197)', 'rgb(168,221,181)', 'rgb(123,204,196)', 'rgb(78,179,211)', 'rgb(43,140,190)', 'rgb(8,88,158)'];
+                    
+                    //getting json obj
+                    var result = JSON.parse('<%=heatMapData%>');
+                    
+                    //looping through it
+                    result.heatMapJsonArray.forEach(function (location) {
+                        //retrieving objs
+                        var id = location['semantic-place'];
+                        var heatValue = location['heat-value'];
+                        
+                        //colouring
+                        $('#' + id).css('fill', colors[heatValue]);
+                    });
+                </script>
 
                 <!-- Legends -->
                 <div class="col-md-2">

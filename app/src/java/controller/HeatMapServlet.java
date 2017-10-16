@@ -108,14 +108,14 @@ public class HeatMapServlet extends HttpServlet {
             heatMapJsonArray.add(jsonObject);
         }
 
-//        //Store array in new "result" jsonObj
-//        JsonObject result = new JsonObject();
-//        result.addProperty("status", "success");
-//        result.add("heatMapJsonArray", heatMapJsonArray);
+        //Store array in new "result" jsonObj
+        JsonObject result = new JsonObject();
+        result.addProperty("status", "success");
+        result.add("heatMapJsonArray", heatMapJsonArray);
 
-        //send reply
+        //send result back to view page
         request.setAttribute("level", level);
-        request.setAttribute("heatMapJsonArray", heatMapJsonArray);
+        request.setAttribute("result", result);
         request.getRequestDispatcher("/HeatMaps.jsp").forward(request, response);
 
 //        //send reply and close PrintWriter

@@ -5,7 +5,6 @@
  */
 package model.dao;
 
-import com.sun.corba.se.impl.orb.ORBSingleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
