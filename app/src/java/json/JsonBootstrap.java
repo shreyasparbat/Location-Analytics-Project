@@ -74,23 +74,25 @@ public class JsonBootstrap extends HttpServlet {
                         try {
                             // Uses MultipartFormDataRequest to parse the HTTP request.
                             MultipartFormDataRequest mrequest = new MultipartFormDataRequest(request);
-                            String todo = null;
                             if (mrequest != null) {
-                                todo = mrequest.getParameter("todo");
-                            }
-                            if ((todo != null) && (todo.equalsIgnoreCase("upload"))) {
                                 // retrieving hashtable
                                 Hashtable files = mrequest.getFiles();
                                 if ((files != null) && (!files.isEmpty())) {
-                                    UploadFile file = (UploadFile) files.get("uploadfile");
+                                    UploadFile file = (UploadFile) files.get("bootstrap-file");
                                     if (file != null) {
                                         out.write("<li>Form field : uploadfile" + "<BR> Uploaded file : " + file.getFileName() + " (" + file.getFileSize() + " bytes)" + "<BR> Content Type : " + file.getContentType());
                                         out.println("");
                                         ZipInputStream zin = new ZipInputStream(file.getInpuStream());
                                         unzipThis(request, response, zin);
+                                    } else {
+                                        jsonOutput.addProperty("status", "error");
+                                        JsonArray jsonArray = new JsonArray();
+                                        jsonArray.add("invalid file");
+                                        jsonOutput.add("messages", jsonArray);
                                     }
                                 }
                             }
+
                         } catch (UploadException ex) {
                             Logger.getLogger(BootstrapServlet.class.getName()).log(Level.SEVERE, null, ex);
                         } catch (IOException e) {
