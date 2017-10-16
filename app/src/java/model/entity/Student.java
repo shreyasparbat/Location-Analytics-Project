@@ -1,5 +1,8 @@
 package model.entity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * A Student object that stores the information about the macAddress, name, password, email and gender
  * @author Joel Tay
@@ -8,10 +11,9 @@ public class Student{
     //attributes of Student
     private String macAddress;
     private String name;
-    private String password;
     private String email;
     private char gender;
-    
+    private HashMap<Integer,TimeIntervalsList> locationTracker;
     //constructor for Student
 
     /**
@@ -22,12 +24,12 @@ public class Student{
      * @param email String of student email
      * @param gender char of student gender
      */
-    public Student(String macAddress, String name, String password, String email, char gender){
+    public Student(String macAddress, String name, String email, char gender){
         this.macAddress = macAddress;
-        this.password = password;
         this.name = name;
         this.email = email;
         this.gender = gender;
+        locationTracker = new HashMap<>();
     }
     
     //getters
@@ -39,15 +41,7 @@ public class Student{
     public String getMacAddress(){
         return macAddress;
     }
-    
-    /**
-     *  Returns the password of a student account
-     * @return a string that represents the password
-     */
-    public String getPassword(){
-        return password;
-    }
-    
+
     /**
      * Returns the email of a student account
      * @return a string that represents student email
@@ -72,6 +66,16 @@ public class Student{
         return gender;
     }
     
+    public HashMap getLocationRecords(){
+        return locationTracker;
+    }
+    
+    public boolean equals(Student s){
+        if(s!=null && s.macAddress==macAddress){
+            return true;
+        }
+        return false;
+    }
     //methods
 
     

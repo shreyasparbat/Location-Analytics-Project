@@ -19,7 +19,11 @@ public class LocationDAO{
      * Initializes a newly created LocationDAO object
      */
     public LocationDAO(){
-        locationList = new ArrayList<Location>();  
+        locationList = new ArrayList<Location>();
+         // hard copy user input
+        locationList.add(new Location("test1", 123 ));
+        locationList.add(new Location("test1", 1256 ));
+        locationList.add(new Location("test2", 1223 ));
     }
     
     //methods
@@ -41,6 +45,8 @@ public class LocationDAO{
         return null;
     }
     
+    
+
     /**
      * Returns the entire list of available locations
      * @return ArrayList of Location
@@ -64,5 +70,6 @@ public class LocationDAO{
             }
         }
         return semanticList;
-    } 
+    }
+    
 }

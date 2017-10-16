@@ -52,7 +52,7 @@ public class StudentDAO {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Student student = new Student(rs.getString("macAddress"), rs.getString("name"), rs.getString("password"), rs.getString("email"), rs.getString("gender").charAt(0));
+                Student student = new Student(rs.getString("macAddress"), rs.getString("name"), rs.getString("email"), rs.getString("gender").charAt(0));
                 studentMap.put(rs.getString("macAddress"), student);
             }
 
