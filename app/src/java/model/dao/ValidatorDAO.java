@@ -42,9 +42,9 @@ public class ValidatorDAO {
      * @throws ClassNotFoundException
      */
     public void validating() throws SQLException, ClassNotFoundException {
-        List<String[]> validLocList;
-        List<String[]> validDemoList;
-        List<String[]> validllList;
+        List<String> validLocList;
+        List<String> validDemoList;
+        List<String> validllList;
         // checks if process is a bootstrap or update; dependent on the location-lookup file
         boolean bootstrapProcess = false;
         Connection conn = createConnection();

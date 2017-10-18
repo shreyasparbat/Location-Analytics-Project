@@ -6,6 +6,8 @@
 package model.utility;
 
 //import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
 import java.sql.*;
 import java.util.Properties;
 import java.io.InputStream;
@@ -28,13 +30,15 @@ public class DBConnection {
     private static String osName = System.getProperty("os.name");
     private static final String COMMA_DELIMITER = ",";
     private static String newLineSeparator = "\r\n";
-    private static String pathName = "C:/Windows/Temp";
+    private static String pathName = "C:" + File.separatorChar + "Windows" + File.separatorChar + "Temp";
+    private static String sqlLineSeparator = "\'\\r\\n\'";
 
     static {
         readDatabaseProperties();
-        if (osName.equals("Linux")){
+        if (osName.equals("Linux")) {
             newLineSeparator = "\n";
             pathName = "/tmp";
+            sqlLineSeparator = "\'\\n\'";
         }
     }
 
@@ -146,7 +150,7 @@ public class DBConnection {
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addDemo(List<String[]> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
+    public static void addDemo(List<String> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt;
         if (bootstrap == true) {
             stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
@@ -156,24 +160,27 @@ public class DBConnection {
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
         stmt.execute();
-        stmt = conn.prepareStatement("INSERT INTO DEMOGRAPH(`macaddress`, `name`, `password`, `email`, `gender`)  VALUES(?, ?, ?,?,?)");
-        int index = 1;
-        for (String[] row : contents) {
-            stmt.setString(1, row[0]);
-            stmt.setString(2, row[1]);
-            stmt.setString(3, row[2]);
-            stmt.setString(4, row[3]);
-            stmt.setString(5, row[4]);
-            stmt.addBatch();
-            if (index == 999) {
-                stmt.executeBatch();
-                stmt.clearBatch();
-                index = 1;
-            }
-        }
 
-        stmt.executeBatch();
-        stmt.clearBatch();
+        try {
+            //C:\Windows\Temp\location.csv 
+            String path = pathName + File.separatorChar + "demographics.csv";
+            FileWriter fileWriter = new FileWriter(path);
+            //file writer creates a file by default
+            for (String row : contents) {
+                fileWriter.append(row);
+                fileWriter.append(newLineSeparator);
+            }
+
+            fileWriter.flush();
+            fileWriter.close();
+            path = path.replace("\\", "\\\\");
+            String query = "load data local infile '" + path + "' into table demograph fields terminated by ',' lines terminated by " + sqlLineSeparator;
+            //load data local infile 'C:\\Windows\\Temp\\demographics.csv' into table demograph fields terminated by ',' lines terminated by '\r\n'
+            stmt = conn.prepareStatement(query);
+            stmt.execute();
+        } catch (IOException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
@@ -189,29 +196,35 @@ public class DBConnection {
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addLL(List<String[]> contents, Connection conn) throws SQLException, ClassNotFoundException {        
+    public static void addLL(List<String> contents, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE locationlookup;");
         stmt.executeUpdate();
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
         stmt.execute();
-        stmt = conn.prepareStatement("INSERT INTO locationlookup VALUES(?, ?)");
-        int index = 1;
-        for (String[] row : contents) {
-            stmt.setInt(1, Integer.parseInt(row[0]));
-            stmt.setString(2, row[1]);
-            stmt.addBatch();
-            index++;
-            if (index == 999) {
-                stmt.executeBatch();
-                stmt.clearBatch();
-                index = 1;
+
+        try {
+            //C:\Windows\Temp\locationlookup.csv 
+            String path = pathName + File.separatorChar + "locationlookup.csv";
+            FileWriter fileWriter = new FileWriter(path);
+            //file writer creates a file by default
+            for (String row : contents) {
+                fileWriter.append(row);
+                fileWriter.append(newLineSeparator);
             }
+
+            fileWriter.flush();
+            fileWriter.close();
+            path = path.replace("\\", "\\\\");
+            String query = "load data local infile '" + path + "' into table locationlookup fields terminated by ',' lines terminated by " + sqlLineSeparator;
+            //load data local infile 'C:\\Windows\\Temp\\locationlookup.csv' into table locationlookup fields terminated by ',' lines terminated by '\r\n'
+            stmt = conn.prepareStatement(query);
+            stmt.execute();
+        } catch (IOException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        stmt.executeBatch();
-        stmt.clearBatch();
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
@@ -227,33 +240,37 @@ public class DBConnection {
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException
      */
-    public static void addLoca(List<String[]> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
+    public static void addLoca(List<String> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt;
-        if (bootstrap == true) {
-            stmt = conn.prepareStatement("TRUNCATE TABLE location;");
-            stmt.executeUpdate();
-        }
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
         stmt.execute();
-        stmt = conn.prepareStatement("INSERT INTO location VALUES(?, ?,?)");
-        int index = 1;
-        for (String[] arr : contents) {
-            stmt.setTimestamp(1, Timestamp.valueOf(arr[0]));
-            stmt.setString(2, arr[1]);
-            stmt.setInt(3, Integer.parseInt(arr[2]));
-            stmt.addBatch();
-            index++;
-            if (index == 5000) {
-                stmt.executeBatch();
-                stmt.clearBatch();
-                index = 1;
+        if (bootstrap == true) {
+            stmt = conn.prepareStatement("TRUNCATE TABLE location;");
+            stmt.executeUpdate();
+        }
+        try {
+            //C:\Windows\Temp\location.csv 
+            String path = pathName + File.separatorChar + "location.csv";
+            FileWriter fileWriter = new FileWriter(path);
+            //file writer creates a file by default
+            for (String row : contents) {
+                fileWriter.append(row);
+                fileWriter.append(newLineSeparator);
             }
+
+            fileWriter.flush();
+            fileWriter.close();
+            path = path.replace("\\", "\\\\");
+            String query = "load data local infile '" + path + "' into table location fields terminated by ',' lines terminated by " + sqlLineSeparator;
+            //load data local infile 'C:\\Windows\\Temp\\location.csv' into table location fields terminated by ',' lines terminated by '\r\n'
+            stmt = conn.prepareStatement(query);
+            stmt.execute();
+        } catch (IOException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        stmt.executeBatch();
-        stmt.clearBatch();
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 1;");
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 1;");
