@@ -17,12 +17,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.dao.AgdDAO;
+import model.dao.StudentDAO;
+import model.entity.Group;
+import model.entity.Student;
 import model.utility.TimeUtility;
 
 /**
@@ -48,8 +52,7 @@ public class AgdServlet extends HttpServlet {
         String time = request.getParameter("time");
         String sec = request.getParameter("seconds");
         String dateTime = date + " " + time + ":" + sec;
-        
-        
+
         Timestamp startDateTime = null;
         Timestamp endDateTime = null;
 
@@ -62,15 +65,17 @@ public class AgdServlet extends HttpServlet {
             request.getRequestDispatcher("/Agd.jsp").forward(request, response);
         }
 
-
         //out.println(dateTime);
         AgdDAO agdDao = new AgdDAO();
-        ArrayList<ArrayList<String>> list = agdDao.getStudentGroups(startDateTime,endDateTime);
-        /*try {
-            HashMap<String, ArrayList<String>> groupList = agdDao.detectGroups(dateTime);  // do request shit from the DAO example Agd Fcuntion requt son
-        } catch (ParseException ex) {
-            Logger.getLogger(AgdServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        StudentDAO sDAO = new StudentDAO();
+        HashMap<String, Student> studentList = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
+        ArrayList<Group> list = agdDao.getStudentGroups(startDateTime, endDateTime, sDAO, studentList);
+        request.setAttribute("studentCount", studentList.size());
+        request.setAttribute("studentGroups", list);
+
+        RequestDispatcher fwd = request.getRequestDispatcher("AutomaticGroupIdentification.jsp");
+        fwd.forward(request, response);
+        return;
 
     }
 
