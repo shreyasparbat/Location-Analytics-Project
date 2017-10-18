@@ -28,6 +28,7 @@ public class LocationReportsDAO {
 
     static Timestamp startDateTime;
     static Timestamp endDateTime;
+    private BreakdownUtility bu = new BreakdownUtility();
 
     public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime) {
         this.startDateTime = startDateTime;
@@ -40,7 +41,7 @@ public class LocationReportsDAO {
      * @param startTime
      * @param endTime
      */
-    public static void breakdownByYearAndGender(String option1, String option2, String option3) {
+    public void breakdownByYearAndGender(String option1, String option2, String option3) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -74,15 +75,15 @@ public class LocationReportsDAO {
         //Check which function to call
         if (option2.equals("none2") && option3.equals("none3")) {
             //calls one value function if only the first option is filled
-            BreakdownUtility.percentageOneOption(option1, studentMap);
+            bu.percentageOneOption(option1, studentMap);
         } else if ((!option2.equals("none2") && option3.equals("none3"))) {
             //calls 2 option function
-            BreakdownUtility.percentageTwoOptions(option1, option2, studentMap);
+            bu.percentageTwoOptions(option1, option2, studentMap);
         } else if ((option2.equals("none2") && !option3.equals("none3"))) {
-            BreakdownUtility.percentageTwoOptions(option1, option3, studentMap);
+            bu.percentageTwoOptions(option1, option3, studentMap);
         } else {
             //calls 3 function option
-            BreakdownUtility.percentageAllOptions(option1, option2, option3, studentMap);
+            bu.percentageAllOptions(option1, option2, option3, studentMap);
         }
     }
 

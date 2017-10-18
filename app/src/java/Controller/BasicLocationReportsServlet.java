@@ -26,7 +26,7 @@ import model.utility.TimeUtility;
  */
 @WebServlet(name = "BasicLocationReportsServlet", urlPatterns = {"/BasicLocationReportsServlet"})
 public class BasicLocationReportsServlet extends HttpServlet {
-
+    public BreakdownUtility bu = new BreakdownUtility();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods. Calls the appropriate function for each selection.
@@ -87,7 +87,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 //Check which function to call according to options selected
                 if (option2.equals("none2") && option3.equals("none3")) {
                     //calls one value function if only the first option is filled
-                    HashMap<String, Double> percentageOneList = BreakdownUtility.percentageOneOption(option1, studentMap);
+                    HashMap<String, Integer> percentageOneList = bu.percentageOneOption(option1, studentMap);
 
                     //send back to View page
                     request.setAttribute("percentageOneList", percentageOneList);
@@ -95,21 +95,21 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
                 } else if (!option2.equals("none2") && option3.equals("none3")) {
                     //calls 2 option function
-                    HashMap<String, HashMap<String, Double>> percentageTwoList = BreakdownUtility.percentageTwoOptions(option1, option2, studentMap);
+                    HashMap<String, HashMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option2, studentMap);
 
                     //send back to view  page
                     request.setAttribute("percentageTwoList", percentageTwoList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 } else if (option2.equals("none2") && !option3.equals("none3")) {
                     //calls 2 option function
-                    HashMap<String, HashMap<String, Double>> percentageTwoList = BreakdownUtility.percentageTwoOptions(option1, option3, studentMap);
+                    HashMap<String, HashMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option3, studentMap);
                     
                     //send back to view  page
                     request.setAttribute("percentageTwoList", percentageTwoList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 } else {
                     //calls 3 function option
-                    HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList = BreakdownUtility.percentageAllOptions(option1, option2, option3, studentMap);
+                    HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(option1, option2, option3, studentMap);
                     
                     //send back to view  page
                     request.setAttribute("percentageAllList", percentageAllList);

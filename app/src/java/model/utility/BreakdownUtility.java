@@ -19,12 +19,12 @@ import model.entity.Student;
 public class BreakdownUtility {
 
     //standard attributes
-    private static final String[] YEAR_LIST = {"2013", "2014", "2015", "2016", "2017"};
-    private static final String[] GENDER_LIST = {"M", "F"};
-    private static final String[] SCHOOL_LIST = {"sis", "law", "accountancy", "economics", "business", "socsc"};
+    private final String[] YEAR_LIST = {"2013", "2014", "2015", "2016", "2017"};
+    private final String[] GENDER_LIST = {"M", "F"};
+    private final String[] SCHOOL_LIST = {"sis", "law", "accountancy", "economics", "business", "socsc"};
 
-    public static HashMap<String, Double> percentageOneOption(String option, HashMap<String, Student> studentMap) {
-        HashMap<String, Double> percentageOneList = new HashMap<>();
+    public HashMap<String, Integer> percentageOneOption(String option, HashMap<String, Student> studentMap) {
+        HashMap<String, Integer> percentageOneList = new HashMap<>();
 
         if ("year".equals(option)) {
             percentageOneList = byYear(studentMap);
@@ -39,11 +39,11 @@ public class BreakdownUtility {
         return percentageOneList;
     }
 
-    public static HashMap<String, HashMap<String, Double>> percentageTwoOptions(String option1, String option2, HashMap<String, Student> studentMap) {
-        HashMap<String, HashMap<String, Double>> percentageTwoList = new HashMap<>();
+    public HashMap<String, HashMap<String, Integer>> percentageTwoOptions(String option1, String option2, HashMap<String, Student> studentMap) {
+        HashMap<String, HashMap<String, Integer>> percentageTwoList = new HashMap<>();
 
         //get hash map based on first option
-        HashMap<String, Double> percentageList = percentageOneOption(option1, studentMap);
+        HashMap<String, Integer> percentageList = percentageOneOption(option1, studentMap);
         Iterator<String> percentageListKeyIterator = percentageList.keySet().iterator();
 
         if ("year".equals(option1)) {
@@ -51,11 +51,11 @@ public class BreakdownUtility {
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {
                 String year = percentageListKeyIterator.next();
-
+                int number = percentageList.get(year);
                 //half rounding
-                int rounded = (int) (percentageList.get(year) + 0.5);
+                //int rounded = (int) (percentageList.get(year) + 0.5);
 
-                percentageTwoList.put(year + " : " + rounded + "%", percentageOneOption(option2, getStudentsByYear(year, studentMap)));
+                percentageTwoList.put(year + " : " + number, percentageOneOption(option2, getStudentsByYear(year, studentMap)));
             }
         }
         if ("gender".equals(option1)) {
@@ -63,11 +63,11 @@ public class BreakdownUtility {
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {
                 String gender = percentageListKeyIterator.next();
-
+                int number = percentageList.get(gender);
                 //half rounding
-                int rounded = (int) (percentageList.get(gender) + 0.5);
+                //int rounded = (int) (percentageList.get(gender) + 0.5);
 
-                percentageTwoList.put(gender + " : " + rounded + "%", percentageOneOption(option2, getStudentsByGender(gender, studentMap)));
+                percentageTwoList.put(gender + " : " + number, percentageOneOption(option2, getStudentsByGender(gender, studentMap)));
             }
         }
         if ("school".equals(option1)) {
@@ -75,34 +75,34 @@ public class BreakdownUtility {
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {
                 String school = percentageListKeyIterator.next();
-
+                int number = percentageList.get(school);
                 //half rounding
-                int rounded = (int) (percentageList.get(school) + 0.5);
+                //int rounded = (int) (percentageList.get(school) + 0.5);
 
-                percentageTwoList.put(school + " : " + rounded + "%", percentageOneOption(option2, getStudentsBySchool(school, studentMap)));
+                percentageTwoList.put(school + " : " + number, percentageOneOption(option2, getStudentsBySchool(school, studentMap)));
             }
         }
 
         return percentageTwoList;
     }
 
-    public static HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllOptions(String option1, String option2, String option3, HashMap<String, Student> studentMap) {
-        HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList = new HashMap<>();
+    public HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllOptions(String option1, String option2, String option3, HashMap<String, Student> studentMap) {
+        HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList = new HashMap<>();
 
         //get hash map based on first option
-        HashMap<String, Double> percentageList = percentageOneOption(option1, studentMap);
-        Iterator<String> percentageListKeyIterator = percentageList.keySet().iterator();
+        HashMap<String, Integer> numberList = percentageOneOption(option1, studentMap);
+        Iterator<String> percentageListKeyIterator = numberList.keySet().iterator();
 
         if ("year".equals(option1)) {
             //Based on year, first get HashMap of students, then save it in another HashMap with year and that year's percentage as key and the
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {
                 String year = percentageListKeyIterator.next();
-
+                int number = numberList.get(year);
                 //half rounding
-                int rounded = (int) (percentageList.get(year) + 0.5);
-                
-                percentageAllList.put(year + " : " + rounded + "%", percentageTwoOptions(option2, option3, getStudentsByYear(year, studentMap)));
+                //int rounded = (int) (percentageList.get(year) + 0.5);
+
+                percentageAllList.put(year + " : " + number, percentageTwoOptions(option2, option3, getStudentsByYear(year, studentMap)));
             }
         }
         if ("gender".equals(option1)) {
@@ -110,11 +110,11 @@ public class BreakdownUtility {
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {
                 String gender = percentageListKeyIterator.next();
+                int number = numberList.get(gender);
 
                 //half rounding
-                int rounded = (int) (percentageList.get(gender) + 0.5);
-
-                percentageAllList.put(gender + " : " + rounded + "%", percentageTwoOptions(option2, option3, getStudentsByGender(gender, studentMap)));
+                //int rounded = (int) (percentageList.get(gender) + 0.5);
+                percentageAllList.put(gender + " : " + number, percentageTwoOptions(option2, option3, getStudentsByGender(gender, studentMap)));
             }
         }
         if ("school".equals(option1)) {
@@ -122,73 +122,68 @@ public class BreakdownUtility {
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {
                 String school = percentageListKeyIterator.next();
-
+                int number = numberList.get(school);
                 //half rounding
-                int rounded = (int) (percentageList.get(school) + 0.5);
+                //int rounded = (int) (percentageList.get(school) + 0.5);
 
-                percentageAllList.put(school + " : " + rounded + "%", percentageTwoOptions(option2, option3, getStudentsBySchool(school, studentMap)));
+                percentageAllList.put(school + " : " + number, percentageTwoOptions(option2, option3, getStudentsBySchool(school, studentMap)));
             }
         }
 
         return percentageAllList;
     }
 
-    //returns a hashtable of percentage breakdown in a key value pair
-    // key = year, value = percentage
-    public static HashMap<String, Double> byYear(HashMap<String, Student> studentMap) {
-        HashMap<String, Double> yearPercentage = new HashMap<>();
-        double totalStudentNo = studentMap.size();
+    //returns a hashmap of number of students breakdown by year in a key value pair
+    // key = year, value = number of students by year
+    public HashMap<String, Integer> byYear(HashMap<String, Student> studentMap) {
+        HashMap<String, Integer> yearNumber = new HashMap<>();
 
-        //getting percentage
+        //getting number
         for (String year : YEAR_LIST) {
             HashMap<String, Student> yearStud = getStudentsByYear(year, studentMap);
-            double noStudentsInYear = yearStud.size();
-            double percentage = (noStudentsInYear / totalStudentNo) * 100;
-            yearPercentage.put(year, percentage);
+            int noStudentsInYear = yearStud.size();
+            yearNumber.put(year, noStudentsInYear);
         }
 
         //returning
-        return yearPercentage;
+        return yearNumber;
     }
 
-    //returns a hashtable of percentage breakdown by gender in a key value pair
-    // key = gender, value = percentage
-    public static HashMap<String, Double> byGender(HashMap<String, Student> studentMap) {
-        HashMap<String, Double> yearPercentage = new HashMap<>();
-        double totalStudentNo = studentMap.size();
-
-        //getting percentage
+    //returns a hashtable of number of students by gender in a key value pair
+    // key = gender, value = number of students
+    public HashMap<String, Integer> byGender(HashMap<String, Student> studentMap) {
+        //initializing hashmap for conversion into raw numbers
+        HashMap<String, Integer> yearNumber = new HashMap<>();
+        //getting number of students by gender
         for (String gender : GENDER_LIST) {
             HashMap<String, Student> genderStud = getStudentsByGender(gender, studentMap);
-            double noStudentsInYear = genderStud.size();
-            double percentage = (noStudentsInYear / totalStudentNo) * 100;
-            yearPercentage.put(gender, percentage);
+            int noStudentsInYear = genderStud.size();
+            yearNumber.put(gender, noStudentsInYear);
         }
 
         //returning
-        return yearPercentage;
+        return yearNumber;
     }
 
-    //returns a hashtable of percentage breakdown by school in a key value pair
-    // key = school, value = percentage
-    public static HashMap<String, Double> bySchool(HashMap<String, Student> studentMap) {
-        HashMap<String, Double> yearPercentage = new HashMap<>();
+    //returns a hashtable of number of students breakdown by school in a key value pair
+    // key = school, value = number of students by school
+    public HashMap<String, Integer> bySchool(HashMap<String, Student> studentMap) {
+        //initializing hashmap for conversion into raw numbers
+        HashMap<String, Integer> schoolNumber = new HashMap<>();
         double totalStudentNo = studentMap.size();
 
-        //getting percentage
+        //getting number of students in school
         for (String sch : SCHOOL_LIST) {
             HashMap<String, Student> schoolStud = getStudentsBySchool(sch, studentMap);
-            double noStudentsInSchool = schoolStud.size();
-            double percentage = (noStudentsInSchool / totalStudentNo) * 100;
-            yearPercentage.put(sch, percentage);
+            int noStudentsInSchool = schoolStud.size();
+            schoolNumber.put(sch, noStudentsInSchool);
         }
-
         //returning
-        return yearPercentage;
+        return schoolNumber;
     }
 
-    public static HashMap<String, Student> getStudentsByYear(String year, HashMap<String, Student> studentMap) {
-        //creates new hashtable
+    public HashMap<String, Student> getStudentsByYear(String year, HashMap<String, Student> studentMap) {
+        //creates new hashmap
         HashMap<String, Student> studentsByYear = new HashMap<>();
         Iterator<String> iter = studentMap.keySet().iterator();
         String key = "";
@@ -211,7 +206,7 @@ public class BreakdownUtility {
     }
 
     //returns a hashtable of students based on the gender specified.
-    public static HashMap<String, Student> getStudentsByGender(String g, HashMap<String, Student> studentMap) {
+    public HashMap<String, Student> getStudentsByGender(String g, HashMap<String, Student> studentMap) {
         char requiredGender = g.charAt(0);
         HashMap<String, Student> studentsByGender = new HashMap<>();
         Iterator<String> iter = studentMap.keySet().iterator();
@@ -235,7 +230,7 @@ public class BreakdownUtility {
     }
 
     //returns a hashtable of students based on the school specified.
-    public static HashMap<String, Student> getStudentsBySchool(String school, HashMap<String, Student> studentMap) {
+    public HashMap<String, Student> getStudentsBySchool(String school, HashMap<String, Student> studentMap) {
         //creates new hashtable
         HashMap<String, Student> studentsBySchool = new HashMap<>();
         Iterator<String> iter = studentMap.keySet().iterator();
@@ -258,14 +253,14 @@ public class BreakdownUtility {
 
     }
 
-    public static ArrayList<String> printBarChart(HashMap<String, Double> percentageOneList) throws IllegalArgumentException {
+    public ArrayList<String> printBarChart(HashMap<String, Integer> percentageOneList) throws IllegalArgumentException {
 
         //strings for charts (innermost layer) to be outputed
         String gsonInnerLabel = "";
         String gsonInnerData = "";
 
         //getting iterator for inner most map
-        Iterator<Double> innerMapValuesIter = percentageOneList.values().iterator();
+        Iterator<Integer> innerMapValuesIter = percentageOneList.values().iterator();
         ArrayList<Integer> innerMapPercentage = new ArrayList<>();
         while (innerMapValuesIter.hasNext()) {
 
@@ -290,42 +285,47 @@ public class BreakdownUtility {
         return toReturnInner;
     }
 
-    public static ArrayList<String> printMiddle(HashMap<String, HashMap<String, Double>> percentageTwoList) throws IllegalArgumentException {
+    public ArrayList<String> printMiddle(HashMap<String, HashMap<String, Integer>> percentageTwoList) throws IllegalArgumentException {
         //ArrayList to be outputed
         ArrayList<String> outputArrayList = new ArrayList<>();
         outputArrayList.add("<ol>");
 
         //getting inner maps, which can only be accessed within this while loop
         Iterator<String> middleMapKeysIter = percentageTwoList.keySet().iterator();
+        double denom = getTwoOptionDenominator(percentageTwoList);
+
         while (middleMapKeysIter.hasNext()) {
             //store the key into output list
             String middlekey = middleMapKeysIter.next();
-            outputArrayList.add("<li type=\"a\">" + middlekey + "</li>");
+            //get inner map
+            HashMap<String, Integer> innerMap = percentageTwoList.get(middlekey);
+            //getting percentage for outer map
+            double numer = getNumerator(innerMap);
+
+            int percentRounded = (int) ((numer / denom) * 100 + 0.5);
+            outputArrayList.add("<li type=\"a\">" + middlekey + " , " + percentRounded + "%</li>");
 
             //for inner ordered list
             outputArrayList.add("<ol>");
-
-            //get inner map
-            HashMap<String, Double> innerMap = percentageTwoList.get(middlekey);
 
             //getting iterator for inner most map keys
             Iterator<String> innerMapKeysIter = innerMap.keySet().iterator();
             while (innerMapKeysIter.hasNext()) {
                 //get innerKey 
                 String innerKey = innerMapKeysIter.next();
-                //outputArrayList.add(innerKey);
+                //outputArrayList.add(innerKey);w
 
                 //checking if the value is 'NaN'
-                double innerMapValue = innerMap.get(innerKey);
+                int innerMapValue = innerMap.get(innerKey);
                 if (Double.isNaN(innerMapValue)) {
                     //throw new IllegalArgumentException();
                 }
 
                 //half rounding values and storing them in a new list
-                int innerMapPercentageRounded = (int) (innerMapValue + 0.5);
+                int innerMapPercentageRounded = (int) ((innerMapValue / denom) * 100 + 0.5);
 
                 //store into out put list
-                outputArrayList.add("<li type=\"i\">" + innerKey + " : " + innerMapPercentageRounded + "%</li>");
+                outputArrayList.add("<li type=\"i\">" + innerKey + " : " + innerMapValue + " , " + innerMapPercentageRounded + "% </li>");
             }
 
             //adding final tag (innerlist)
@@ -334,31 +334,123 @@ public class BreakdownUtility {
 
         //adding final tag (middle list)
         outputArrayList.add("</ol>");
-        
+
         //returning
         return outputArrayList;
     }
-    
-    public static ArrayList<String> printOuter(HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList) throws IllegalArgumentException {
+
+    public ArrayList<String> printOuter(HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList) throws IllegalArgumentException {
         //ArrayList to be outputed
         ArrayList<String> outputArrayList = new ArrayList<>();
         outputArrayList.add("<ol>");
-        
+
         //getting middle maps, which can only be accessed within this while loop
         Iterator<String> outerMapKeysIter = percentageAllList.keySet().iterator();
         while (outerMapKeysIter.hasNext()) {
-            //store the key into output list
-            String outerkey = outerMapKeysIter.next();
-            outputArrayList.add("<li>" + outerkey + "</li>");
-            
+            //store the key into output listHashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList
+            String outerKey = outerMapKeysIter.next();
+            HashMap<String, HashMap<String, Integer>> middleMap = percentageAllList.get(outerKey);
+            //getting percentage value
+            double denom = getThreeOptionDenominator(percentageAllList);
+            double numer = getTwoOptionDenominator(middleMap);
+            int percentage = (int) ((numer / denom) * 100 + 0.5);
+
+            outputArrayList.add("<li>" + outerKey + " , " + percentage + "%</li>");
             //getting outputlist of middle and inner maps
-            outputArrayList.addAll(printMiddle(percentageAllList.get(outerkey)));
+            //
+
+            //getting inner maps, which can only be accessed within this while loop
+            Iterator<String> middleMapKeysIter = middleMap.keySet().iterator();
+
+            while (middleMapKeysIter.hasNext()) {
+                //store the key into output list
+                String middlekey = middleMapKeysIter.next();
+                //get inner map
+                HashMap<String, Integer> innerMap = middleMap.get(middlekey);
+                //getting percentage for outer map
+                numer = getNumerator(innerMap);
+
+                int percentRounded = (int) ((numer / denom) * 100 + 0.5);
+                outputArrayList.add("<li type=\"a\">" + middlekey + " , " + percentRounded + "%</li>");
+
+                //for inner ordered list
+                outputArrayList.add("<ol>");
+
+                //getting iterator for inner most map keys
+                Iterator<String> innerMapKeysIter = innerMap.keySet().iterator();
+                while (innerMapKeysIter.hasNext()) {
+                    //get innerKey 
+                    String innerKey = innerMapKeysIter.next();
+                    //outputArrayList.add(innerKey);w
+
+                    //checking if the value is 'NaN'
+                    int innerMapValue = innerMap.get(innerKey);
+                    if (Double.isNaN(innerMapValue)) {
+                        //throw new IllegalArgumentException();
+                    }
+
+                    //half rounding values and storing them in a new list
+                    int innerMapPercentageRounded = (int) ((innerMapValue / denom) * 100 + 0.5);
+
+                    //store into out put list
+                    outputArrayList.add("<li type=\"i\">" + innerKey + " : " + innerMapValue + " , " + innerMapPercentageRounded + "% </li>");
+                }
+
+                //adding final tag (innerlist)
+                outputArrayList.add("</ol>");
+            }
         }
-        
         //adding final tag (middle list)
         outputArrayList.add("</ol>");
-        
+
         //returning
         return outputArrayList;
+    }
+
+    public double getThreeOptionDenominator(HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList) {
+        double denominator = 0.0;
+        Iterator<String> outerMapKeysIter = percentageAllList.keySet().iterator();
+        while (outerMapKeysIter.hasNext()) {
+            String outerKey = outerMapKeysIter.next();
+            HashMap<String, HashMap<String, Integer>> middleMap = percentageAllList.get(outerKey);
+            Iterator<String> middleMapKeysIter = middleMap.keySet().iterator();
+            while (middleMapKeysIter.hasNext()) {
+                String middlekey = middleMapKeysIter.next();
+                HashMap<String, Integer> innerMap = middleMap.get(middlekey);
+                Iterator<String> innerMapKeysIter = innerMap.keySet().iterator();
+                while (innerMapKeysIter.hasNext()) {
+                    String innerKey = innerMapKeysIter.next();
+                    int value = innerMap.get(innerKey);
+                    denominator += value;
+                }
+            }
+        }
+        return denominator;
+    }
+
+    public double getTwoOptionDenominator(HashMap<String, HashMap<String, Integer>> percentageTwoList) {
+        double denominator = 0;
+        Iterator<String> middleMapKeysIter = percentageTwoList.keySet().iterator();
+        while (middleMapKeysIter.hasNext()) {
+            String middlekey = middleMapKeysIter.next();
+            HashMap<String, Integer> innerMap = percentageTwoList.get(middlekey);
+            Iterator<String> innerMapKeysIter = innerMap.keySet().iterator();
+            while (innerMapKeysIter.hasNext()) {
+                String innerKey = innerMapKeysIter.next();
+                int value = innerMap.get(innerKey);
+                denominator += value;
+            }
+        }
+        return denominator;
+    }
+
+    public double getNumerator(HashMap<String, Integer> input) {
+        double numerator = 0;
+        Iterator<String> inputIter = input.keySet().iterator();
+        while (inputIter.hasNext()) {
+            String inputKey = inputIter.next();
+            numerator += input.get(inputKey);
+        }
+        return numerator;
     }
 }

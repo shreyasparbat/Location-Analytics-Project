@@ -13,6 +13,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%
+    BreakdownUtility bu = new BreakdownUtility();
     //getting error message
     String message = "";
     if (request.getAttribute("errMessage") != null) {
@@ -178,9 +179,9 @@
             <!-- Instantiating required variables -->
             <%
                 //maps
-                HashMap<String, Double> percentageOneList = new HashMap<>();
-                HashMap<String, HashMap<String, Double>> percentageTwoList = new HashMap<>();
-                HashMap<String, HashMap<String, HashMap<String, Double>>> percentageAllList = new HashMap<>();
+                HashMap<String, Integer> percentageOneList = new HashMap<>();
+                HashMap<String, HashMap<String, Integer>> percentageTwoList = new HashMap<>();
+                HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList = new HashMap<>();
 
                 //List of json strings to be used for printing
                 ArrayList<String> gsonStringList = new ArrayList<>();
@@ -194,11 +195,11 @@
             <!-- Printing chart according number of options requested -->
             <%  //printing percentageOneList if it exits
                 if (request.getAttribute("percentageOneList") != null) {
-                    percentageOneList = (HashMap<String, Double>) request.getAttribute("percentageOneList");
+                    percentageOneList = (HashMap<String, Integer>) request.getAttribute("percentageOneList");
 
                     //making bar chart
                     try {
-                        gsonStringList = BreakdownUtility.printBarChart(percentageOneList);
+                        gsonStringList = bu.printBarChart(percentageOneList);
                         out.print("<canvas id=\"inner\"></canvas>");
 
                         //error handling
@@ -209,13 +210,13 @@
 
                 //printing percentageTwoList if it exits
                 if (request.getAttribute("percentageTwoList") != null) {
-                    percentageTwoList = (HashMap<String, HashMap<String, Double>>) request.getAttribute("percentageTwoList");
+                    percentageTwoList = (HashMap<String, HashMap<String, Integer>>) request.getAttribute("percentageTwoList");
 
                     //getting out put list
                     ArrayList<String> outputArrayList = new ArrayList<>();
                     try {
-                        outputArrayList = BreakdownUtility.printMiddle(percentageTwoList);
-                    } catch (Exception e) {
+                        outputArrayList = bu.printMiddle(percentageTwoList);
+                    } catch (IllegalArgumentException e) {
                         out.print("<h4 class=\"text-center red-text\">Records Not Found!</h4>");
                     }
 
@@ -227,12 +228,12 @@
 
                 //printing percentageAllList if it exits
                 if (request.getAttribute("percentageAllList") != null) {
-                    percentageAllList = (HashMap<String, HashMap<String, HashMap<String, Double>>>) request.getAttribute("percentageAllList");
+                    percentageAllList = (HashMap<String, HashMap<String, HashMap<String, Integer>>>) request.getAttribute("percentageAllList");
 
                     //getting out put list
                     ArrayList<String> outputArrayList = new ArrayList<>();
                     try {
-                        outputArrayList = BreakdownUtility.printOuter(percentageAllList);
+                        outputArrayList = bu.printOuter(percentageAllList);
                     } catch (Exception e) {
                         out.print("<h4 class=\"text-center red-text\">Records Not Found!</h4>");
                     }
