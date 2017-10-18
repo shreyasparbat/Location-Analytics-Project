@@ -35,6 +35,13 @@ public class StudentDAO {
     }
 
     //getters
+
+    /**
+     * to get students within processing window 
+     * @param startDateTime timestamp object of start time from user
+     * @param endDateTime timestamp object of end time from user
+     * @return HashMap of students within processing window 
+     */
     public HashMap<String, Student> getAllStudentsWithinProcessingWindow(Timestamp startDateTime, Timestamp endDateTime) {
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -68,6 +75,10 @@ public class StudentDAO {
         return studentMap;
     }
 
+    /**
+     * process students to return groups of students that spent a minimum of 12 mins together 
+     * @return ArrayList of Groups 
+     */
     public ArrayList<Group> getStudentGroups() {
         ArrayList<Group> groupList = new ArrayList<>();
 
@@ -107,7 +118,7 @@ public class StudentDAO {
                 while (groupIter.hasNext()) {
                     duration += groupCheck.getRecord().get(groupIter.next()).getDuration();
                 }
-                if (groupCheck.getGroup().size() > 1 && duration >= 12.0) { // group is 2 man group
+                if (groupCheck.getGroup().size() > 1 && duration >= 720.0) { // group is 2 man group
                     groupList.add(groupCheck);
                 }
             }
@@ -116,6 +127,11 @@ public class StudentDAO {
         return groupList;
     }
 
+    /**
+     * to process groups to remove subsets, such hat larger groups of students are formed 
+     * @param groups groups of students
+     * @return arraylist of merged groups of students 
+     */
     public ArrayList<Group> getSuperGroup(ArrayList<Group> groups) {
         ArrayList<Group> toReturn = new ArrayList<>();
         for (Group g : groups) {
@@ -141,7 +157,7 @@ public class StudentDAO {
                             }
                         }
                     }
-                    if (duration >= 12.0) {
+                    if (duration >= 720.0) {
                         superGroup.addGroup(g);
                         toAdd = false;
                         superGroup.setLocaList(newRecord);

@@ -16,19 +16,18 @@ public class Group {
     private ArrayList<Student> sGroup;
     private HashMap<Integer,TimeIntervalsList> locList;
     
+    /**
+     *default constructor for Group Object
+     * A group object is a list of students and theirs location timings 
+     */
     public Group(){
         sGroup = new ArrayList<>();
         locList = new HashMap<>();
     }
     
-    public Group(ArrayList<Student> studentList, HashMap<Integer,TimeIntervalsList> locaList ){
-        sGroup = studentList;
-        locList = locaList;
-    }
-    
     /**
      * Adds a new student into the group
-     * @param s
+     * @param s student to be added in 
      */
     public void addStudent(Student s){
         if (!sGroup.contains(s)){
@@ -38,7 +37,7 @@ public class Group {
     
     /**
      * Sets a list of students in the group
-     * @param sList
+     * @param sList list of students 
      */
     public void setStudents(ArrayList<Student> sList){
         sGroup = sList;
@@ -46,7 +45,7 @@ public class Group {
     
     /**
      *  Sets a new record list to the group details
-     * @param locaList
+     * @param locaList list of location records entered to replace the existing location records 
      */
     public void setLocaList(HashMap<Integer,TimeIntervalsList> locaList){
         locList = locaList;
@@ -54,8 +53,8 @@ public class Group {
     
     /**
      * Adds a new location with time interval lists into the group details
-     * @param locationID
-     * @param list
+     * @param locationID locationID of the semantic place
+     * @param list records of the time intervals 
      */
     public void addLocation(int locationID, TimeIntervalsList list){
         locList.put(locationID, list);
@@ -63,7 +62,7 @@ public class Group {
     
     /**
      * Returns the list of students in the group
-     * @return
+     * @return an arraylist of students 
      */
     public ArrayList<Student> getGroup(){
         return sGroup;
@@ -71,7 +70,7 @@ public class Group {
     
     /**
      * Returns the location records of the group
-     * @return
+     * @return a HashMap of location records where key is locationID and value is the list of time intervals
      */
     public HashMap<Integer,TimeIntervalsList> getRecord(){
         return locList;
@@ -95,7 +94,7 @@ public class Group {
     
     /**
      * Adds students of another group into the current group. Group size doesnt increase if group is a subset of current group
-     * @param g
+     * @param g group of students 
      */
     public void addGroup(Group g){
         for(Student s : g.sGroup){

@@ -29,17 +29,25 @@ import model.utility.DBConnection;
  */
 public class AgdDAO {
 
+    /**
+     * returns a list of student group objects where size can be zero
+     *
+     * @param startDateTime timestamp object of start time from user
+     * @param endDateTime timestamp object of end time from user
+     * @param sDAO studentDAO object
+     * @param studentList list of student records found within the input time
+     * range
+     * @return an arraylist of groups of students
+     */
     public ArrayList<Group> getStudentGroups(Timestamp startDateTime, Timestamp endDateTime, StudentDAO sDAO, HashMap<String, Student> studentList) {
 
-        if (startDateTime == null || endDateTime == null) {
-            return null;
-        }
         ArrayList<Group> studentGroups = new ArrayList<>();
-        
-        try {
 
-            studentList = importDataFromDatabase(studentList, startDateTime, endDateTime);
-            studentGroups = sDAO.getStudentGroups();
+        try {
+            if (startDateTime != null && endDateTime != null) {
+                studentList = importDataFromDatabase(studentList, startDateTime, endDateTime);
+                studentGroups = sDAO.getStudentGroups();
+            }
 
             //testing
             /*
@@ -69,6 +77,15 @@ public class AgdDAO {
         return studentGroups;
     }
 
+    /**
+     * inserts time interval records into each student within the given time frame 
+     * @param studentList list of student records found within the input time
+     * @param startDateTime timestamp object of start time from user
+     * @param endDateTime timestamp object of end time from user
+     * @return an updated HashMap of student records with updated locationIDs
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public HashMap<String, Student> importDataFromDatabase(HashMap<String, Student> studentList, Timestamp startDateTime, Timestamp endDateTime) throws SQLException, ClassNotFoundException {
         Connection conn = null;
         PreparedStatement stmt = null;

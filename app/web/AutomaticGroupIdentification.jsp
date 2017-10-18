@@ -153,7 +153,7 @@
                         out.println("<td>");
                         while(iter.hasNext()){
                             int place = iter.next();
-                            double seconds = records.get(place).getDuration()*60;
+                            double seconds = records.get(place).getDuration();
                             duration += seconds;
                             out.println("<h2>"+ place + " "+ seconds +"</h2><br>");
                             ArrayList<TimeIntervals> timeList = records.get(place).getList();
