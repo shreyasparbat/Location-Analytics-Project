@@ -44,7 +44,7 @@ public class AgdDAO {
         ArrayList<Group> studentGroups = new ArrayList<>();
 
         try {
-            if (startDateTime != null && endDateTime != null) {
+            if (startDateTime != null && endDateTime != null && !studentList.isEmpty()) {
                 studentList = importDataFromDatabase(studentList, startDateTime, endDateTime);
                 studentGroups = sDAO.getStudentGroups();
             }
@@ -78,7 +78,9 @@ public class AgdDAO {
     }
 
     /**
-     * inserts time interval records into each student within the given time frame 
+     * inserts time interval records into each student within the given time
+     * frame
+     *
      * @param studentList list of student records found within the input time
      * @param startDateTime timestamp object of start time from user
      * @param endDateTime timestamp object of end time from user
@@ -129,7 +131,14 @@ public class AgdDAO {
                 }
             } else { //enter the last location of the previous student
                 if (previousStudent != null) {
-                    TimeIntervals intervalDuration = new TimeIntervals(previousTimestamp, endDateTime); //duration is the last startTime to end of query time
+                    double timeDiff = (endDateTime.getTime() - previousTimestamp.getTime()) / 60000.0;
+                    TimeIntervals intervalDuration;
+                    if (timeDiff <= 5.0) {
+                        intervalDuration = new TimeIntervals(previousTimestamp, endDateTime); //duration is the last startTime to end of query time
+                    } else {
+                        Timestamp newEndTime = new Timestamp(previousTimestamp.getTime() + 5 * 60 * 1000);
+                        intervalDuration = new TimeIntervals(previousTimestamp, newEndTime);
+                    }
                     HashMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
                     if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
                         locationTracker.put(previousLocID, new TimeIntervalsList());

@@ -4,6 +4,9 @@
     Author     : amanda
 --%>
 
+<%@page import="java.text.DateFormat"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Date"%>
 <%@page import="model.entity.TimeIntervals"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="model.entity.TimeIntervalsList"%>
@@ -100,22 +103,47 @@
             <hr>
 
             <h1>Input request parameters </h1>
+            <%
+                // Date date = new Date();
+                // int year = date.getYear();
+                //int month = date.getMonth(); 
+                //DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                //Date dateToday = new Date();
+                //System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
+                // out.println("test" + dateToday);
+                Date date = new Date();
+                int year = date.getYear() + 1900;
+                int month = date.getMonth() + 1;
+                int day = date.getDay();
+                String dayy;
+                String mon;
+                if (day < 10) {
+                    dayy = "0" + day;
+                } else {
+                    dayy = "" + day;
+                }
+                if (month < 10) {
+                    mon = "0" + month;
+                } else {
+                    mon = "" + month;
+                }
+                String newDate = dayy + "-" + mon + "-" + year;
+            %>
 
             <form method = "get" name ="AgdRequest_form" action="AgdServlet">
-                Date <input type="date" name="date"><br/>
-                Time <Input type ="time" name ="time"> 
+                Date <input type="date" name="date" max = "2025 -12-31" required ><br/>
+                Time <Input type ="time" name ="time" required> 
                 Seconds<select name ="seconds">
-                    <%
-                        for (int i = 0; i <= 59; i++) {
+                    <%  for (int i = 0; i <= 59; i++) {
                             String sec = "" + i;
 
                             if (i < 10) {
-                                sec = "0"+sec;
-                                
+                                sec = "0" + sec;
+
                             }
-                            out.println("<option value=" + sec+">"+sec + "</option>");
+                            out.println("<option value=" + sec + ">" + sec + "</option>");
                         }
-                            
+
                     %>
                 </select> 
 
@@ -123,8 +151,7 @@
                 <input type="submit" value="Send">
 
             </form>  
-            <%
-                /*not done 
+            <%                /*not done 
 
                 if (request.getAttribute("errMessage") != null) {
                     out.println(request.getAttribute("errMessage"));
@@ -132,39 +159,38 @@
                  */
 
             %> 
-            <%                
-                if(count!=null && studentGroups!=null){
+            <%                if (count != null && studentGroups != null) {
                     out.println("<table border='1'>");
                     out.println("<tr> <th> Count of Students: " + count.toString() + " </th> </tr>");
                     out.println("<tr> <th> Count of groups : " + studentGroups.size() + " </th> </tr>");
-                    for(Group g : studentGroups){
+                    for (Group g : studentGroups) {
                         out.println("<tr>");
                         ArrayList<Student> students = g.getGroup();
-                        HashMap<Integer,TimeIntervalsList> records= g.getRecord();
+                        HashMap<Integer, TimeIntervalsList> records = g.getRecord();
                         Iterator<Integer> iter = records.keySet().iterator();
                         double duration = 0;
                         out.println("<td> Group size: " + students.size() + " </td>");
-                        
+
                         out.println("<td> Students :");
-                        for(Student s : students){
-                            out.println(s.getMacAddress() + " " + s.getEmail() +"<br> ");
+                        for (Student s : students) {
+                            out.println(s.getMacAddress() + " " + s.getEmail() + "<br> ");
                         }
                         out.println("</td>");
                         out.println("<td>");
-                        while(iter.hasNext()){
+                        while (iter.hasNext()) {
                             int place = iter.next();
                             double seconds = records.get(place).getDuration();
                             duration += seconds;
-                            out.println("<h2>"+ place + " "+ seconds +"</h2><br>");
+                            out.println("<h2>" + place + " " + seconds + "</h2><br>");
                             ArrayList<TimeIntervals> timeList = records.get(place).getList();
-                            for(TimeIntervals ti : timeList){
+                            for (TimeIntervals ti : timeList) {
                                 out.println(ti.getStartTime().toString() + " - " + ti.getEndTime().toString());
                                 out.println("<br>");
                             }
                         }
                         out.println("</td>");
-                        
-                        out.println("<td> Total Time spent: " + duration + " seconds </td>" );
+
+                        out.println("<td> Total Time spent: " + duration + " seconds </td>");
                         out.println("</tr>");
                     }
                     out.println("</table>");
