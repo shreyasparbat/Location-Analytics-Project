@@ -4,9 +4,7 @@
     Author     : amanda
 --%>
 
-<%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="java.util.Date"%>
+
 <%@page import="model.entity.TimeIntervals"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="model.entity.TimeIntervalsList"%>
@@ -103,32 +101,7 @@
             <hr>
 
             <h1>Input request parameters </h1>
-            <%
-                // Date date = new Date();
-                // int year = date.getYear();
-                //int month = date.getMonth(); 
-                //DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                //Date dateToday = new Date();
-                //System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
-                // out.println("test" + dateToday);
-                Date date = new Date();
-                int year = date.getYear() + 1900;
-                int month = date.getMonth() + 1;
-                int day = date.getDay();
-                String dayy;
-                String mon;
-                if (day < 10) {
-                    dayy = "0" + day;
-                } else {
-                    dayy = "" + day;
-                }
-                if (month < 10) {
-                    mon = "0" + month;
-                } else {
-                    mon = "" + month;
-                }
-                String newDate = dayy + "-" + mon + "-" + year;
-            %>
+           
 
             <form method = "get" name ="AgdRequest_form" action="AgdServlet">
                 Date <input type="date" name="date" max = "2025 -12-31" required ><br/>
