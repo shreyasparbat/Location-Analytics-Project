@@ -49,12 +49,21 @@
         <br>
 
 
-        <%            HashMap<Integer, List<String>> locationErrors = (HashMap<Integer, List<String>>) request.getAttribute("location_errors");
+        <%            
+            HashMap<Integer, List<String>> locationErrors = (HashMap<Integer, List<String>>) request.getAttribute("location_errors");
             HashMap<Integer, List<String>> llErrors = (HashMap<Integer, List<String>>) request.getAttribute("ll_errors");
             HashMap<Integer, List<String>> demographErrors = (HashMap<Integer, List<String>>) request.getAttribute("demographics_errors");
+            Integer demoRowsEntered = (Integer) request.getAttribute("numDemoRowsInserted");
+            Integer localookUpRowsEntered = (Integer) request.getAttribute("numLLRowsInserted");
+            Integer locaRowsEntered = (Integer) request.getAttribute("numLocaRowsInserted");
         %>
         <p> 
-            <%  if (demographErrors != null) {
+            <% if(demoRowsEntered!=null){
+                %>
+        <h2> Number of rows loaded from demographics.csv <%=demoRowsEntered%></h2>
+            <%  
+                }
+                if (demographErrors != null) {
                     String total = "";
                     Iterator<Integer> iter = demographErrors.keySet().iterator();
                     if (iter.hasNext()) {
@@ -79,7 +88,12 @@
             %>
         </p>
         <p> 
-            <%  if (llErrors != null) {
+             <% if(localookUpRowsEntered!=null){
+                %>
+            <h2> Number of rows loaded from locationlookup.csv <%=localookUpRowsEntered%></h2>
+            <% 
+                }
+                if (llErrors != null) {
                     String total = "";
                     Iterator<Integer> iter = llErrors.keySet().iterator();
                     if (iter.hasNext()) {
@@ -104,7 +118,11 @@
             %>
         </p>
         <p> 
-            <%  if (locationErrors != null) {
+            <% if(locaRowsEntered!=null){
+                %>
+            <h2> Number of rows loaded from location.csv <%=locaRowsEntered%></h2>
+            <% }
+             if (locationErrors != null) {
                     String total = "";
                     Iterator<Integer> iter = locationErrors.keySet().iterator();
                     if (iter.hasNext()) {

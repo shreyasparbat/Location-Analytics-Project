@@ -104,7 +104,7 @@
            
 
             <form method = "get" name ="AgdRequest_form" action="AgdServlet">
-                Date <input type="date" name="date" max = "2025 -12-31" required ><br/>
+                Date <input type="date" name="date" max = "2025-12-31" required ><br/>
                 Time <Input type ="time" name ="time" required> 
                 Seconds<select name ="seconds">
                     <%  for (int i = 0; i <= 59; i++) {

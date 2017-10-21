@@ -89,13 +89,13 @@ public class BootstrapServlet extends HttpServlet {
         }
         response.getWriter().write("Upload Successful");
     }
-    
+
     /**
      *
      * @param request HttpServletRequest Object
      * @param response HttpServletResponse Object
      * @param zin zip input stream object of the contents that needs to be read
-     * @throws IOException 
+     * @throws IOException
      * @throws ClassNotFoundException
      * @throws SQLException
      */
@@ -117,18 +117,29 @@ public class BootstrapServlet extends HttpServlet {
         }
         ValidatorDAO validDAO = new ValidatorDAO(map);
         validDAO.validating();
+
+        //insert num of errors from each file
         HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
         request.setAttribute("location_errors", locationErrors);
         HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
         request.setAttribute("ll_errors", locationLookUpErrors);
         HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
         request.setAttribute("demographics_errors", demoErrors);
+        
+        //Inserting num rows successfully added into the request attribute
+        // taken from static attribute from each validator class
+        int demoInsert = DemographicsValidator.numDemoRowsValidated;
+        request.setAttribute("numDemoRowsInserted", demoInsert);
+        int localookupInsert = LocationLookupValidator.numDLLRowsValidated;
+        request.setAttribute("numLLRowsInserted", localookupInsert);
+        int locaInsert = LocationValidator.numDLocaRowsValidated;
+        request.setAttribute("numLocaRowsInserted", locaInsert);
+
         RequestDispatcher fwd = request.getRequestDispatcher("Admin.jsp");
         fwd.forward(request, response);
         return;
     }
 
-   
     // Standard servlet code
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -155,7 +166,7 @@ public class BootstrapServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         processRequest(request, response);
     }
 }

@@ -26,13 +26,15 @@ public class LocationLookupValidator {
      * A list of location ids that is validated during bootstrap
      */
     public static ArrayList<String> locationList = new ArrayList<String>();
-
+    
+    public static int numDLLRowsValidated ;
     /**
      * A list of location levels to check the id of location based on levels
      */
     private static ArrayList<String> locationLevels = new ArrayList<String>();
 
     static {
+        numDLLRowsValidated = 0;
         locationLevels.add("10");
         locationLevels.add("20");
         locationLevels.add("30");
@@ -48,6 +50,7 @@ public class LocationLookupValidator {
      */
     public static List<String> validateLocationLookup(List<String[]> list) {
         List<String> correctList = new ArrayList<>();
+        numDLLRowsValidated = 0;
         Iterator<String[]> iter = list.iterator();
         llErrors.clear();
 
@@ -78,6 +81,7 @@ public class LocationLookupValidator {
             }
             if (errorMsgs.isEmpty()) {
                 String rowData = row[0].trim() + "," + row[1].trim();
+                numDLLRowsValidated++;
                 correctList.add(rowData);
             } else {
                 llErrors.put(index, errorMsgs);

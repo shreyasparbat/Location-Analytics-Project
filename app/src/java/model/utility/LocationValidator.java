@@ -26,7 +26,13 @@ public class LocationValidator {
      * messages related to the row
      */
     public static HashMap<Integer, List<String>> locationErrors = new HashMap<>();
-
+    
+    public static int numDLocaRowsValidated;
+    
+    static{
+        numDLocaRowsValidated = 0;
+    }
+    
     /**
      * Validates the contents of the location.csv file
      *
@@ -37,6 +43,7 @@ public class LocationValidator {
      * @return the correct list of content from the file
      */
     public static List<String> validateLocation(List<String[]> list, boolean bootstrapProcess, Connection conn) throws ClassNotFoundException, SQLException {
+        numDLocaRowsValidated = 0;
         List<String> correctList = new ArrayList<>();
         HashMap<String, String> mapCheck = new HashMap<>();
         Iterator<String[]> iter = list.iterator();
@@ -88,6 +95,7 @@ public class LocationValidator {
                 }
                 if (invalidRow == false) {
                     String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim();
+                    numDLocaRowsValidated++;
                     mapCheck.put(key, rowData);
                 }
             }

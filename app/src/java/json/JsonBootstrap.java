@@ -21,6 +21,7 @@ import static java.lang.System.out;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,73 +58,78 @@ public class JsonBootstrap extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject jsonOutput = new JsonObject();
-
-        try {
-
+        // Check for file upload request
+        // try {
+        /*
             String token = request.getParameter("token");
             if (token != null && token.length() > 0) {
                 String verification = JWTUtility.verify(token, "secret");
                 // throws JWT Utility if verify fails
                 if (verification != null) {
-                    if (MultipartFormDataRequest.isMultipartFormData(request)) {
-                        try {
-                            // Uses MultipartFormDataRequest to parse the HTTP request.
-                            MultipartFormDataRequest mrequest = new MultipartFormDataRequest(request);
-                            if (mrequest != null) {
-                                // retrieving hashtable
-                                Hashtable files = mrequest.getFiles();
-                                if ((files != null) && (!files.isEmpty())) {
-                                    UploadFile file = (UploadFile) files.get("bootstrap-file");
-                                    if (file != null) {
-                                        out.write("<li>Form field : uploadfile" + "<BR> Uploaded file : " + file.getFileName() + " (" + file.getFileSize() + " bytes)" + "<BR> Content Type : " + file.getContentType());
-                                        out.println("");
-                                        ZipInputStream zin = new ZipInputStream(file.getInpuStream());
-                                        unzipThis(request, response, zin);
-                                    } else {
-                                        jsonOutput.addProperty("status", "error");
-                                        JsonArray jsonArray = new JsonArray();
-                                        jsonArray.add("invalid file");
-                                        jsonOutput.add("messages", jsonArray);
-                                    }
-                                }
+         */
+        if (MultipartFormDataRequest.isMultipartFormData(request)) {
+            try {
+                // Uses MultipartFormDataRequest to parse the HTTP request.
+                MultipartFormDataRequest mrequest = new MultipartFormDataRequest(request);
+                if (mrequest != null) {
+                    // retrieving hashtable
+                    String token = mrequest.getParameter("token");
+                    if (token != null && token.length() > 0) {
+                        String verification = JWTUtility.verify(token, "secret");
+
+                        Hashtable files = mrequest.getFiles();
+                        if ((files != null) && (!files.isEmpty())) {
+                            UploadFile file = (UploadFile) files.get("bootstrap-file");
+
+                            if (file != null) {
+                                out.write("<li>Form field : uploadfile" + "<BR> Uploaded file : " + file.getFileName() + " (" + file.getFileSize() + " bytes)" + "<BR> Content Type : " + file.getContentType());
+                                out.println("");
+                                ZipInputStream zin = new ZipInputStream(file.getInpuStream());
+                                unzipThis(request, response, zin, jsonOutput);
                             }
 
-                        } catch (UploadException ex) {
-                            Logger.getLogger(BootstrapServlet.class.getName()).log(Level.SEVERE, null, ex);
-                        } catch (IOException e) {
-                            out.println(e.getMessage());
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        } else {
+                            jsonOutput.addProperty("status", "error");
+                            JsonArray jsonArray = new JsonArray();
+                            jsonArray.add("missing file input");
+                            jsonOutput.add("messages", jsonArray);
                         }
+
+                    } else { // token parameter is missing or is a "" token
+                        jsonOutput.addProperty("status", "error");
+                        JsonArray jsonArray = new JsonArray();
+                        if (token == null) {
+                            jsonArray.add("missing token");
+                        } else if (token.length() == 0) {
+                            jsonArray.add("blank token");
+                        }
+                        jsonOutput.add("messages", jsonArray);
+
                     }
 
                 }
-            } else { // token parameter is missing or is a "" token
+            } catch (JWTException ex) {
                 jsonOutput.addProperty("status", "error");
                 JsonArray jsonArray = new JsonArray();
-                if (token == null) {
-                    jsonArray.add("missing token");
-                } else if (token.length() == 0) {
-                    jsonArray.add("blank token");
-                }
+                jsonArray.add("invalid token");
                 jsonOutput.add("messages", jsonArray);
 
+            } catch (Exception e) {
+                jsonOutput.addProperty("status", "error");
+                JsonArray jsonArray = new JsonArray();
+                jsonArray.add("invalid file");
+                jsonOutput.add("messages", jsonArray);
+            } finally {
+                String prettyPrint = gson.toJson(jsonOutput);
+                out.println(prettyPrint);
             }
-        } catch (JWTException ex) {
-            jsonOutput.addProperty("status", "error");
-            JsonArray jsonArray = new JsonArray();
-            jsonArray.add("invalid token");
-            jsonOutput.add("messages", jsonArray);
-
-        } finally {
-            String prettyPrint = gson.toJson(jsonOutput);
-            out.println(prettyPrint);
         }
+
     }
 
     /**
@@ -135,7 +141,7 @@ public class JsonBootstrap extends HttpServlet {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin) throws IOException, ClassNotFoundException, SQLException {
+    protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin, JsonObject jsonOutput) throws IOException, ClassNotFoundException, SQLException {
         HttpSession session = request.getSession();
         ZipEntry entry;
         while ((entry = zin.getNextEntry()) != null) { // for every item in the zip file
@@ -154,12 +160,96 @@ public class JsonBootstrap extends HttpServlet {
         ValidatorDAO validDAO = new ValidatorDAO(map);
         validDAO.validating();
         HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
-        session.setAttribute("location_errors", locationErrors);
+
         HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
-        session.setAttribute("ll_errors", locationLookUpErrors);
+
         HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
-        session.setAttribute("demographics_errors", demoErrors);
-        response.sendRedirect("Admin.jsp");
+
+        //Inserting num rows successfully added into the request attribute
+        // taken from static attribute from each validator class
+        int demoInsert = DemographicsValidator.numDemoRowsValidated;
+        int localookupInsert = LocationLookupValidator.numDLLRowsValidated;
+        int locaInsert = LocationValidator.numDLocaRowsValidated;
+        if (locationErrors.isEmpty() && locationLookUpErrors.isEmpty() && demoErrors.isEmpty()) {
+            jsonOutput.addProperty("status", "success");
+            JsonArray jsonArray = new JsonArray();
+            JsonObject demo = new JsonObject();
+            demo.addProperty("demographics.csv", demoInsert);
+            JsonObject locationll = new JsonObject();
+            locationll.addProperty("location-lookup.csv", demoInsert);
+            JsonObject location = new JsonObject();
+            location.addProperty("location.csv", locaInsert);
+            jsonArray.add(demo);
+            jsonArray.add(locationll);
+            jsonArray.add(location);
+            jsonOutput.add("num-record-loaded", jsonArray);
+        } else {
+            jsonOutput.addProperty("status", "error");
+
+            //first array
+            JsonArray jsonArray = new JsonArray();
+            JsonObject demo = new JsonObject();
+            demo.addProperty("demographics.csv", demoInsert);
+            JsonObject locationll = new JsonObject();
+            locationll.addProperty("location-lookup.csv", demoInsert);
+            JsonObject location = new JsonObject();
+            location.addProperty("location.csv", locaInsert);
+            jsonArray.add(demo);
+            jsonArray.add(locationll);
+            jsonArray.add(location);
+            jsonOutput.add("num-record-loaded", jsonArray);
+
+            //second array
+            JsonArray jsonArrayError = new JsonArray();
+            if (!demoErrors.isEmpty()) {
+                Iterator<Integer> iter = demoErrors.keySet().iterator();
+                while (iter.hasNext()) {
+                    JsonObject demoError = new JsonObject();
+                    demoError.addProperty("file", "demographics.csv");
+                    int line = iter.next();
+                    demoError = listErrors(demoError, demoErrors, line);
+                    jsonArrayError.add(demoError);
+                }
+
+            }
+            if (!locationErrors.isEmpty()) {
+                Iterator<Integer> iter = locationErrors.keySet().iterator();
+                while (iter.hasNext()) {
+                    int line = iter.next();
+                    JsonObject locaError = new JsonObject();
+                    locaError.addProperty("file", "location.csv");
+                    locaError = listErrors(locaError, locationErrors, line);
+                    jsonArrayError.add(locaError);
+                }
+
+            }
+            if (!locationLookUpErrors.isEmpty()) {
+                Iterator<Integer> iter = locationLookUpErrors.keySet().iterator();
+                while (iter.hasNext()) {
+                    int line = iter.next();
+                    JsonObject locllError = new JsonObject();
+                    locllError.addProperty("file", "location-lookup.csv");
+                    locllError = listErrors(locllError, locationLookUpErrors, line);
+                    jsonArrayError.add(locllError);
+                }
+            }
+
+            jsonOutput.add("error", jsonArrayError);
+        }
+    }
+
+    protected JsonObject listErrors(JsonObject obj, HashMap<Integer, List<String>> errorList, int line) {
+
+        obj.addProperty("line", line);
+        List<String> lineErrors = errorList.get(line);
+        JsonArray lineArray = new JsonArray();
+        for (String error : lineErrors) {
+            lineArray.add(error);
+        }
+        obj.add("message", lineArray);
+
+        return obj;
+
     }
 
 }

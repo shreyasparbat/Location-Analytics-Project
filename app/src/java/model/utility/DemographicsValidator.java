@@ -22,12 +22,15 @@ public class DemographicsValidator {
      * messages related to the row
      */
     public static HashMap<Integer, List<String>> demographErrors = new HashMap<>();
+    
+    public static int numDemoRowsValidated;
     /**
      * A list of school email to verify
      */
     private static ArrayList<String> schEmailList = new ArrayList<String>();
 
     static {
+        numDemoRowsValidated = 0;
         schEmailList.add("@sis.smu.edu.sg");
         schEmailList.add("@socsc.smu.edu.sg");
         schEmailList.add("@business.smu.edu.sg");
@@ -44,6 +47,7 @@ public class DemographicsValidator {
      * @return correctList the correct form of data after validation
      */
     public static List<String> validateDemographic(List<String[]> list) {
+        numDemoRowsValidated = 0;
         List<String> correctList = new ArrayList<>();
         Iterator<String[]> iter = list.iterator();
         demographErrors.clear();
@@ -97,6 +101,7 @@ public class DemographicsValidator {
 
             if (errorMsgs.isEmpty()) {
                 String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim() + "," + row[3].trim() + "," + row[4].trim();
+                numDemoRowsValidated ++;
                 correctList.add(rowData);
             } else {
                 demographErrors.put(index, errorMsgs);
