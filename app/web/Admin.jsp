@@ -49,8 +49,7 @@
         <br>
 
 
-        <%            
-            HashMap<Integer, List<String>> locationErrors = (HashMap<Integer, List<String>>) request.getAttribute("location_errors");
+        <%            HashMap<Integer, List<String>> locationErrors = (HashMap<Integer, List<String>>) request.getAttribute("location_errors");
             HashMap<Integer, List<String>> llErrors = (HashMap<Integer, List<String>>) request.getAttribute("ll_errors");
             HashMap<Integer, List<String>> demographErrors = (HashMap<Integer, List<String>>) request.getAttribute("demographics_errors");
             Integer demoRowsEntered = (Integer) request.getAttribute("numDemoRowsInserted");
@@ -58,93 +57,105 @@
             Integer locaRowsEntered = (Integer) request.getAttribute("numLocaRowsInserted");
         %>
         <p> 
-            <% if(demoRowsEntered!=null){
-                %>
+            <% if (demoRowsEntered != null) {
+            %>
         <h2> Number of rows loaded from demographics.csv <%=demoRowsEntered%></h2>
-            <%  
-                }
-                if (demographErrors != null) {
-                    String total = "";
-                    Iterator<Integer> iter = demographErrors.keySet().iterator();
-                    if (iter.hasNext()) {
-                        out.println("<h2> Errors found in Demographics.csv </h2> <br>");
-                    }
-                    while (iter.hasNext()) {
-                        int index = iter.next();
-                        List<String> demoErrorList = demographErrors.get(index);
-                        Iterator<String> deIter = demoErrorList.iterator();
-                        if (deIter.hasNext()) {
-                            total = deIter.next();
-                        }
-                        while (deIter.hasNext()) {
-                            total = total + "," + deIter.next();
-                        }
+        <%
+            }
+            if (demographErrors != null) {
+                String total = "";
 
-                        out.println("Errors found in row " + index + " in demographics.csv: " + total);
-                        out.println(" <br>");
-                    }
-                    demographErrors.clear();
+                List<Integer> listOfErrorLines = new ArrayList<Integer>(demographErrors.size());
+                listOfErrorLines.addAll(demographErrors.keySet());
+                Collections.sort(listOfErrorLines);
+                Iterator<Integer> iter = listOfErrorLines.iterator();
+                if (iter.hasNext()) {
+                    out.println("<h2> Errors found in Demographics.csv </h2> <br>");
                 }
-            %>
-        </p>
-        <p> 
-             <% if(localookUpRowsEntered!=null){
-                %>
-            <h2> Number of rows loaded from locationlookup.csv <%=localookUpRowsEntered%></h2>
-            <% 
-                }
-                if (llErrors != null) {
-                    String total = "";
-                    Iterator<Integer> iter = llErrors.keySet().iterator();
-                    if (iter.hasNext()) {
-                        out.println("<h2> Errors found in LocationLookup.csv </h2> <br>");
+                while (iter.hasNext()) {
+                    int index = iter.next();
+                    List<String> demoErrorList = demographErrors.get(index);
+                    Iterator<String> deIter = demoErrorList.iterator();
+                    if (deIter.hasNext()) {
+                        total = deIter.next();
                     }
-                    while (iter.hasNext()) {
-                        int index = iter.next();
-                        List<String> locationLookupErrorList = llErrors.get(index);
-                        Iterator<String> lleIter = locationLookupErrorList.iterator();
-                        if (lleIter.hasNext()) {
-                            total = lleIter.next();
-                        }
-                        while (lleIter.hasNext()) {
-                            total = total + "," + lleIter.next();
-                        }
+                    while (deIter.hasNext()) {
+                        total = total + "," + deIter.next();
+                    }
 
-                        out.println("Errors found in row " + index + " in LocationLookup.csv: " + total);
-                        out.println(" <br>");
-                    }
-                    llErrors.clear();
+                    out.println("Errors found in row " + index + " in demographics.csv: " + total);
+                    out.println(" <br>");
                 }
-            %>
-        </p>
-        <p> 
-            <% if(locaRowsEntered!=null){
-                %>
-            <h2> Number of rows loaded from location.csv <%=locaRowsEntered%></h2>
-            <% }
-             if (locationErrors != null) {
-                    String total = "";
-                    Iterator<Integer> iter = locationErrors.keySet().iterator();
-                    if (iter.hasNext()) {
-                        out.println("<h2> Errors found in Location.csv </h2> <br>");
-                    }
-                    while (iter.hasNext()) {
-                        int index = iter.next();
-                        List<String> locationErrorList = locationErrors.get(index);
-                        Iterator<String> leIter = locationErrorList.iterator();
-                        if (leIter.hasNext()) {
-                            total = leIter.next();
-                        }
-                        while (leIter.hasNext()) {
-                            total = total + "," + leIter.next();
-                        }
+                demographErrors.clear();
+            }
+        %>
+    </p>
+    <p> 
+        <% if (localookUpRowsEntered != null) {
+        %>
+    <h2> Number of rows loaded from locationlookup.csv <%=localookUpRowsEntered%></h2>
+    <%
+        }
+        if (llErrors != null) {
+            String total = "";
 
-                        out.println("Errors found in row " + index + " in location.csv: " + total);
-                        out.println(" <br>");
-                    }
-                    locationErrors.clear();
+            List<Integer> listOfErrorLines = new ArrayList<Integer>(llErrors.size());
+            listOfErrorLines.addAll(llErrors.keySet());
+            Collections.sort(listOfErrorLines);
+            Iterator<Integer> iter = listOfErrorLines.iterator();
+            if (iter.hasNext()) {
+                out.println("<h2> Errors found in LocationLookup.csv </h2> <br>");
+            }
+            while (iter.hasNext()) {
+                int index = iter.next();
+                List<String> locationLookupErrorList = llErrors.get(index);
+                Iterator<String> lleIter = locationLookupErrorList.iterator();
+                if (lleIter.hasNext()) {
+                    total = lleIter.next();
                 }
-            %>
-        </p>
-    </body>
+                while (lleIter.hasNext()) {
+                    total = total + "," + lleIter.next();
+                }
+
+                out.println("Errors found in row " + index + " in LocationLookup.csv: " + total);
+                out.println(" <br>");
+            }
+            llErrors.clear();
+        }
+    %>
+</p>
+<p> 
+    <% if (locaRowsEntered != null) {
+    %>
+<h2> Number of rows loaded from location.csv <%=locaRowsEntered%></h2>
+<% }
+    if (locationErrors != null) {
+        String total = "";
+
+        List<Integer> listOfErrorLines = new ArrayList<Integer>(locationErrors.size());
+        listOfErrorLines.addAll(locationErrors.keySet());
+        Collections.sort(listOfErrorLines);
+        Iterator<Integer> iter = listOfErrorLines.iterator();
+        if (iter.hasNext()) {
+            out.println("<h2> Errors found in Location.csv </h2> <br>");
+        }
+        while (iter.hasNext()) {
+            int index = iter.next();
+            List<String> locationErrorList = locationErrors.get(index);
+            Iterator<String> leIter = locationErrorList.iterator();
+            if (leIter.hasNext()) {
+                total = leIter.next();
+            }
+            while (leIter.hasNext()) {
+                total = total + "," + leIter.next();
+            }
+
+            out.println("Errors found in row " + index + " in location.csv: " + total);
+            out.println(" <br>");
+        }
+        locationErrors.clear();
+    }
+%>
+</p>
+</body>
 </html>

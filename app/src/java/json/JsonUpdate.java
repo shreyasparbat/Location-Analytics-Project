@@ -10,7 +10,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.opencsv.CSVReader;
-import controller.BootstrapServlet;
 import is203.JWTException;
 import is203.JWTUtility;
 import java.io.File;
@@ -25,8 +24,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.servlet.ServletException;
@@ -36,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javazoom.upload.MultipartFormDataRequest;
-import javazoom.upload.UploadException;
 import javazoom.upload.UploadFile;
 import model.dao.ValidatorDAO;
 import model.utility.DemographicsValidator;
@@ -45,10 +41,10 @@ import model.utility.LocationValidator;
 
 /**
  *
- * @author amanda
+ * @author Joel Tay
  */
-@WebServlet(name = "JsonBootstrap", urlPatterns = {"/json/bootstrap"})
-public class JsonBootstrap extends HttpServlet {
+@WebServlet(name = "JsonUpdate", urlPatterns = {"/json/update"})
+public class JsonUpdate extends HttpServlet {
 
     private final HashMap<String, List<String[]>> map = new HashMap<>();
 
@@ -162,29 +158,23 @@ public class JsonBootstrap extends HttpServlet {
         validDAO.validating();
         HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
 
-        HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
-
         HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
 
         //Inserting num rows successfully added into the request attribute
         // taken from static attribute from each validator class
         int demoInsert = DemographicsValidator.numDemoRowsValidated;
-        int localookupInsert = LocationLookupValidator.numDLLRowsValidated;
         int locaInsert = LocationValidator.numDLocaRowsValidated;
         
         //Json output for bootstrap
-        if (locationErrors.isEmpty() && locationLookUpErrors.isEmpty() && demoErrors.isEmpty()) {
+        if (locationErrors.isEmpty()&& demoErrors.isEmpty()) {
             //if there is no errors = success
             jsonOutput.addProperty("status", "success");
             JsonArray jsonArray = new JsonArray();
             JsonObject demo = new JsonObject();
             demo.addProperty("demographics.csv", demoInsert);
-            JsonObject locationll = new JsonObject();
-            locationll.addProperty("location-lookup.csv", localookupInsert);
             JsonObject location = new JsonObject();
             location.addProperty("location.csv", locaInsert);
             jsonArray.add(demo);
-            jsonArray.add(locationll);
             jsonArray.add(location);
             jsonOutput.add("num-record-loaded", jsonArray);
         } else {
@@ -194,12 +184,9 @@ public class JsonBootstrap extends HttpServlet {
             JsonArray jsonArray = new JsonArray();
             JsonObject demo = new JsonObject();
             demo.addProperty("demographics.csv", demoInsert);
-            JsonObject locationll = new JsonObject();
-            locationll.addProperty("location-lookup.csv", localookupInsert);
             JsonObject location = new JsonObject();
             location.addProperty("location.csv", locaInsert);
             jsonArray.add(demo);
-            jsonArray.add(locationll);
             jsonArray.add(location);
             jsonOutput.add("num-record-loaded", jsonArray);
 
@@ -236,19 +223,7 @@ public class JsonBootstrap extends HttpServlet {
                 }
 
             }
-            if (!locationLookUpErrors.isEmpty()) {
-                List<Integer> listOfErrorLines = new ArrayList<Integer>(locationLookUpErrors.size());
-                listOfErrorLines.addAll(locationLookUpErrors.keySet());
-                Collections.sort(listOfErrorLines);
-                Iterator<Integer> iter = listOfErrorLines.iterator();
-                while (iter.hasNext()) {
-                    int line = iter.next();
-                    JsonObject locllError = new JsonObject();
-                    locllError.addProperty("file", "location-lookup.csv");
-                    locllError = listErrors(locllError, locationLookUpErrors, line);
-                    jsonArrayError.add(locllError);
-                }
-            }
+           
 
             jsonOutput.add("error", jsonArrayError);
         }
