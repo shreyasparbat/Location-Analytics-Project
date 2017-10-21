@@ -302,7 +302,7 @@ public class BreakdownUtility {
             //getting percentage for outer map
             double numer = getNumerator(innerMap);
             int percentRounded = (int) ((numer / denom) * 100 + 0.5);
-            outputArrayList.add("<li type=\"a\">" + middlekey + " , " + percentRounded + "%</li>");
+            outputArrayList.add("<li>" + middlekey + " , " + percentRounded + "%</li>");
 
             //for inner ordered list
             outputArrayList.add("<ol>");
@@ -312,19 +312,15 @@ public class BreakdownUtility {
             while (innerMapKeysIter.hasNext()) {
                 //get innerKey 
                 String innerKey = innerMapKeysIter.next();
-                //outputArrayList.add(innerKey);w
 
-                //checking if the value is 'NaN'
+                //getting innerMapValue
                 int innerMapValue = innerMap.get(innerKey);
-                if (Double.isNaN(innerMapValue)) {
-                    //throw new IllegalArgumentException();
-                }
 
                 //half rounding values and storing them in a new list
                 int innerMapPercentageRounded = (int) ((innerMapValue / denom) * 100 + 0.5);
 
                 //store into out put list
-                outputArrayList.add("<li type=\"i\">" + innerKey + " : " + innerMapValue + " , " + innerMapPercentageRounded + "% </li>");
+                outputArrayList.add("<li type=\"a\">" + innerKey + " : " + innerMapValue + " , " + innerMapPercentageRounded + "% </li>");
             }
 
             //adding final tag (innerlist)
@@ -349,14 +345,17 @@ public class BreakdownUtility {
             //store the key into output listHashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList
             String outerKey = outerMapKeysIter.next();
             HashMap<String, HashMap<String, Integer>> middleMap = percentageAllList.get(outerKey);
+            
             //getting percentage value
             double denom = getThreeOptionDenominator(percentageAllList);
             double numer = getTwoOptionDenominator(middleMap);
             int percentage = (int) ((numer / denom) * 100 + 0.5);
 
+            //adding outer tag
             outputArrayList.add("<li>" + outerKey + " , " + percentage + "%</li>");
-            //getting outputlist of middle and inner maps
-            //
+            
+            //adding starting ordered list tag (middle list)
+            outputArrayList.add("<ol>");
 
             //getting inner maps, which can only be accessed within this while loop
             Iterator<String> middleMapKeysIter = middleMap.keySet().iterator();
@@ -380,14 +379,10 @@ public class BreakdownUtility {
                 while (innerMapKeysIter.hasNext()) {
                     //get innerKey 
                     String innerKey = innerMapKeysIter.next();
-                    //outputArrayList.add(innerKey);w
 
-                    //checking if the value is 'NaN'
+                    //get inner map value
                     int innerMapValue = innerMap.get(innerKey);
-                    if (Double.isNaN(innerMapValue)) {
-                        //throw new IllegalArgumentException();
-                    }
-
+                    
                     //half rounding values and storing them in a new list
                     int innerMapPercentageRounded = (int) ((innerMapValue / denom) * 100 + 0.5);
 
@@ -398,8 +393,10 @@ public class BreakdownUtility {
                 //adding final tag (innerlist)
                 outputArrayList.add("</ol>");
             }
+            //adding final tag (middle list)
+            outputArrayList.add("</ol>");
         }
-        //adding final tag (middle list)
+        //adding final tag (outer list)
         outputArrayList.add("</ol>");
 
         //returning

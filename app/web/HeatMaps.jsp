@@ -132,7 +132,7 @@
                         </div>
 
                         <div class="text-center">
-                            <button id="heat-map-button" type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
+                            <button id="heat-map-button" type="submit" class="btn btn-elegant">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
                         </div>
 
                     </form>
@@ -162,20 +162,12 @@
                         //converting array to json representation
                         Gson gson = new GsonBuilder().create();
                         String heatMapData = gson.toJson(result);
-                        
-                        out.print(heatMapData);
 
                         //if map is about to be printed
                         if (level != null) {
                             //print map name
                             out.print("<h2>" + level + "</h2>");
-
-                            //set css colour scheme according to heat values
-                    %>
-
-
-
-                    <%  }
+                        }
 
                         //printing correct map
                         if ("B1".equals(level)) { %>
@@ -183,7 +175,7 @@
                     <%@include file='assets/maps/B1.svg'%>
 
                     <%  }
-                        
+
                         if ("L1".equals(level)) { %>
 
                     <%@include file='assets/maps/L1.svg'%>
@@ -214,22 +206,25 @@
 
                 <div class="col-md-1"></div>
 
-                <%  //printing legends only if map is being printed
-                    if (level != null) {%>
+                <%  //printing legends and coloring map (only if map is being printed)
+                    if (level != null) {
+                        //set css colour scheme according to heat values                
+                %>
 
                 <script>
                     //for colouring
-                    var colors = ['rgb(240,249,232)', 'rgb(204,235,197)', 'rgb(168,221,181)', 'rgb(123,204,196)', 'rgb(78,179,211)', 'rgb(43,140,190)', 'rgb(8,88,158)'];
-                    
+                    //var colors = ['#ffffd4', '#fee391', '#fec44f', '#fe9929', '#ec7014', '#cc4c02', '#8c2d04'];
+                    var colors = ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#b10026'];
+
                     //getting json obj
                     var result = JSON.parse('<%=heatMapData%>');
-                    
+
                     //looping through it
                     result.heatMapJsonArray.forEach(function (location) {
                         //retrieving objs
                         var id = location['semantic-place'];
                         var heatValue = location['heat-value'];
-                        
+
                         //colouring
                         $('#' + id).css('fill', colors[heatValue]);
                     });

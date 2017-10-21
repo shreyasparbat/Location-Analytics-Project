@@ -68,41 +68,33 @@ public class HeatMapServlet extends HttpServlet {
         }
 
         //get semanticPlaceHeat HashMap and its iterator
-        HeatMapDAO heatMapDAO = new HeatMapDAO(startDateTime, endDateTime);
-        HashMap<String, Integer> semanticPlaceHeat = heatMapDAO.getAllSemanticPlaceHeat();
+        HeatMapDAO heatMapDAO = new HeatMapDAO(startDateTime, endDateTime, level);
+        HashMap<String, Integer> semanticPlaceHeat = heatMapDAO.getSemanticPlaceHeatFromSpecificFloor();
         Iterator<String> semanticPlaceHeatKeysIterator = semanticPlaceHeat.keySet().iterator();
-
-        //store only the required level's semantic places in one ArrayList 
-        //and the corresponding heatValue in another ArrayList 
-        ArrayList<String> semanticPlaceFromSpecifiedFloor = new ArrayList<>();
-        ArrayList<Integer> correspondingHeatValue = new ArrayList<>();
-
-        //NOTE: same index means they correspond with each other
-        while (semanticPlaceHeatKeysIterator.hasNext()) {
-            String semanticPlace = semanticPlaceHeatKeysIterator.next();
-
-            //check if level is same
-            if (semanticPlace.contains(level)) {
-                //add to arraylist
-                semanticPlaceFromSpecifiedFloor.add(semanticPlace);
-
-                //get heat value and add to corresponding arraylist
-                int heatValue = getHeatValue(semanticPlaceHeat.get(semanticPlace));
-                correspondingHeatValue.add(heatValue);
-            }
-        }
 
         //create Json Array to be used for printing heat map
         JsonArray heatMapJsonArray = new JsonArray();
 
-        //read the above created lists and store values in JsonArray
-        for (int i = 0; i < semanticPlaceFromSpecifiedFloor.size(); i++) {
+        while (semanticPlaceHeatKeysIterator.hasNext()) {
             //making json object to be added to array
             JsonObject jsonObject = new JsonObject();
 
+            //get semanticPlace
+            String semanticPlace = semanticPlaceHeatKeysIterator.next();
+
+            //get number of mac addresses and correspinding heat value
+            int noOfMacAdd = semanticPlaceHeat.get(semanticPlace);
+            int heatValue = getHeatValue(noOfMacAdd);
+            
+            //semanticplaces corresponding to SRs have "." in them, which lead to problems in the svg file
+            //because the "id" attribute of a path/shape cannot have a "."
+            //thus here we replace the dot with "n"
+            semanticPlace = semanticPlace.replace('.', 'n');
+
             //adding required "properties" to jsonObject
-            jsonObject.addProperty("semantic-place", semanticPlaceFromSpecifiedFloor.get(i));
-            jsonObject.addProperty("heat-value", correspondingHeatValue.get(i));
+            jsonObject.addProperty("semantic-place", semanticPlace);
+            jsonObject.addProperty("num-macAdd", noOfMacAdd);
+            jsonObject.addProperty("heat-value", heatValue);
 
             //adding jsonObject to heatmap json array
             heatMapJsonArray.add(jsonObject);
@@ -118,7 +110,7 @@ public class HeatMapServlet extends HttpServlet {
         request.setAttribute("result", result);
         request.getRequestDispatcher("/HeatMaps.jsp").forward(request, response);
 
-//        //send reply and close PrintWriter
+//        //For testing: send reply and close PrintWriter
 //        out.println(gson.toJson(heatMapJsonArray));
 //        out.close();
     }

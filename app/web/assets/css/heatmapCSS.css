@@ -26,31 +26,31 @@ and open the template in the editor.
 }
 
 #legend li:nth-child(1) .color-block {
-    background-color: rgb(240,249,232);
+    background-color: #ffffb2;
 }
 
 #legend li:nth-child(2) .color-block {
-    background-color: rgb(204,235,197);
+    background-color: #fed976;
 }
 
 #legend li:nth-child(3) .color-block {
-    background-color: rgb(168,221,181);
+    background-color: #feb24c;
 }
 
 #legend li:nth-child(4) .color-block {
-    background-color: rgb(123,204,196);
+    background-color: #fd8d3c;
 }
 
 #legend li:nth-child(5) .color-block {
-    background-color: rgb(78,179,211);
+    background-color: #fc4e2a;
 }
 
 #legend li:nth-child(6) .color-block {
-    background-color: rgb(43,140,190);
+    background-color: #e31a1c;
 }
 
 #legend li:nth-child(7) .color-block {
-    background-color: rgb(8,88,158);
+    background-color: #b10026;
 }
 
 #legend .color-block {
