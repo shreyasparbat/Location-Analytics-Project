@@ -99,7 +99,7 @@ public class BootstrapServlet extends HttpServlet {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin) throws IOException, ClassNotFoundException, SQLException {
+    protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin) throws IOException, ClassNotFoundException, SQLException, ServletException {
         HttpSession session = request.getSession();
         ZipEntry entry;
         while ((entry = zin.getNextEntry()) != null) { // for every item in the zip file
@@ -118,12 +118,14 @@ public class BootstrapServlet extends HttpServlet {
         ValidatorDAO validDAO = new ValidatorDAO(map);
         validDAO.validating();
         HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
-        session.setAttribute("location_errors", locationErrors);
+        request.setAttribute("location_errors", locationErrors);
         HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
-        session.setAttribute("ll_errors", locationLookUpErrors);
+        request.setAttribute("ll_errors", locationLookUpErrors);
         HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
-        session.setAttribute("demographics_errors", demoErrors);
-        response.sendRedirect("Admin.jsp");
+        request.setAttribute("demographics_errors", demoErrors);
+        RequestDispatcher fwd = request.getRequestDispatcher("Admin.jsp");
+        fwd.forward(request, response);
+        return;
     }
 
    

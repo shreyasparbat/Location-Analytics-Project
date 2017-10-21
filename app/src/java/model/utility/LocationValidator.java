@@ -31,19 +31,21 @@ public class LocationValidator {
      * Validates the contents of the location.csv file
      *
      * @param list the list of content from the file
-     * @param bootstrapProcess boolean to check if the process is bootstrap[True] or upload [False]
+     * @param bootstrapProcess boolean to check if the process is
+     * bootstrap[True] or upload [False]
      * @param conn Connection object
      * @return the correct list of content from the file
      */
-    public static List<String[]> validateLocation(List<String[]> list, boolean bootstrapProcess, Connection conn) throws ClassNotFoundException, SQLException {
-        List<String[]> correctList = new ArrayList<>();
-        HashMap<String, String[]> mapCheck = new HashMap<>();
+    public static List<String> validateLocation(List<String[]> list, boolean bootstrapProcess, Connection conn) throws ClassNotFoundException, SQLException {
+        List<String> correctList = new ArrayList<>();
+        HashMap<String, String> mapCheck = new HashMap<>();
         Iterator<String[]> iter = list.iterator();
         locationErrors.clear();
-        int index = 1;
+
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
         }
+        int index = 2; // cos of buffer
         while (iter.hasNext()) {
             ArrayList<String> errorMsgs = new ArrayList<>();
             String[] row = iter.next();
@@ -85,7 +87,8 @@ public class LocationValidator {
                     }
                 }
                 if (invalidRow == false) {
-                    mapCheck.put(key, row);
+                    String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim();
+                    mapCheck.put(key, rowData);
                 }
             }
             if (!timeCheck) {
@@ -100,7 +103,7 @@ public class LocationValidator {
             if (duplicateRow) {
                 errorMsgs.add("duplicate row");
             }
-            if (timeCheck != true || locationCheck != true || macAddressCheck != true || duplicateRow == true) {
+            if (!errorMsgs.isEmpty()) {
                 locationErrors.put(index, errorMsgs);
             }
             index++;
@@ -111,12 +114,12 @@ public class LocationValidator {
         while (correctRow.hasNext()) {
             correctList.add(mapCheck.get(correctRow.next()));
         }*/
-         //Getting values
-        Collection<String[]> listValues = mapCheck.values();
-         
+        //Getting values
+        Collection<String> listValues = mapCheck.values();
+
         //Creating an ArrayList of values
-        correctList = new ArrayList<String[]>(listValues);
-        
+        correctList = new ArrayList<String>(listValues);
+
         return correctList;
 
     }

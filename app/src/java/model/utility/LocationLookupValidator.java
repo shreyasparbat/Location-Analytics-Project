@@ -17,15 +17,16 @@ import java.util.List;
 public class LocationLookupValidator {
 
     /**
-     * A map of error messages where key is the row and values are the error messages related to the row
+     * A map of error messages where key is the row and values are the error
+     * messages related to the row
      */
     public static HashMap<Integer, List<String>> llErrors = new HashMap<>();
-    
+
     /**
      * A list of location ids that is validated during bootstrap
      */
     public static ArrayList<String> locationList = new ArrayList<String>();
-    
+
     /**
      * A list of location levels to check the id of location based on levels
      */
@@ -40,18 +41,20 @@ public class LocationLookupValidator {
     }
 
     /**
-     * Validates the contents of the locationlookup 
+     * Validates the contents of the locationlookup
+     *
      * @param list the contents of the locationlookup.csv
      * @return a list of the processed location lookup data
      */
-    public static List<String[]> validateLocationLookup(List<String[]> list) {
-        List<String[]> correctList = new ArrayList<>();
+    public static List<String> validateLocationLookup(List<String[]> list) {
+        List<String> correctList = new ArrayList<>();
         Iterator<String[]> iter = list.iterator();
         llErrors.clear();
-        int index = 1;
+
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
         }
+        int index = 2; // cos of buffer
         while (iter.hasNext()) {
             String[] row = iter.next();
             ArrayList<String> errorMsgs = new ArrayList<>();
@@ -73,8 +76,9 @@ public class LocationLookupValidator {
             if (!semanticPlaceCheck) {
                 errorMsgs.add("invalid semantic place");
             }
-            if (locationIdCheck && semanticPlaceCheck) {
-                correctList.add(row);
+            if (errorMsgs.isEmpty()) {
+                String rowData = row[0].trim() + "," + row[1].trim();
+                correctList.add(rowData);
             } else {
                 llErrors.put(index, errorMsgs);
             }
@@ -85,7 +89,9 @@ public class LocationLookupValidator {
     }
 
     /**
-     * validates the location id based on the requirements, adds the valid locationID into the locationList
+     * validates the location id based on the requirements, adds the valid
+     * locationID into the locationList
+     *
      * @param locatID input of locatID
      * @return return true if locatID is valid,else false
      */
@@ -109,6 +115,7 @@ public class LocationLookupValidator {
 
     /**
      * validates the semantic place based on the requirements
+     *
      * @param semanticPlace input of semantic place
      * @param locationID input of location id
      * @return true if the semantic place is valid, else false

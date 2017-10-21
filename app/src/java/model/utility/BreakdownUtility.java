@@ -301,7 +301,6 @@ public class BreakdownUtility {
             HashMap<String, Integer> innerMap = percentageTwoList.get(middlekey);
             //getting percentage for outer map
             double numer = getNumerator(innerMap);
-
             int percentRounded = (int) ((numer / denom) * 100 + 0.5);
             outputArrayList.add("<li>" + middlekey + " , " + percentRounded + "%</li>");
 

@@ -43,14 +43,15 @@ public class DemographicsValidator {
      * @param list initial data of the demographics data
      * @return correctList the correct form of data after validation
      */
-    public static List<String[]> validateDemographic(List<String[]> list) {
-        List<String[]> correctList = new ArrayList<>();
+    public static List<String> validateDemographic(List<String[]> list) {
+        List<String> correctList = new ArrayList<>();
         Iterator<String[]> iter = list.iterator();
         demographErrors.clear();
-        int index = 1;
+        
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
         }
+        int index = 2; // cos of buffer
         while (iter.hasNext()) {
             ArrayList<String> errorMsgs = new ArrayList<>();
 
@@ -81,9 +82,6 @@ public class DemographicsValidator {
                 genderCheck = false;
             }
 
-            if (macAddressCheck && passwordCheck && emailCheck && genderCheck) {
-                correctList.add(row);
-            }
             if (!macAddressCheck) {
                 errorMsgs.add("invalid mac address");
             }
@@ -96,7 +94,11 @@ public class DemographicsValidator {
             if (!genderCheck) {
                 errorMsgs.add("invalid gender");
             }
-            if (macAddressCheck != true || passwordCheck != true || emailCheck != true || genderCheck != true) {
+
+            if (errorMsgs.isEmpty()) {
+                String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim() + "," + row[3].trim() + "," + row[4].trim();
+                correctList.add(rowData);
+            } else {
                 demographErrors.put(index, errorMsgs);
             }
             index++;

@@ -66,10 +66,19 @@ public class Student{
         return gender;
     }
     
+    /**
+     * gets the location records of a particular student
+     * @return a hashmap of location records where key is the location id and value is the list of time intervals spent in that particular location
+     */
     public HashMap getLocationRecords(){
         return locationTracker;
     }
     
+    /**
+     * Checks if Student is the same person as the input student
+     * @param s A student object
+     * @return true if students are referring to the same person, else false
+     */
     public boolean equals(Student s){
         if(s!=null && s.macAddress==macAddress){
             return true;
