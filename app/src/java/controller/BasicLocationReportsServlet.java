@@ -29,8 +29,8 @@ public class BasicLocationReportsServlet extends HttpServlet {
     public BreakdownUtility bu = new BreakdownUtility();
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods. Calls the appropriate function for each selection.
-     *
+     * methods. Calls the appropriate function for each selection and returns a hashmap of the breakdown to the view page.
+     *  
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs

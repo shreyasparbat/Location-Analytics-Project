@@ -51,7 +51,6 @@ public class ValidatorDAO {
         if (map.containsKey("location-lookup.csv")) {
             //missing validation
             List<String[]> llList = map.get("location-lookup.csv");
-
             validllList = LocationLookupValidator.validateLocationLookup(llList);
             DBConnection.addLL(validllList, conn);
             bootstrapProcess = true;

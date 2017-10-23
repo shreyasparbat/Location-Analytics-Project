@@ -20,7 +20,6 @@ public class Student{
      * Constructs a new Student object with the unique macAddress, name, password, email and gender
      * @param macAddress String of mac address of user device
      * @param name String of user name
-     * @param password String of intended password
      * @param email String of student email
      * @param gender char of student gender
      */
@@ -85,7 +84,5 @@ public class Student{
         }
         return false;
     }
-    //methods
-
     
 }

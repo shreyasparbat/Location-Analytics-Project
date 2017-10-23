@@ -11,6 +11,7 @@
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.HashMap"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="Protect.jsp" %>
 
 <%
     BreakdownUtility bu = new BreakdownUtility();

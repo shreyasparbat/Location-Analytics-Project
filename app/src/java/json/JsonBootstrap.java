@@ -87,7 +87,7 @@ public class JsonBootstrap extends HttpServlet {
                         Hashtable files = mrequest.getFiles();
                         if ((files != null) && (!files.isEmpty())) {
                             UploadFile file = (UploadFile) files.get("bootstrap-file");
-
+                            
                             if (file != null) {
                                 //unzips file
                                 ZipInputStream zin = new ZipInputStream(file.getInpuStream());

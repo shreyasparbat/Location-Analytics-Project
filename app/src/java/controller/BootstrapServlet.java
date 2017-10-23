@@ -48,7 +48,9 @@ public class BootstrapServlet extends HttpServlet {
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
-     *
+     * Captures the file that is uploaded via the multipart form data, utilizes UploadBeans library 
+     * Gets the zipinput stream of the file and calls unzipthis method to validate the contents in the file
+     * 
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -72,8 +74,6 @@ public class BootstrapServlet extends HttpServlet {
                     if ((files != null) && (!files.isEmpty())) {
                         UploadFile file = (UploadFile) files.get("uploadfile");
                         if (file != null) {
-                            out.write("<li>Form field : uploadfile" + "<BR> Uploaded file : " + file.getFileName() + " (" + file.getFileSize() + " bytes)" + "<BR> Content Type : " + file.getContentType());
-                            out.println("");
                             ZipInputStream zin = new ZipInputStream(file.getInpuStream());
                             unzipThis(request, response, zin);
                         }
@@ -91,7 +91,9 @@ public class BootstrapServlet extends HttpServlet {
     }
 
     /**
-     *
+     * Unzips the content of a zipinputstream and stores the values in a hashmap where the key is the file name
+     * Utilizes validatorDAO to validate each files in the hashmap
+     * 
      * @param request HttpServletRequest Object
      * @param response HttpServletResponse Object
      * @param zin zip input stream object of the contents that needs to be read

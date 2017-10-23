@@ -24,7 +24,8 @@ public class LoginServlet extends HttpServlet {
 
     /**
      * Handles the HTTP <code>POST</code> method.
-     *
+     * Authenticates a form login using LoginDAO to give whether the user and password matches in the database
+     * 
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs

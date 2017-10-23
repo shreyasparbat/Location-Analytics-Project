@@ -13,7 +13,7 @@
 <%@page import="model.entity.Group"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
+<%@include file="Protect.jsp" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -46,6 +46,7 @@
         <%
             Integer count = (Integer) request.getAttribute("studentCount");
             ArrayList<Group> studentGroups = (ArrayList<Group>) request.getAttribute("studentGroups");
+            String errorMsg = (String) request.getAttribute("errMessage");
         %>
         <!--Navbar-->
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark blue-grey">
@@ -106,19 +107,7 @@
             <form method = "get" name ="AgdRequest_form" action="AgdServlet">
                 Date <input type="date" name="date" max = "2025-12-31" required ><br/>
                 Time <Input type ="time" name ="time" required> 
-                Seconds<select name ="seconds">
-                    <%  for (int i = 0; i <= 59; i++) {
-                            String sec = "" + i;
-
-                            if (i < 10) {
-                                sec = "0" + sec;
-
-                            }
-                            out.println("<option value=" + sec + ">" + sec + "</option>");
-                        }
-
-                    %>
-                </select> 
+                
 
                 <br/>
                 <input type="submit" value="Send">
@@ -132,7 +121,12 @@
                  */
 
             %> 
-            <%                if (count != null && studentGroups != null) {
+            <%               
+                if(errorMsg!=null){
+                    out.println(errorMsg);
+                }
+                
+                if (count != null && studentGroups != null) {
                     out.println("<table border='1'>");
                     out.println("<tr> <th> Count of Students: " + count.toString() + " </th> </tr>");
                     out.println("<tr> <th> Count of groups : " + studentGroups.size() + " </th> </tr>");

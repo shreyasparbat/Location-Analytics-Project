@@ -38,7 +38,7 @@ public class AgdServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * methods. Returns an arraylist of groups to the view page or returns an error message if date time format is wrong
      *
      * @param request servlet request
      * @param response servlet response
@@ -50,8 +50,7 @@ public class AgdServlet extends HttpServlet {
         //to take in user inputs
         String date = request.getParameter("date");
         String time = request.getParameter("time");
-        String sec = request.getParameter("seconds");
-        String dateTime = date + " " + time + ":" + sec;
+        String dateTime = date + " " + time + ":00";
 
         Timestamp startDateTime = null;
         Timestamp endDateTime = null;
@@ -62,7 +61,7 @@ public class AgdServlet extends HttpServlet {
             endDateTime = processingWindowArrayList.get(1);
         } catch (IllegalArgumentException e) {
             request.setAttribute("errMessage", "Invalid date-time format");
-            request.getRequestDispatcher("/Agd.jsp").forward(request, response);
+            request.getRequestDispatcher("AutomaticGroupIdentification.jsp").forward(request, response);
         }
 
         //out.println(dateTime);

@@ -118,10 +118,7 @@ public class LocationValidator {
         }
 
         //Once run finish, the mapCheck should contain all the updated and correct rows
-        /*Iterator<String> correctRow = mapCheck.keySet().iterator();
-        while (correctRow.hasNext()) {
-            correctList.add(mapCheck.get(correctRow.next()));
-        }*/
+        
         //Getting values
         Collection<String> listValues = mapCheck.values();
 

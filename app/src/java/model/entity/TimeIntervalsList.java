@@ -16,6 +16,10 @@ public class TimeIntervalsList {
     private ArrayList<TimeIntervals> intervalList;
     private double duration;
 
+    /**
+     *  Creates a new TimeIntervalList object with an empty arraylist of TimeIntervals and a duration of 0
+     * 
+     */
     public TimeIntervalsList() {
         intervalList = new ArrayList<>();
         duration = 0;

@@ -172,35 +172,5 @@ public class StudentDAO {
 
         return toReturn;
     }
-//
-//    //
-//    /**
-//     * Returns a student after searching his name in the database
-//     *
-//     * @param name - the string of the name
-//     * @return returns Student object if name is correct. Else returns a null
-//     * object.
-//     */
-//    public Student getStudent(String name) {
-//        for (Student s : sList) {
-//            String sName = s.getName();
-//            if (sName.equals(name)) {
-//                return s;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * Returns a list of all students in a Hashtable
-//     *
-//     * @return returns a Hashtable of students
-//     */
-//    public HashMap<String, Student> getAllStudentsMap() {
-//        HashMap<String, Student> studentTable = new HashMap<>();
-//        for (Student s : sList) {
-//            studentTable.put(s.getMacAddress(), s);
-//        }
-//        return studentTable;
-//    }
+
 }
