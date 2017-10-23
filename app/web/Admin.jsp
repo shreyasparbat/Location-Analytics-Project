@@ -26,7 +26,7 @@
                 </tr>
                 <tr>
                     <td align="left">
-                        <input type="file" name="uploadfile" size="50">
+                        <input type="file" name="uploadfile" size="50" required>
                     </td>
                 </tr>
                 <tr>
@@ -55,8 +55,14 @@
             Integer demoRowsEntered = (Integer) request.getAttribute("numDemoRowsInserted");
             Integer localookUpRowsEntered = (Integer) request.getAttribute("numLLRowsInserted");
             Integer locaRowsEntered = (Integer) request.getAttribute("numLocaRowsInserted");
+            String errorMsg = (String) request.getAttribute("errorMsg");
         %>
         <p> 
+            <% 
+                if(errorMsg!=null){
+                    out.println("<h2>" + errorMsg + "</h2>");
+                }
+                %>
             <% if (demoRowsEntered != null) {
             %>
         <h2> Number of rows loaded from demographics.csv <%=demoRowsEntered%></h2>

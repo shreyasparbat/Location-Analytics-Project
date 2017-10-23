@@ -7,6 +7,7 @@ package controller;
 
 import model.utility.DBConnection;
 import com.opencsv.CSVReader;
+import exception.ValidatorException;
 import model.dao.ValidatorDAO;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -47,10 +48,10 @@ public class BootstrapServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     * Captures the file that is uploaded via the multipart form data, utilizes UploadBeans library 
-     * Gets the zipinput stream of the file and calls unzipthis method to validate the contents in the file
-     * 
+     * methods. Captures the file that is uploaded via the multipart form data,
+     * utilizes UploadBeans library Gets the zipinput stream of the file and
+     * calls unzipthis method to validate the contents in the file
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -84,16 +85,17 @@ public class BootstrapServlet extends HttpServlet {
             } catch (IOException e) {
                 out.println(e.getMessage());
             } catch (Exception e) {
-                e.printStackTrace();
+                out.println(e.getMessage());
             }
         }
-        response.getWriter().write("Upload Successful");
+
     }
 
     /**
-     * Unzips the content of a zipinputstream and stores the values in a hashmap where the key is the file name
-     * Utilizes validatorDAO to validate each files in the hashmap
-     * 
+     * Unzips the content of a zipinputstream and stores the values in a hashmap
+     * where the key is the file name Utilizes validatorDAO to validate each
+     * files in the hashmap
+     *
      * @param request HttpServletRequest Object
      * @param response HttpServletResponse Object
      * @param zin zip input stream object of the contents that needs to be read
@@ -102,44 +104,60 @@ public class BootstrapServlet extends HttpServlet {
      * @throws SQLException
      */
     protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin) throws IOException, ClassNotFoundException, SQLException, ServletException {
-        HttpSession session = request.getSession();
         ZipEntry entry;
         while ((entry = zin.getNextEntry()) != null) { // for every item in the zip file
             //default constructor is CSVReader(new Reader (new InputStreamReader(InputStream())) and Reader is a superclass of InputStreamReader
             CSVReader csvr = new CSVReader(new InputStreamReader(zin));
             out.println("");
-            out.println("");
             // name of the file in the zip folder
             String fileName = new File(entry.getName()).getName();
             if (fileName.endsWith(".csv")) {
-                out.println();
                 List<String[]> allList = csvr.readAll();
                 map.put(fileName, allList);
             }
         }
         ValidatorDAO validDAO = new ValidatorDAO(map);
-        validDAO.validating();
+        try {
+            validDAO.validating();
+            //insert num of errors from each file
+            
 
-        //insert num of errors from each file
-        HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
-        request.setAttribute("location_errors", locationErrors);
-        HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
-        request.setAttribute("ll_errors", locationLookUpErrors);
-        HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
-        request.setAttribute("demographics_errors", demoErrors);
-        
-        //Inserting num rows successfully added into the request attribute
-        // taken from static attribute from each validator class
-        int demoInsert = DemographicsValidator.numDemoRowsValidated;
-        request.setAttribute("numDemoRowsInserted", demoInsert);
-        int localookupInsert = LocationLookupValidator.numDLLRowsValidated;
-        request.setAttribute("numLLRowsInserted", localookupInsert);
-        int locaInsert = LocationValidator.numDLocaRowsValidated;
-        request.setAttribute("numLocaRowsInserted", locaInsert);
+        } catch (ValidatorException ex) {
+            request.setAttribute("errorMsg",ex.getMessage());
+        } finally {
+            HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
+            if (!locationErrors.isEmpty()) {
+                request.setAttribute("location_errors", locationErrors);
+            }
 
-        RequestDispatcher fwd = request.getRequestDispatcher("Admin.jsp");
-        fwd.forward(request, response);
-        return;
+            HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
+            if (!locationLookUpErrors.isEmpty()) {
+                request.setAttribute("ll_errors", locationLookUpErrors);
+
+            }
+            HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
+            if (!demoErrors.isEmpty()) {
+                request.setAttribute("demographics_errors", demoErrors);
+            }
+            //Inserting num rows successfully added into the request attribute
+            // taken from static attribute from each validator class
+            if (map.containsKey("demographics.csv")) {
+                int demoInsert = DemographicsValidator.numDemoRowsValidated;
+                request.setAttribute("numDemoRowsInserted", demoInsert);
+            }
+            if (map.containsKey("location-lookup.csv")) {
+                int localookupInsert = LocationLookupValidator.numDLLRowsValidated;
+                request.setAttribute("numLLRowsInserted", localookupInsert);
+            }
+            if (map.containsKey("location.csv")) {
+                int locaInsert = LocationValidator.numDLocaRowsValidated;
+                request.setAttribute("numLocaRowsInserted", locaInsert);
+            }
+            RequestDispatcher fwd = request.getRequestDispatcher("Admin.jsp");
+            fwd.forward(request, response);
+            map.clear();
+            return;
+        }
     }
 
     // Standard servlet code

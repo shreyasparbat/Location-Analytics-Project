@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.opencsv.CSVReader;
 import controller.BootstrapServlet;
+import exception.ValidatorException;
 import is203.JWTException;
 import is203.JWTUtility;
 import java.io.File;
@@ -67,13 +68,7 @@ public class JsonBootstrap extends HttpServlet {
         JsonObject jsonOutput = new JsonObject();
         // Check for file upload request
         // try {
-        /*
-            String token = request.getParameter("token");
-            if (token != null && token.length() > 0) {
-                String verification = JWTUtility.verify(token, "secret");
-                // throws JWT Utility if verify fails
-                if (verification != null) {
-         */
+        
         if (MultipartFormDataRequest.isMultipartFormData(request)) {
             try {
                 // Uses MultipartFormDataRequest to parse the HTTP request.
@@ -87,7 +82,7 @@ public class JsonBootstrap extends HttpServlet {
                         Hashtable files = mrequest.getFiles();
                         if ((files != null) && (!files.isEmpty())) {
                             UploadFile file = (UploadFile) files.get("bootstrap-file");
-                            
+
                             if (file != null) {
                                 //unzips file
                                 ZipInputStream zin = new ZipInputStream(file.getInpuStream());
@@ -159,99 +154,107 @@ public class JsonBootstrap extends HttpServlet {
             }
         }
         ValidatorDAO validDAO = new ValidatorDAO(map);
-        validDAO.validating();
-        HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
+        try {
+            validDAO.validating();
+            HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
 
-        HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
+            HashMap<Integer, List<String>> locationLookUpErrors = LocationLookupValidator.llErrors;
 
-        HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
+            HashMap<Integer, List<String>> demoErrors = DemographicsValidator.demographErrors;
 
-        //Inserting num rows successfully added into the request attribute
-        // taken from static attribute from each validator class
-        int demoInsert = DemographicsValidator.numDemoRowsValidated;
-        int localookupInsert = LocationLookupValidator.numDLLRowsValidated;
-        int locaInsert = LocationValidator.numDLocaRowsValidated;
-        
-        //Json output for bootstrap
-        if (locationErrors.isEmpty() && locationLookUpErrors.isEmpty() && demoErrors.isEmpty()) {
-            //if there is no errors = success
-            jsonOutput.addProperty("status", "success");
-            JsonArray jsonArray = new JsonArray();
-            JsonObject demo = new JsonObject();
-            demo.addProperty("demographics.csv", demoInsert);
-            JsonObject locationll = new JsonObject();
-            locationll.addProperty("location-lookup.csv", localookupInsert);
-            JsonObject location = new JsonObject();
-            location.addProperty("location.csv", locaInsert);
-            jsonArray.add(demo);
-            jsonArray.add(locationll);
-            jsonArray.add(location);
-            jsonOutput.add("num-record-loaded", jsonArray);
-        } else {
+            //Inserting num rows successfully added into the request attribute
+            // taken from static attribute from each validator class
+            int demoInsert = DemographicsValidator.numDemoRowsValidated;
+            int localookupInsert = LocationLookupValidator.numDLLRowsValidated;
+            int locaInsert = LocationValidator.numDLocaRowsValidated;
+
+            //Json output for bootstrap
+            if (locationErrors.isEmpty() && locationLookUpErrors.isEmpty() && demoErrors.isEmpty()) {
+                //if there is no errors = success
+                jsonOutput.addProperty("status", "success");
+                JsonArray jsonArray = new JsonArray();
+                JsonObject demo = new JsonObject();
+                demo.addProperty("demographics.csv", demoInsert);
+                JsonObject locationll = new JsonObject();
+                locationll.addProperty("location-lookup.csv", localookupInsert);
+                JsonObject location = new JsonObject();
+                location.addProperty("location.csv", locaInsert);
+                jsonArray.add(demo);
+                jsonArray.add(locationll);
+                jsonArray.add(location);
+                jsonOutput.add("num-record-loaded", jsonArray);
+            } else {
+                jsonOutput.addProperty("status", "error");
+
+                //first array - input number of successful rows entered
+                JsonArray jsonArray = new JsonArray();
+                JsonObject demo = new JsonObject();
+                demo.addProperty("demographics.csv", demoInsert);
+                JsonObject locationll = new JsonObject();
+                locationll.addProperty("location-lookup.csv", localookupInsert);
+                JsonObject location = new JsonObject();
+                location.addProperty("location.csv", locaInsert);
+                jsonArray.add(demo);
+                jsonArray.add(locationll);
+                jsonArray.add(location);
+                jsonOutput.add("num-record-loaded", jsonArray);
+
+                //second array - output errors based on the file
+                JsonArray jsonArrayError = new JsonArray();
+                if (!demoErrors.isEmpty()) {
+
+                    List<Integer> listOfErrorLines = new ArrayList<Integer>(demoErrors.size());
+                    listOfErrorLines.addAll(demoErrors.keySet());
+                    Collections.sort(listOfErrorLines);
+
+                    Iterator<Integer> iter = listOfErrorLines.iterator();
+                    while (iter.hasNext()) {
+                        JsonObject demoError = new JsonObject();
+                        demoError.addProperty("file", "demographics.csv");
+                        int line = iter.next();
+                        demoError = listErrors(demoError, demoErrors, line);
+                        jsonArrayError.add(demoError);
+                    }
+
+                }
+                if (!locationErrors.isEmpty()) {
+
+                    List<Integer> listOfErrorLines = new ArrayList<Integer>(locationErrors.size());
+                    listOfErrorLines.addAll(locationErrors.keySet());
+                    Collections.sort(listOfErrorLines);
+                    Iterator<Integer> iter = listOfErrorLines.iterator();
+                    while (iter.hasNext()) {
+                        int line = iter.next();
+                        JsonObject locaError = new JsonObject();
+                        locaError.addProperty("file", "location.csv");
+                        locaError = listErrors(locaError, locationErrors, line);
+                        jsonArrayError.add(locaError);
+                    }
+
+                }
+                if (!locationLookUpErrors.isEmpty()) {
+                    List<Integer> listOfErrorLines = new ArrayList<Integer>(locationLookUpErrors.size());
+                    listOfErrorLines.addAll(locationLookUpErrors.keySet());
+                    Collections.sort(listOfErrorLines);
+                    Iterator<Integer> iter = listOfErrorLines.iterator();
+                    while (iter.hasNext()) {
+                        int line = iter.next();
+                        JsonObject locllError = new JsonObject();
+                        locllError.addProperty("file", "location-lookup.csv");
+                        locllError = listErrors(locllError, locationLookUpErrors, line);
+                        jsonArrayError.add(locllError);
+                    }
+                }
+
+                jsonOutput.add("error", jsonArrayError);
+            }
+        } catch (ValidatorException ex) {
             jsonOutput.addProperty("status", "error");
-
-            //first array - input number of successful rows entered
             JsonArray jsonArray = new JsonArray();
-            JsonObject demo = new JsonObject();
-            demo.addProperty("demographics.csv", demoInsert);
-            JsonObject locationll = new JsonObject();
-            locationll.addProperty("location-lookup.csv", localookupInsert);
-            JsonObject location = new JsonObject();
-            location.addProperty("location.csv", locaInsert);
-            jsonArray.add(demo);
-            jsonArray.add(locationll);
-            jsonArray.add(location);
-            jsonOutput.add("num-record-loaded", jsonArray);
-
-            //second array - output errors based on the file
-            JsonArray jsonArrayError = new JsonArray();
-            if (!demoErrors.isEmpty()) {
-
-                List<Integer> listOfErrorLines = new ArrayList<Integer>(demoErrors.size());
-                listOfErrorLines.addAll(demoErrors.keySet());
-                Collections.sort(listOfErrorLines);
-
-                Iterator<Integer> iter = listOfErrorLines.iterator();
-                while (iter.hasNext()) {
-                    JsonObject demoError = new JsonObject();
-                    demoError.addProperty("file", "demographics.csv");
-                    int line = iter.next();
-                    demoError = listErrors(demoError, demoErrors, line);
-                    jsonArrayError.add(demoError);
-                }
-
-            }
-            if (!locationErrors.isEmpty()) {
-
-                List<Integer> listOfErrorLines = new ArrayList<Integer>(locationErrors.size());
-                listOfErrorLines.addAll(locationErrors.keySet());
-                Collections.sort(listOfErrorLines);
-                Iterator<Integer> iter = listOfErrorLines.iterator();
-                while (iter.hasNext()) {
-                    int line = iter.next();
-                    JsonObject locaError = new JsonObject();
-                    locaError.addProperty("file", "location.csv");
-                    locaError = listErrors(locaError, locationErrors, line);
-                    jsonArrayError.add(locaError);
-                }
-
-            }
-            if (!locationLookUpErrors.isEmpty()) {
-                List<Integer> listOfErrorLines = new ArrayList<Integer>(locationLookUpErrors.size());
-                listOfErrorLines.addAll(locationLookUpErrors.keySet());
-                Collections.sort(listOfErrorLines);
-                Iterator<Integer> iter = listOfErrorLines.iterator();
-                while (iter.hasNext()) {
-                    int line = iter.next();
-                    JsonObject locllError = new JsonObject();
-                    locllError.addProperty("file", "location-lookup.csv");
-                    locllError = listErrors(locllError, locationLookUpErrors, line);
-                    jsonArrayError.add(locllError);
-                }
-            }
-
-            jsonOutput.add("error", jsonArrayError);
+            jsonArray.add(ex.getMessage());
+            jsonOutput.add("messages", jsonArray);
         }
+
     }
 
     /**

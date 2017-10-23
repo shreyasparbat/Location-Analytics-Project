@@ -152,19 +152,21 @@ public class DBConnection {
      */
     public static void addDemo(List<String> contents, boolean bootstrap, Connection conn) throws SQLException, ClassNotFoundException {
         PreparedStatement stmt;
-        if (bootstrap == true) {
-            stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
-            stmt.executeUpdate();
-        }
+
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
         stmt.execute();
+        if (bootstrap == true) {
+            stmt = conn.prepareStatement("TRUNCATE TABLE demograph;");
+            stmt.executeUpdate();
+        }
 
         try {
             //C:\Windows\Temp\location.csv 
             String path = pathName + File.separatorChar + "demographics.csv";
-            FileWriter fileWriter = new FileWriter(path);
+            File f = new File(path);
+            FileWriter fileWriter = new FileWriter(f);
             //file writer creates a file by default
             for (String row : contents) {
                 fileWriter.append(row);
@@ -178,6 +180,8 @@ public class DBConnection {
             //load data local infile 'C:\\Windows\\Temp\\demographics.csv' into table demograph fields terminated by ',' lines terminated by '\r\n'
             stmt = conn.prepareStatement(query);
             stmt.execute();
+            // comment the delete if you want to test
+            f.delete();
         } catch (IOException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -197,17 +201,20 @@ public class DBConnection {
      * @throws ClassNotFoundException
      */
     public static void addLL(List<String> contents, Connection conn) throws SQLException, ClassNotFoundException {
-        PreparedStatement stmt = conn.prepareStatement("TRUNCATE TABLE locationlookup;");
-        stmt.executeUpdate();
+        PreparedStatement stmt;
+
         stmt = conn.prepareStatement("SET FOREIGN_KEY_CHECKS = 0;");
         stmt.execute();
         stmt = conn.prepareStatement("SET UNIQUE_CHECKS = 0;");
         stmt.execute();
+        stmt = conn.prepareStatement("TRUNCATE TABLE locationlookup;");
+        stmt.executeUpdate();
 
         try {
             //C:\Windows\Temp\locationlookup.csv 
             String path = pathName + File.separatorChar + "locationlookup.csv";
-            FileWriter fileWriter = new FileWriter(path);
+            File f = new File(path);
+            FileWriter fileWriter = new FileWriter(f);
             //file writer creates a file by default
             for (String row : contents) {
                 fileWriter.append(row);
@@ -221,6 +228,8 @@ public class DBConnection {
             //load data local infile 'C:\\Windows\\Temp\\locationlookup.csv' into table locationlookup fields terminated by ',' lines terminated by '\r\n'
             stmt = conn.prepareStatement(query);
             stmt.execute();
+            // comment the delete if you want to test
+            f.delete();
         } catch (IOException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -253,7 +262,8 @@ public class DBConnection {
         try {
             //C:\Windows\Temp\location.csv 
             String path = pathName + File.separatorChar + "location.csv";
-            FileWriter fileWriter = new FileWriter(path);
+            File f = new File(path);
+            FileWriter fileWriter = new FileWriter(f);
             //file writer creates a file by default
             for (String row : contents) {
                 fileWriter.append(row);
@@ -267,6 +277,8 @@ public class DBConnection {
             //load data local infile 'C:\\Windows\\Temp\\location.csv' into table location fields terminated by ',' lines terminated by '\r\n'
             stmt = conn.prepareStatement(query);
             stmt.execute();
+            // comment the delete if you want to test
+            f.delete();
         } catch (IOException ex) {
             Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
         }

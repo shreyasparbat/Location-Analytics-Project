@@ -5,6 +5,7 @@
  */
 package model.dao;
 
+import exception.ValidatorException;
 import java.sql.Connection;
 import model.utility.DBConnection;
 import model.utility.DemographicsValidator;
@@ -33,6 +34,9 @@ public class ValidatorDAO {
      */
     public ValidatorDAO(HashMap<String, List<String[]>> map) {
         this.map = map;
+        LocationLookupValidator.llErrors.clear();
+        DemographicsValidator.demographErrors.clear();
+        LocationValidator.locationErrors.clear();
     }
 
     /**
@@ -41,13 +45,19 @@ public class ValidatorDAO {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public void validating() throws SQLException, ClassNotFoundException {
+    public void validating() throws SQLException, ClassNotFoundException, ValidatorException {
         List<String> validLocList;
         List<String> validDemoList;
         List<String> validllList;
         // checks if process is a bootstrap or update; dependent on the location-lookup file
         boolean bootstrapProcess = false;
         Connection conn = createConnection();
+        
+        
+        if ((map.isEmpty() || !map.containsKey("demographics.csv") && !map.containsKey("location.csv"))){
+            map.clear();
+            throw new ValidatorException("invalid file input");
+        }
         if (map.containsKey("location-lookup.csv")) {
             //missing validation
             List<String[]> llList = map.get("location-lookup.csv");
