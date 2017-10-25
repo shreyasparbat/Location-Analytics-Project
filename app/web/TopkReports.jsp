@@ -1,14 +1,14 @@
 <%-- 
     Document   : TopkReports
-    Created on : 9 Oct, 2017, 5:25:29 PM
-    Author     : shrey
+    Created on : 25 Oct, 2017, 3:15:29 PM
+    Author     : Ming Xuan
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="Protect.jsp" %>
+
 <!DOCTYPE html>
 <html lang="en">
-
+    
     <head>
 
         <meta charset="utf-8">
@@ -79,31 +79,42 @@
             <!-- Collapsible content -->
         </nav>
         <!--/.Navbar-->
-        
+
         <br/>
         <br/>
-        
+
         <div class="container">
+            <div class="row">
 
-            
+                <div class="col-md-4"></div>
 
-            <hr>
+                <div class="jumbotron col-md-4 centre-of-page">
+                        <br>
+                        <p class="h5 text-center mb-4">Top K Functions</p>
 
-            <footer>
-                <p>&copy; SE G1T3</p>
-            </footer>
-        </div> <!-- /container -->
+                        Select Function:
+                        <br>
+                        <br><a href="TopKPopularPlaces.jsp"> Top K popular places </a>
+                        <br><a href="TopKCompanions.jsp"> Top K companions </a>
+                        <br><a href="TopKNextPlaces.jsp"> Top K next places </a>
+
+                    <hr>
+
+                    <footer>
+                        <p>&copy; SE G1T3</p>
+                    </footer>
+                </div> <!-- /container -->
 
 
-        <!-- SCRIPTS
-        ================================================== -->
-        <!-- JQuery -->
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <!-- Bootstrap tooltips -->
-        <script type="text/javascript" src="assets/js/popper.min.js"></script>
-        <!-- Bootstrap core JavaScript -->
-        <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-        <!-- MDB core JavaScript -->
-        <script type="text/javascript" src="assets/js/mdb.min.js"></script>
-    </body>
+                <!-- SCRIPTS
+                ================================================== -->
+                <!-- JQuery -->
+                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <!-- Bootstrap tooltips -->
+                <script type="text/javascript" src="assets/js/popper.min.js"></script>
+                <!-- Bootstrap core JavaScript -->
+                <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+                <!-- MDB core JavaScript -->
+                <script type="text/javascript" src="assets/js/mdb.min.js"></script>
+     </body>
 </html>

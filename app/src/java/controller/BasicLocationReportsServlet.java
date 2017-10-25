@@ -120,23 +120,26 @@ public class BasicLocationReportsServlet extends HttpServlet {
             }
 
             //Top-k popular places
-            case "2": {
-                int k = 0;
-                LocationReportsDAO.topkPopularPlaces(k, 10);
+            case "topKPopularPlaces": {
+                //int k = 0;
+                //LocationReportsDAO.topkPopularPlaces(k, 10);
+                request.getRequestDispatcher("/TopKPopularPlaces.jsp").forward(request, response);
             }
             break;
 
             //Top-k companions
-            case "3": {
-                int k = 0;
-                LocationReportsDAO.topkCompanions(k);
+            case "topKCompanions": {
+                //int k = 0;
+                //LocationReportsDAO.topkCompanions(k);
+                request.getRequestDispatcher("/TopKCompanions.jsp").forward(request, response);
             }
             break;
 
             //Top-k next places
-            case "4": {
-                int k = 0;
-                LocationReportsDAO.topkNextPlaces(k);
+            case "topKNextPlaces": {
+                //int k = 0;
+                //LocationReportsDAO.topkNextPlaces(k);
+                request.getRequestDispatcher("/TopKNextPlaces.jsp").forward(request, response);
             }
             break;
         }
