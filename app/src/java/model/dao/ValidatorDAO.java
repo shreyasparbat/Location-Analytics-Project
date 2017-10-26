@@ -23,7 +23,7 @@ import static model.utility.DBConnection.createConnection;
  */
 public class ValidatorDAO {
 
-    HashMap<String, List<String[]>> map = new HashMap<>();
+    private HashMap<String, List<String[]>> map = new HashMap<>();
 
     /**
      * Initiates a new ValidatorDAO object with a hashmap containing file names
