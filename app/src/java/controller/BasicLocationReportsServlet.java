@@ -136,6 +136,8 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 int k = Integer.parseInt(request.getParameter("k"));
                 String studentMacAddress = request.getParameter("user");
                 LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
+                // key is the rank from 1 - n
+                // value is the merged groups
                 HashMap<Integer, Group> companionList = locationReportDAO.topkCompanions(k,studentMacAddress);
                 request.setAttribute("k",k);
                 request.setAttribute("companions",companionList);

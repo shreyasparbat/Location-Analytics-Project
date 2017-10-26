@@ -136,23 +136,24 @@ public class LocationReportsDAO {
      * in the specified processing time window.
      *
      * @param k the number of companions
+     * @param studentMac student's unique macaddress
      * @return stList List of student objects based on the number specified
      */
     public HashMap<Integer, Group> topkCompanions(int k, String studentMac) {
         HashMap<Integer, Group> stList = new HashMap<>();
         StudentDAO sDAO = new StudentDAO();
-        System.out.println(studentMac);
         HashMap<String, Student> sMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
         Student s = sMap.get(studentMac);
-        System.out.println(s.getName());
         if (s != null) {
             try {
                 sDAO.importDataFromDatabase(sMap, startDateTime, endDateTime);
-                System.out.println("Data input");
+                //gets groups of two
                 ArrayList<Group> studentGroup = sDAO.getStudentGroups(s);
-                System.out.println("D");
+                //sort groups by their duration (Highest to lowest)
                 Collections.sort(studentGroup, new GroupComparator());
-                System.out.println("Sort");
+                
+                //merge the groups if they have common total duration (regardless of location)
+                studentGroup = sDAO.mergeGroups(studentGroup);
                 int i = 1;
                 for (Group g : studentGroup) {
                     if (i <= k) {

@@ -224,6 +224,30 @@ public class StudentDAO {
 
         return toReturn;
     }
+    
+    /**
+     * Merge groups together based on their total duration in a given list of group objects
+     * @param groups
+     * @return list of merged groups
+     */
+    public ArrayList<Group> mergeGroups(ArrayList<Group> groups){
+        ArrayList<Group> toReturn = new ArrayList<>();
+        for (Group g : groups) {
+            boolean toAdd = true;
+            for (Group mergeGroup : toReturn) {
+                if(g.getTotalDuration() == mergeGroup.getTotalDuration()){
+                    mergeGroup.addGroup(g);
+                    toAdd = false;
+                } 
+            }
+            if (toAdd) {
+                toReturn.add(g);
+            }
+        }
+        return toReturn;
+    }
+
+   
 
     /**
      * inserts time interval records into each student within the given time

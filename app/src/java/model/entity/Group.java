@@ -104,7 +104,11 @@ public class Group {
         }
     }
     
-     public double getTotalDuration(){
+    /**
+     * Returns the total duration of a given group
+     * @return the total duration (seconds) in double format
+     */
+    public double getTotalDuration(){
         Iterator<Integer> iter = locList.keySet().iterator();
         double duration =0;
         while(iter.hasNext()){
@@ -113,6 +117,11 @@ public class Group {
         return duration;
     }
     
+    /**
+     *Gets a list of other student in a group excluding the input student 
+     * @param s Student object of a particular student
+     * @return the rest of the group members
+     */
     public List<Student> getOtherStudentsInGroup(Student s){
         List<Student> toReturn = new ArrayList<>();
         for(Student stu : sGroup){
@@ -123,6 +132,11 @@ public class Group {
         return toReturn;
     }
     
+    /**
+     * Gets a list of other student in a group excluding the input student 
+     * @param macAddress Unique macaddress of a particular student you want to exclude
+     * @return the rest of the group members
+     */
     public List<Student> getOtherStudentsInGroup(String macAddress){
         List<Student> toReturn = new ArrayList<>();
         for(Student stu : sGroup){

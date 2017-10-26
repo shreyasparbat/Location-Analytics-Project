@@ -166,7 +166,7 @@
             
                     <%
                         if (value != null && companionList != null && macAddress != null) {
-                            out.println("<h1> Companion to " + macAddress + "</h1>");
+                            out.println("<p> Companion to " + macAddress + "</p>");
                             out.println("<table border='1'>");
                             out.println("<tr><td> Rank </td> <td> Students </td>");
                             for (int i = 1; i <= value; i++) {

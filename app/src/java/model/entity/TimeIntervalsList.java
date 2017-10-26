@@ -31,7 +31,7 @@ public class TimeIntervalsList {
      */
     public void addTimeInterval(TimeIntervals ti) {
         intervalList.add(ti);
-        duration += (ti.getEndTime().getTime() - ti.getStartTime().getTime()) / 1000.0; // (milliseconds to minutes)
+        duration += (ti.getEndTime().getTime() - ti.getStartTime().getTime()) / 1000.0; // (milliseconds to seconds)
     }
 
     //include method such as calculating the duration of time spent
