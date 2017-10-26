@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.entity.Group;
+import model.entity.TimeIntervals;
 import model.entity.TimeIntervalsList;
 import model.utility.DBConnection;
 
@@ -35,12 +36,12 @@ public class StudentDAO {
     }
 
     //getters
-
     /**
-     * to get students within processing window 
+     * to get students within processing window
+     *
      * @param startDateTime timestamp object of start time from user
      * @param endDateTime timestamp object of end time from user
-     * @return HashMap of students within processing window 
+     * @return HashMap of students within processing window
      */
     public HashMap<String, Student> getAllStudentsWithinProcessingWindow(Timestamp startDateTime, Timestamp endDateTime) {
         Connection conn = null;
@@ -76,8 +77,58 @@ public class StudentDAO {
     }
 
     /**
-     * process students to return groups of students that spent a minimum of 12 mins together 
-     * @return ArrayList of Groups 
+     * process student to return groups of students that spent a minimum of 12
+     * mins together
+     *
+     * @return ArrayList of Groups
+     */
+    public ArrayList<Group> getStudentGroups(Student currentStudent) {
+        ArrayList<Group> groupList = new ArrayList<>();
+
+        //Collection<Student> tempList = studentMap.values();
+        List<Student> students = new ArrayList<Student>(studentMap.values());
+
+        //Iterating through student and pair students up with overlaps that last more than 12 minutes
+        // location timings for student 
+        HashMap<Integer, TimeIntervalsList> currentStudentLocation = currentStudent.getLocationRecords();
+        for (int j = 0; j < students.size(); j++) {
+            Student nextStudent = students.get(j);
+            if (!nextStudent.equals(currentStudent)) {
+                Group groupCheck = new Group();
+                groupCheck.addStudent(currentStudent);
+                HashMap<Integer, TimeIntervalsList> nextStudentLocation = nextStudent.getLocationRecords();
+                Iterator<Integer> iter = currentStudentLocation.keySet().iterator();
+
+                while (iter.hasNext()) {
+                    Integer place = iter.next();
+                    TimeIntervalsList currentTimeList;
+                    if (nextStudentLocation.containsKey(place)) {
+                        currentTimeList = currentStudentLocation.get(place);
+                        TimeIntervalsList nextTimeList = nextStudentLocation.get(place);
+                        TimeIntervalsList overlap = currentTimeList.getOverlaps(nextTimeList);
+                        if (overlap.getList().size() > 0) { //Whens there an overlap
+                            groupCheck.addLocation(place, overlap);
+                            if (!groupCheck.getGroup().contains(nextStudent)) {
+                                groupCheck.addStudent(nextStudent); // adds the student to the group if havnt
+                            }
+                        }
+                    }
+                }
+                if (groupCheck.getGroup().size() > 1) { // group is 2 man group
+                    groupList.add(groupCheck);
+                }
+            }
+
+        }
+
+        return groupList;
+    }
+
+    /**
+     * process students to return groups of students that spent a minimum of 12
+     * mins together
+     *
+     * @return ArrayList of Groups
      */
     public ArrayList<Group> getStudentGroups() {
         ArrayList<Group> groupList = new ArrayList<>();
@@ -123,14 +174,15 @@ public class StudentDAO {
                 }
             }
         }
-        groupList = getSuperGroup(groupList);
         return groupList;
     }
 
     /**
-     * to process groups to remove subsets, such hat larger groups of students are formed 
+     * to process groups to remove subsets, such hat larger groups of students
+     * are formed
+     *
      * @param groups groups of students
-     * @return arraylist of merged groups of students 
+     * @return arraylist of merged groups of students
      */
     public ArrayList<Group> getSuperGroup(ArrayList<Group> groups) {
         ArrayList<Group> toReturn = new ArrayList<>();
@@ -173,4 +225,105 @@ public class StudentDAO {
         return toReturn;
     }
 
+    /**
+     * inserts time interval records into each student within the given time
+     * frame
+     *
+     * @param studentList list of student records found within the input time
+     * @param startDateTime timestamp object of start time from user
+     * @param endDateTime timestamp object of end time from user
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public void importDataFromDatabase(HashMap<String, Student> studentList, Timestamp startDateTime, Timestamp endDateTime) throws SQLException, ClassNotFoundException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        conn = DBConnection.createConnection();
+        stmt = conn.prepareStatement("select d.macaddress, time,locationid from demograph d, location l"
+                + " where d.macaddress = l.macaddress"
+                + " and  l.time between ? and ? "
+                + " order by d.macaddress, time"
+                + " limit 1000000;");
+        stmt.setTimestamp(1, startDateTime);
+        stmt.setTimestamp(2, endDateTime);
+
+        rs = stmt.executeQuery();
+
+        //Buffer for the first row
+        Student previousStudent = null;
+        int previousLocID = -1;
+        Timestamp previousTimestamp = null;
+
+        //Looping through all rows of the result sets to put in location datas of the student
+        //Always compare current row with previous row, and see if there is a difference
+        //If there is a difference in student object, means it reachs the end of the previous student records
+        //If there is a difference in locationid object, means there is a change in location
+        while (rs.next()) {
+            Student student = studentList.get(rs.getString("macaddress")); //current student
+            int locationid = rs.getInt("locationid"); //current
+            Timestamp timestamp = rs.getTimestamp("time");
+            if (student.equals(previousStudent)) { //make sures pointing to the right student
+                if (locationid != previousLocID) { //identifies change in location and clear first line buffer
+                    //everything else that is based on the same user but with a different location id
+                    //create time interval of previous location id
+                    //[previoustimestamp is the start, current timestamp (where location id changes) is the end
+                    TimeIntervals intervalDuration = new TimeIntervals(previousTimestamp, timestamp);
+                    HashMap<Integer, TimeIntervalsList> locationTracker = student.getLocationRecords();
+                    if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
+                        locationTracker.put(previousLocID, new TimeIntervalsList());
+                    }
+                    TimeIntervalsList intervalList = locationTracker.get(previousLocID);
+                    intervalList.addTimeInterval(intervalDuration);
+                    previousTimestamp = timestamp;
+                    //after adding, the end time becomes the start time of the current location id unless a change is spotted
+                }
+
+            } else { //enter the last location of the previous student
+                if (previousStudent != null) {
+                    double timeDiff = (endDateTime.getTime() - previousTimestamp.getTime()) / 60000.0;
+                    TimeIntervals intervalDuration;
+                    if (timeDiff <= 5.0) {
+                        intervalDuration = new TimeIntervals(previousTimestamp, endDateTime); //duration is the last startTime to end of query time
+                    } else {
+                        Timestamp newEndTime = new Timestamp(previousTimestamp.getTime() + 5 * 60 * 1000);
+                        intervalDuration = new TimeIntervals(previousTimestamp, newEndTime);
+                    }
+                    HashMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
+                    if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
+                        locationTracker.put(previousLocID, new TimeIntervalsList());
+                    }
+                    TimeIntervalsList intervalList = locationTracker.get(previousLocID);
+                    intervalList.addTimeInterval(intervalDuration);
+                    previousTimestamp = timestamp;
+                    //after adding, the end time becomes the start time of the current location id unless a change is spotted
+                } else {
+                    previousTimestamp = timestamp;
+                }
+
+            }
+            //before moving to the next row, stores current student details as previous
+            previousStudent = student;
+            previousLocID = locationid;
+
+        }
+        //last row from the ResultSet, executes the last timeinterval
+        double timeDiff = (endDateTime.getTime() - previousTimestamp.getTime()) / 60000.0;
+        TimeIntervals intervalDuration; //duration is the last startTime to end of query time
+        if (timeDiff <= 5.0) {
+            intervalDuration = new TimeIntervals(previousTimestamp, endDateTime); //duration is the last startTime to end of query time
+        } else {
+            Timestamp newEndTime = new Timestamp(previousTimestamp.getTime() + 5 * 60 * 1000);
+            intervalDuration = new TimeIntervals(previousTimestamp, newEndTime);
+        }
+
+        HashMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
+        if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
+            locationTracker.put(previousLocID, new TimeIntervalsList());
+        }
+        TimeIntervalsList intervalList = locationTracker.get(previousLocID);
+        intervalList.addTimeInterval(intervalDuration);
+        DBConnection.close(conn, stmt, rs);
+    }
 }

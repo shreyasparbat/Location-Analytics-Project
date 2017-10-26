@@ -7,6 +7,8 @@ package model.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -100,5 +102,34 @@ public class Group {
         for(Student s : g.sGroup){
             addStudent(s);
         }
+    }
+    
+     public double getTotalDuration(){
+        Iterator<Integer> iter = locList.keySet().iterator();
+        double duration =0;
+        while(iter.hasNext()){
+            duration += locList.get(iter.next()).getDuration();
+        }
+        return duration;
+    }
+    
+    public List<Student> getOtherStudentsInGroup(Student s){
+        List<Student> toReturn = new ArrayList<>();
+        for(Student stu : sGroup){
+            if(!stu.equals(s)){
+                toReturn.add(stu);
+            }
+        }
+        return toReturn;
+    }
+    
+    public List<Student> getOtherStudentsInGroup(String macAddress){
+        List<Student> toReturn = new ArrayList<>();
+        for(Student stu : sGroup){
+            if(!stu.getMacAddress().equals(macAddress)){
+                toReturn.add(stu);
+            }
+        }
+        return toReturn;
     }
 }

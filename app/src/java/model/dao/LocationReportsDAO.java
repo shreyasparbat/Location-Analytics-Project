@@ -12,13 +12,17 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.entity.Group;
 import model.entity.Location;
 import model.entity.Student;
 import model.utility.BreakdownUtility;
 import model.utility.DBConnection;
+import model.utility.GroupComparator;
 
 /**
  *
@@ -134,27 +138,39 @@ public class LocationReportsDAO {
      * @param k the number of companions
      * @return stList List of student objects based on the number specified
      */
-    public static ArrayList<Student> topkCompanions(int k) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Student> stList = new ArrayList<>();
-        try {
-            conn = DBConnection.createConnection();
-            stmt = conn.prepareStatement("");
-            rs = stmt.executeQuery("something");
+    public HashMap<Integer, Group> topkCompanions(int k, String studentMac) {
+        HashMap<Integer, Group> stList = new HashMap<>();
+        StudentDAO sDAO = new StudentDAO();
+        System.out.println(studentMac);
+        HashMap<String, Student> sMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
+        Student s = sMap.get(studentMac);
+        System.out.println(s.getName());
+        if (s != null) {
+            try {
+                sDAO.importDataFromDatabase(sMap, startDateTime, endDateTime);
+                System.out.println("Data input");
+                ArrayList<Group> studentGroup = sDAO.getStudentGroups(s);
+                System.out.println("D");
+                Collections.sort(studentGroup, new GroupComparator());
+                System.out.println("Sort");
+                int i = 1;
+                for (Group g : studentGroup) {
+                    if (i <= k) {
+                        stList.put(i,g);
+                        i++;
+                    }
+                    else{
+                        continue;
+                    }
+                }
 
-            while (rs.next()) {
-
+            } catch (SQLException ex) {
+                Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, "Unable to perform request", ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            DBConnection.close(conn, stmt, rs);
         }
+
         return stList;
     }
 
@@ -192,4 +208,6 @@ public class LocationReportsDAO {
         }
         return topKPlacesList;
     }
+
+   
 }

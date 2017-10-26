@@ -7,15 +7,18 @@ package controller;
 
 import model.dao.LocationReportsDAO;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.dao.StudentDAO;
+import model.entity.Group;
 import model.entity.Student;
 import model.utility.BreakdownUtility;
 import model.utility.TimeUtility;
@@ -124,24 +127,32 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 //int k = 0;
                 //LocationReportsDAO.topkPopularPlaces(k, 10);
                 request.getRequestDispatcher("/TopKPopularPlaces.jsp").forward(request, response);
+                break;
             }
-            break;
+            
 
             //Top-k companions
             case "topKCompanions": {
-                //int k = 0;
-                //LocationReportsDAO.topkCompanions(k);
+                int k = Integer.parseInt(request.getParameter("k"));
+                String studentMacAddress = request.getParameter("user");
+                LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
+                HashMap<Integer, Group> companionList = locationReportDAO.topkCompanions(k,studentMacAddress);
+                request.setAttribute("k",k);
+                request.setAttribute("companions",companionList);
+                request.setAttribute("student",studentMacAddress);                
                 request.getRequestDispatcher("/TopKCompanions.jsp").forward(request, response);
+                break;
             }
-            break;
+            
 
             //Top-k next places
             case "topKNextPlaces": {
                 //int k = 0;
                 //LocationReportsDAO.topkNextPlaces(k);
                 request.getRequestDispatcher("/TopKNextPlaces.jsp").forward(request, response);
+                break;
             }
-            break;
+            
         }
     }
 

@@ -45,8 +45,9 @@ public class AgdDAO {
 
         try {
             if (startDateTime != null && endDateTime != null && !studentList.isEmpty()) {
-                studentList = importDataFromDatabase(studentList, startDateTime, endDateTime);
+                sDAO.importDataFromDatabase(studentList, startDateTime, endDateTime);
                 studentGroups = sDAO.getStudentGroups();
+                studentGroups = sDAO.getSuperGroup(studentGroups);
             }
 
         } catch (SQLException ex) {
@@ -58,110 +59,6 @@ public class AgdDAO {
         }
 
         return studentGroups;
-    }
-
-    /**
-     * inserts time interval records into each student within the given time
-     * frame
-     *
-     * @param studentList list of student records found within the input time
-     * @param startDateTime timestamp object of start time from user
-     * @param endDateTime timestamp object of end time from user
-     * @return an updated HashMap of student records with updated locationIDs
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     */
-    public HashMap<String, Student> importDataFromDatabase(HashMap<String, Student> studentList, Timestamp startDateTime, Timestamp endDateTime) throws SQLException, ClassNotFoundException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        conn = DBConnection.createConnection();
-        stmt = conn.prepareStatement("select d.macaddress, time,locationid from demograph d, location l"
-                + " where d.macaddress = l.macaddress"
-                + " and  l.time between ? and ? "
-                + " order by d.macaddress, time"
-                + " limit 1000000;");
-        stmt.setTimestamp(1, startDateTime);
-        stmt.setTimestamp(2, endDateTime);
-
-        rs = stmt.executeQuery();
-
-        //Buffer for the first row
-        Student previousStudent = null;
-        int previousLocID = -1;
-        Timestamp previousTimestamp = null;
-
-        //Looping through all rows of the result sets to put in location datas of the student
-        //Always compare current row with previous row, and see if there is a difference
-        //If there is a difference in student object, means it reachs the end of the previous student records
-        //If there is a difference in locationid object, means there is a change in location
-        while (rs.next()) {
-            Student student = studentList.get(rs.getString("macaddress")); //current student
-            int locationid = rs.getInt("locationid"); //current
-            Timestamp timestamp = rs.getTimestamp("time");
-            if (student.equals(previousStudent)) { //make sures pointing to the right student
-                if (locationid != previousLocID) { //identifies change in location and clear first line buffer
-                    //everything else that is based on the same user but with a different location id
-                    //create time interval of previous location id
-                    //[previoustimestamp is the start, current timestamp (where location id changes) is the end
-                    TimeIntervals intervalDuration = new TimeIntervals(previousTimestamp, timestamp);
-                    HashMap<Integer, TimeIntervalsList> locationTracker = student.getLocationRecords();
-                    if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
-                        locationTracker.put(previousLocID, new TimeIntervalsList());
-                    }
-                    TimeIntervalsList intervalList = locationTracker.get(previousLocID);
-                    intervalList.addTimeInterval(intervalDuration);
-                    previousTimestamp = timestamp;
-                    //after adding, the end time becomes the start time of the current location id unless a change is spotted
-                }
-
-            } else { //enter the last location of the previous student
-                if (previousStudent != null) {
-                    double timeDiff = (endDateTime.getTime() - previousTimestamp.getTime()) / 60000.0;
-                    TimeIntervals intervalDuration;
-                    if (timeDiff <= 5.0) {
-                        intervalDuration = new TimeIntervals(previousTimestamp, endDateTime); //duration is the last startTime to end of query time
-                    } else {
-                        Timestamp newEndTime = new Timestamp(previousTimestamp.getTime() + 5 * 60 * 1000);
-                        intervalDuration = new TimeIntervals(previousTimestamp, newEndTime);
-                    }
-                    HashMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
-                    if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
-                        locationTracker.put(previousLocID, new TimeIntervalsList());
-                    }
-                    TimeIntervalsList intervalList = locationTracker.get(previousLocID);
-                    intervalList.addTimeInterval(intervalDuration);
-                    previousTimestamp = timestamp;
-                    //after adding, the end time becomes the start time of the current location id unless a change is spotted
-                } else {
-                    previousTimestamp = timestamp;
-                }
-
-            }
-            //before moving to the next row, stores current student details as previous
-            previousStudent = student;
-            previousLocID = locationid;
-
-        }
-        //last row from the ResultSet, executes the last timeinterval
-        double timeDiff = (endDateTime.getTime() - previousTimestamp.getTime()) / 60000.0;
-        TimeIntervals intervalDuration; //duration is the last startTime to end of query time
-        if (timeDiff <= 5.0) {
-            intervalDuration = new TimeIntervals(previousTimestamp, endDateTime); //duration is the last startTime to end of query time
-        } else {
-            Timestamp newEndTime = new Timestamp(previousTimestamp.getTime() + 5 * 60 * 1000);
-            intervalDuration = new TimeIntervals(previousTimestamp, newEndTime);
-        }
-
-        HashMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
-        if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
-            locationTracker.put(previousLocID, new TimeIntervalsList());
-        }
-        TimeIntervalsList intervalList = locationTracker.get(previousLocID);
-        intervalList.addTimeInterval(intervalDuration);
-        DBConnection.close(conn, stmt, rs);
-        return studentList;
-    }
+    } 
 
 }
