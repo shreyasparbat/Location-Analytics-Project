@@ -8,11 +8,11 @@
 <%@page import="java.util.List"%>
 <%@page import="model.utility.TopKUtility"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@include file="Protect.jsp" %>
 
 <!DOCTYPE html>
 <html lang="en">
-    <%
-        Integer value = (Integer) request.getAttribute("k");
+    <%        Integer value = (Integer) request.getAttribute("k");
         int rank = 1;
         LinkedHashMap<String, Integer> popularPlaceList = (LinkedHashMap<String, Integer>) request.getAttribute("popularPlaces");
     %>
@@ -87,9 +87,10 @@
     </nav>
     <!--/.Navbar-->
 
-    <br/>
+    <br>
 
     <div class="container">
+        <br>
 
         <div class="row">
 
@@ -146,38 +147,49 @@
     <br/>
 
     <div class="container">
-        <%
-            if (value != null && popularPlaceList != null) {
-                                
-                //printing table
-                out.println("<p> Top K Popular Places </p>");
-                out.println("<table border='1'>");
-                out.println("<tr><td> Rank </td> <td> Sementic Place</td> <td> Count</td>");
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="jumbotron col-md-4 centre-of-page">
+                <%
+                    if (value != null && popularPlaceList != null) {
 
-                Iterator iter = popularPlaceList.keySet().iterator();
-                while (iter.hasNext()) {
-                    String key = (String) iter.next();
-                    out.println("<tr>");
-                    //print rank
-                    out.println("<td>");
-                    out.println(rank);
-                    rank++;
-                    out.println("</td>");
-                    //print semantic place
-                    out.println("<td>");
-                    out.println(key);
-                    out.println("</td>");
-                    //print count
-                    out.println("<td>");
-                    out.println(popularPlaceList.get(key));
-                    out.println("</td>");
-                    out.println("</tr>");
-                }
+                        //printing header and results parameters
+                        out.println("<h1> Top " + value + " Popular Places</h1>");
+                        out.println("<table border='1'>");
+                        out.println("<tr><td>From </td><td>" + request.getAttribute("startDateTime") + "</td></tr>");
+                        out.println("<tr><td>To Before </td><td>" + request.getAttribute("endDateTime") + "</td></tr>");
+                        out.println("</table>");
+                        out.println("<br>");
 
-                out.println("</table>");
-            }
-        %>
-        <hr>
+                        //printing table
+                        out.println("<table border='1'>");
+                        out.println("<tr><td> Rank </td> <td> Semantic Place</td> <td> Count</td>");
+
+                        Iterator iter = popularPlaceList.keySet().iterator();
+                        while (iter.hasNext()) {
+                            String key = (String) iter.next();
+                            out.println("<tr>");
+                            //print rank
+                            out.println("<td>");
+                            out.println(rank);
+                            rank++;
+                            out.println("</td>");
+                            //print semantic place
+                            out.println("<td>");
+                            out.println(key);
+                            out.println("</td>");
+                            //print count
+                            out.println("<td>");
+                            out.println(popularPlaceList.get(key));
+                            out.println("</td>");
+                            out.println("</tr>");
+                        }
+
+                        out.println("</table>");
+                    }
+                %>
+            </div>
+        </div>
 
         <footer>
             <p>&copy; SE G1T3</p>

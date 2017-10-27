@@ -129,11 +129,43 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
             //Top-k popular places
             case "topKPopularPlaces": {
+                //Error message generation
+                try {
+                    ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
+                    startDateTime = processingWindowArrayList.get(0);
+                    endDateTime = processingWindowArrayList.get(1);
+                } catch (IllegalArgumentException e) {
+                    request.setAttribute("errMessage", "Invalid date-time format");
+                    request.getRequestDispatcher("/TopKPopularPlaces.jsp").forward(request, response);
+                }
+                
+                //Getting Parametres to process Top K popular places request
+                int k = Integer.parseInt(request.getParameter("k"));
+                LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime);
+                // key is the semantic place
+                // value is the number of people at that semantic place in the given time window
+                LinkedHashMap<String, Integer> popularPlaceList = locationReportsDAO.topkPopularPlaces(k);
+                //setting attributes for display page
+                request.setAttribute("k", k);
+                request.setAttribute("startDateTime", startDateTime);
+                request.setAttribute("endDateTime", endDateTime);
+                request.setAttribute("popularPlaces", popularPlaceList);
                 request.getRequestDispatcher("/TopKPopularPlaces.jsp").forward(request, response);
+                break;
             }
 
             //Top-k companions
             case "topKCompanions": {
+                //Error message generation
+                try {
+                    ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
+                    startDateTime = processingWindowArrayList.get(0);
+                    endDateTime = processingWindowArrayList.get(1);
+                } catch (IllegalArgumentException e) {
+                    request.setAttribute("errMessage", "Invalid date-time format");
+                    request.getRequestDispatcher("/TopKCompanions.jsp").forward(request, response);
+                }
+                
                 int k = Integer.parseInt(request.getParameter("k"));
                 String studentMacAddress = request.getParameter("user");
                 LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
