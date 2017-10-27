@@ -4,7 +4,6 @@
     Author     : Ming Xuan
 --%>
 <%@page import="java.util.LinkedHashMap"%>
-<%@page import="java.util.TreeMap"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.List"%>
 <%@page import="model.utility.TopKUtility"%>
@@ -147,7 +146,37 @@
     <br/>
 
     <div class="container">
-        
+        <%
+            if (value != null && popularPlaceList != null) {
+                                
+                //printing table
+                out.println("<p> Top K Popular Places </p>");
+                out.println("<table border='1'>");
+                out.println("<tr><td> Rank </td> <td> Sementic Place</td> <td> Count</td>");
+
+                Iterator iter = popularPlaceList.keySet().iterator();
+                while (iter.hasNext()) {
+                    String key = (String) iter.next();
+                    out.println("<tr>");
+                    //print rank
+                    out.println("<td>");
+                    out.println(rank);
+                    rank++;
+                    out.println("</td>");
+                    //print semantic place
+                    out.println("<td>");
+                    out.println(key);
+                    out.println("</td>");
+                    //print count
+                    out.println("<td>");
+                    out.println(popularPlaceList.get(key));
+                    out.println("</td>");
+                    out.println("</tr>");
+                }
+
+                out.println("</table>");
+            }
+        %>
         <hr>
 
         <footer>
