@@ -11,7 +11,10 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,11 +32,14 @@ import model.utility.TimeUtility;
  */
 @WebServlet(name = "BasicLocationReportsServlet", urlPatterns = {"/BasicLocationReportsServlet"})
 public class BasicLocationReportsServlet extends HttpServlet {
+
     public BreakdownUtility bu = new BreakdownUtility();
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods. Calls the appropriate function for each selection and returns a hashmap of the breakdown to the view page.
-     *  
+     * methods. Calls the appropriate function for each selection and returns a
+     * hashmap of the breakdown to the view page.
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -56,21 +62,21 @@ public class BasicLocationReportsServlet extends HttpServlet {
         Timestamp startDateTime = null;
         Timestamp endDateTime = null;
 
-        try {
-            ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
-            startDateTime = processingWindowArrayList.get(0);
-            endDateTime = processingWindowArrayList.get(1);
-        } catch (IllegalArgumentException e) {
-            request.setAttribute("errMessage", "Invalid date-time format");
-            request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
-        }
-
         //Creating LocationReportsDAO obj
         //LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime);
         switch (function) {
 
             //Breakdown by year and gender
             case "breakdownByYearGenderSchool": {
+                //error message generation
+                try {
+                    ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
+                    startDateTime = processingWindowArrayList.get(0);
+                    endDateTime = processingWindowArrayList.get(1);
+                } catch (IllegalArgumentException e) {
+                    request.setAttribute("errMessage", "Invalid date-time format");
+                    request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
+                }
 
                 //Get option parameters
                 String option1 = request.getParameter("option1");
@@ -106,14 +112,14 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 } else if (option2.equals("none2") && !option3.equals("none3")) {
                     //calls 2 option function
                     HashMap<String, HashMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option3, studentMap);
-                    
+
                     //send back to view  page
                     request.setAttribute("percentageTwoList", percentageTwoList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 } else {
                     //calls 3 function option
                     HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(option1, option2, option3, studentMap);
-                    
+
                     //send back to view  page
                     request.setAttribute("percentageAllList", percentageAllList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
@@ -124,12 +130,8 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
             //Top-k popular places
             case "topKPopularPlaces": {
-                //int k = 0;
-                //LocationReportsDAO.topkPopularPlaces(k, 10);
                 request.getRequestDispatcher("/TopKPopularPlaces.jsp").forward(request, response);
-                break;
             }
-            
 
             //Top-k companions
             case "topKCompanions": {
@@ -138,14 +140,13 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
                 // key is the rank from 1 - n
                 // value is the merged groups
-                HashMap<Integer, Group> companionList = locationReportDAO.topkCompanions(k,studentMacAddress);
-                request.setAttribute("k",k);
-                request.setAttribute("companions",companionList);
-                request.setAttribute("student",studentMacAddress);                
+                HashMap<Integer, Group> companionList = locationReportDAO.topkCompanions(k, studentMacAddress);
+                request.setAttribute("k", k);
+                request.setAttribute("companions", companionList);
+                request.setAttribute("student", studentMacAddress);
                 request.getRequestDispatcher("/TopKCompanions.jsp").forward(request, response);
                 break;
             }
-            
 
             //Top-k next places
             case "topKNextPlaces": {
@@ -154,7 +155,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 request.getRequestDispatcher("/TopKNextPlaces.jsp").forward(request, response);
                 break;
             }
-            
+
         }
     }
 

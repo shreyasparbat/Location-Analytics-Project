@@ -3,13 +3,20 @@
     Created on : Oct 25, 2017, 3:04:31 PM
     Author     : Ming Xuan
 --%>
+<%@page import="java.util.LinkedHashMap"%>
+<%@page import="java.util.TreeMap"%>
+<%@page import="java.util.Iterator"%>
 <%@page import="java.util.List"%>
 <%@page import="model.utility.TopKUtility"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
 <html lang="en">
-
+    <%
+        Integer value = (Integer) request.getAttribute("k");
+        int rank = 1;
+        LinkedHashMap<String, Integer> popularPlaceList = (LinkedHashMap<String, Integer>) request.getAttribute("popularPlaces");
+    %>
     <head>
 
         <meta charset="utf-8">
@@ -85,81 +92,79 @@
 
     <div class="container">
 
-            <div class="row">
+        <div class="row">
 
-                <div class="col-md-4"></div>
+            <div class="col-md-4"></div>
 
-                <div class="jumbotron col-md-4 centre-of-page">
+            <div class="jumbotron col-md-4 centre-of-page">
 
-                    <!-- Form get table -->
+                <!-- Form get table -->
 
-                    <p class="h5 text-center mb-4">Get Top K Popular places</p>
+                <p class="h5 text-center mb-4">Get Top K Popular places</p>
 
-                    <form action="BasicLocationReportsServlet">
-                        <div class="form-group">
-                            <br> Select Rank:
-                            <select name="k">
-                                <%
-                                    for (int i = 1; i <= 10; i++) {
-                                        out.print("<option value = \"" + i + "\" ");
-                                        if (i == 3) {
-                                            out.print("selected");
-                                        }
-                                        out.print("> " + i + "</option>");
+                <form action="BasicLocationReportsServlet">
+                    <div class="form-group">
+                        <br> Select Rank:
+                        <select name="k">
+                            <%
+                                for (int i = 1; i <= 10; i++) {
+                                    out.print("<option value = \"" + i + "\" ");
+                                    if (i == 3) {
+                                        out.print("selected");
                                     }
-                                %>
-                            </select>
-                        </div>
+                                    out.print("> " + i + "</option>");
+                                }
+                            %>
+                        </select>
+                    </div>
+                    <br>
+
+                    <div class="form-group">
+                        <label>Date: </label>
+                        <input class="form-control" type="date" name="date">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Time: </label>
+                        <input class="form-control" type="time" name='time'>
+                    </div>
+
+                    <input type="hidden" name="function" value="topKPopularPlaces">
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-amber">Go ! <i class="fa fa-paper-plane-o ml-1"></i></button>
                         <br>
-
-                        <div class="form-group">
-                            <label>Date: </label>
-                            <input class="form-control" type="date" name="date">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Time: </label>
-                            <input class="form-control" type="time" name='time'>
-                        </div>
-                        
-                        <input type="hidden" name="function" value="topKPopularPlaces">
-                        
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-amber">Go ! <i class="fa fa-paper-plane-o ml-1"></i></button>
-                            <br>
-                            <button type="reset" class="btn btn-amber" name="Reset" value="Cancel">Cancel</button>  
-                        </div>
-                    </form>
-                </div>
-
-                <div class="col-md-4"></div>
-
+                        <button type="reset" class="btn btn-amber" name="Reset" value="Cancel">Cancel</button>  
+                    </div>
+                </form>
             </div>
+
+            <div class="col-md-4"></div>
+
         </div>
+    </div>
 
-        <br/>
+    <br/>
 
-        <div class="container">
+    <div class="container">
+        
+        <hr>
 
-
-
-            <hr>
-
-            <footer>
-                <p>&copy; SE G1T3</p>
-            </footer>
-        </div> <!-- /container -->
+        <footer>
+            <p>&copy; SE G1T3</p>
+        </footer>
+    </div> <!-- /container -->
 
 
-        <!-- SCRIPTS
-        ================================================== -->
-        <!-- JQuery -->
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <!-- Bootstrap tooltips -->
-        <script type="text/javascript" src="assets/js/popper.min.js"></script>
-        <!-- Bootstrap core JavaScript -->
-        <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-        <!-- MDB core JavaScript -->
-        <script type="text/javascript" src="assets/js/mdb.min.js"></script>
+    <!-- SCRIPTS
+    ================================================== -->
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="assets/js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="assets/js/mdb.min.js"></script>
 </body>
 </html>
