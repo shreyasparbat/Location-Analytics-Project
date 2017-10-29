@@ -26,13 +26,13 @@ public class LocationValidator {
      * messages related to the row
      */
     public static HashMap<Integer, List<String>> locationErrors = new HashMap<>();
-    
+
     public static int numDLocaRowsValidated;
-    
-    static{
+
+    static {
         numDLocaRowsValidated = 0;
     }
-    
+
     /**
      * Validates the contents of the location.csv file
      *
@@ -60,17 +60,17 @@ public class LocationValidator {
             boolean locationCheck = true;
             boolean macAddressCheck = true;
             try {
-                timeCheck = checkTime(row[0]);
+                timeCheck = checkTime(row[0].trim());
             } catch (ArrayIndexOutOfBoundsException e) {
                 timeCheck = false;
             }
             try {
-                locationCheck = checkLocation(row[2], conn, bootstrapProcess);
+                locationCheck = checkLocation(row[2].trim(), conn, bootstrapProcess);
             } catch (ArrayIndexOutOfBoundsException e) {
                 locationCheck = false;
             }
             try {
-                macAddressCheck = checkMacAddress(row[1]);
+                macAddressCheck = checkMacAddress(row[1].trim());
             } catch (ArrayIndexOutOfBoundsException e) {
                 macAddressCheck = false;
             }
@@ -83,8 +83,8 @@ public class LocationValidator {
                 } else {
                     if (!bootstrapProcess) { //additional step for update
                         PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM location WHERE macaddress = ? and time = ? ");
-                        stmt.setString(1, row[1]);
-                        stmt.setTimestamp(2, Timestamp.valueOf(row[0]));
+                        stmt.setString(1, row[1].trim());
+                        stmt.setTimestamp(2, Timestamp.valueOf(row[0].trim()));
                         ResultSet rs = stmt.executeQuery();
                         if (rs.next() == true) {
                             invalidRow = true;
@@ -100,13 +100,25 @@ public class LocationValidator {
                 }
             }
             if (!timeCheck) {
-                errorMsgs.add("invalid timestamp");
+                if (row[0].trim().equals("")) {
+                    errorMsgs.add("blank timestamp");
+                } else {
+                    errorMsgs.add("invalid timestamp");
+                }
             }
             if (!locationCheck) {
-                errorMsgs.add("invalid location");
+                if (row[2].trim().equals("")) {
+                    errorMsgs.add("blank location-id");
+                } else {
+                    errorMsgs.add("invalid location-id");
+                }
             }
             if (!macAddressCheck) {
-                errorMsgs.add("invalid mac address");
+                if(row[1].trim().equals("")){
+                    errorMsgs.add("blank mac-address");
+                }else{
+                    errorMsgs.add("invalid mac-address");
+                }
             }
             if (duplicateRow) {
                 errorMsgs.add("duplicate row");
@@ -118,7 +130,6 @@ public class LocationValidator {
         }
 
         //Once run finish, the mapCheck should contain all the updated and correct rows
-        
         //Getting values
         Collection<String> listValues = mapCheck.values();
 

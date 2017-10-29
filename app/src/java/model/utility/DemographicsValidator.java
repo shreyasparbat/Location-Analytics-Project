@@ -22,7 +22,7 @@ public class DemographicsValidator {
      * messages related to the row
      */
     public static HashMap<Integer, List<String>> demographErrors = new HashMap<>();
-    
+
     public static int numDemoRowsValidated;
     /**
      * A list of school email to verify
@@ -51,7 +51,7 @@ public class DemographicsValidator {
         List<String> correctList = new ArrayList<>();
         Iterator<String[]> iter = list.iterator();
         demographErrors.clear();
-        
+
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
         }
@@ -87,21 +87,38 @@ public class DemographicsValidator {
             }
 
             if (!macAddressCheck) {
-                errorMsgs.add("invalid mac address");
+                if (row[0].trim().equals("")) {
+                    errorMsgs.add("blank mac address");
+                } else {
+                    errorMsgs.add("invalid mac address");
+
+                }
             }
             if (!passwordCheck) {
-                errorMsgs.add("invalid password");
+                if (row[2].trim().equals("")) {
+                    errorMsgs.add("blank password");
+                } else {
+                    errorMsgs.add("invalid password");
+                }
             }
             if (!emailCheck) {
-                errorMsgs.add("invalid email");
+                if (row[3].trim().equals("")) {
+                    errorMsgs.add("blank email");
+                } else {
+                    errorMsgs.add("invalid email");
+                }
             }
             if (!genderCheck) {
-                errorMsgs.add("invalid gender");
+                if (row[4].trim().equals("")) {
+                    errorMsgs.add("blank gender");
+                } else {
+                    errorMsgs.add("invalid gender");
+                }
             }
 
             if (errorMsgs.isEmpty()) {
                 String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim() + "," + row[3].trim() + "," + row[4].trim();
-                numDemoRowsValidated ++;
+                numDemoRowsValidated++;
                 correctList.add(rowData);
             } else {
                 demographErrors.put(index, errorMsgs);

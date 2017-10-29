@@ -21,6 +21,10 @@ import static model.utility.DBConnection.createConnection;
  */
 public class TopKUtility {
     
+    /**
+     * A method that calls the database and returns a list of string array where the first entry of the array is a student mac address and second entry is name
+     * @return list of student's macaddress and email
+     */
     public static List<String[]> getStudentMacAddress(){
         List<String[]> studentMA = new ArrayList<>();
         try {
@@ -40,7 +44,11 @@ public class TopKUtility {
         return studentMA;
     }
     
-     public static List<String> getSemanticPlaces(){
+    /**
+     * A method that connects Database and returns all semantic places found
+     * @return a list of strings which contains the semantic places
+     */
+    public static List<String> getSemanticPlaces(){
         List<String> semanticPlaces = new ArrayList<>();
         try {
             Connection conn = DBConnection.createConnection();

@@ -14,6 +14,8 @@ import model.entity.Group;
  */
 
 public class GroupComparator implements Comparator<Group> {
+    
+    
     public int compare(Group g1, Group g2){
         Double difference = -(g1.getTotalDuration() - g2.getTotalDuration());
         return difference.intValue();

@@ -26,8 +26,8 @@ public class LocationLookupValidator {
      * A list of location ids that is validated during bootstrap
      */
     public static ArrayList<String> locationList = new ArrayList<String>();
-    
-    public static int numDLLRowsValidated ;
+
+    public static int numDLLRowsValidated;
     /**
      * A list of location levels to check the id of location based on levels
      */
@@ -64,20 +64,28 @@ public class LocationLookupValidator {
             boolean locationIdCheck = true;
             boolean semanticPlaceCheck = true;
             try {
-                locationIdCheck = checkLocationID(row[0]);
+                locationIdCheck = checkLocationID(row[0].trim());
             } catch (ArrayIndexOutOfBoundsException e) {
                 locationIdCheck = false;
             }
             try {
-                semanticPlaceCheck = checkSemanticPlace(row[1], row[0]);
+                semanticPlaceCheck = checkSemanticPlace(row[1].trim(), row[0].trim());
             } catch (ArrayIndexOutOfBoundsException e) {
                 semanticPlaceCheck = false;
             }
             if (!locationIdCheck) {
-                errorMsgs.add("invalid location id");
+                if (row[0].trim().equals("")) {
+                    errorMsgs.add("blank location-id");
+                } else {
+                    errorMsgs.add("invalid location id");
+                }
             }
             if (!semanticPlaceCheck) {
-                errorMsgs.add("invalid semantic place");
+                if (row[1].trim().equals("")) {
+                    errorMsgs.add("blank semantic place");
+                } else {
+                    errorMsgs.add("invalid semantic place");
+                }
             }
             if (errorMsgs.isEmpty()) {
                 String rowData = row[0].trim() + "," + row[1].trim();
