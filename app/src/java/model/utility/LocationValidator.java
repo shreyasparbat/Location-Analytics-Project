@@ -106,20 +106,20 @@ public class LocationValidator {
                     errorMsgs.add("invalid timestamp");
                 }
             }
-            if (!locationCheck) {
-                if (row[2].trim().equals("")) {
-                    errorMsgs.add("blank location-id");
-                } else {
-                    errorMsgs.add("invalid location-id");
-                }
-            }
             if (!macAddressCheck) {
                 if(row[1].trim().equals("")){
-                    errorMsgs.add("blank mac-address");
+                    errorMsgs.add("blank mac address");
                 }else{
-                    errorMsgs.add("invalid mac-address");
+                    errorMsgs.add("invalid mac address");
                 }
             }
+            if (!locationCheck) {
+                if (row[2].trim().equals("")) {
+                    errorMsgs.add("blank location");
+                } else {
+                    errorMsgs.add("invalid location");
+                }
+            }           
             if (duplicateRow) {
                 errorMsgs.add("duplicate row");
             }
