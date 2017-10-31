@@ -14,7 +14,8 @@
 
 <%
     List<String> semanticPlaces = TopKUtility.getSemanticPlaces();
-    ArrayList<Location> locationList = locationList = (ArrayList<Location>) request.getAttribute("locationList");
+    ArrayList<Location> locationList = (ArrayList<Location>) request.getAttribute("locationList");
+    ArrayList<String> studentList =(ArrayList<String>)request.getAttribute("studentList");
     Integer k = (Integer) request.getAttribute("k");
     int rank = 1;
     int previousCount = 0;
@@ -181,7 +182,8 @@
             //printing information table
             out.println("<table border='1'>");
             out.println("<tr><td><b> Initial Location</b></td><td>" + (String) request.getAttribute("place") + "</td></tr>");
-            out.println("<tr><td><b> Total number</b></td><td>" + (int) totalCount + "</td></tr>");
+            out.println("<tr><td><b> Users in initial location</b></td><td>" + studentList.size()+ "</td></tr>");
+            out.println("<tr><td><b> Users that visited another place</b></td><td>" + (int) totalCount + "</td></tr>");
             out.println("</table>");
             out.println("<br>");
             //printing results table
@@ -207,7 +209,7 @@
                 out.println("</td>");
                 //print percentage, half rounded up
                 out.println("<td>");
-                out.println((int) (((l.getNumberOfStudents() / totalCount) * 100) + 0.5));
+                out.println((int) (((l.getNumberOfStudents() / (double)studentList.size()) * 100) + 0.5));
                 out.println("</td>");
 
                 out.println("</tr>");

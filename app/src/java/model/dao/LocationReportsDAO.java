@@ -226,8 +226,8 @@ public class LocationReportsDAO {
                     + "	(select macaddress from location\n"
                     + "	where macaddress in \n"
                     + "		(select distinct macaddress from location, locationlookup \n"
-                    + "		where location.locationid = locationlookup.locationid \n"
-                    + "        and locationlookup.semanticplace = ?)\n"
+                    + "		 where location.locationid = locationlookup.locationid \n"
+                    + "          and locationlookup.semanticplace = ?)\n"
                     + "	and time >= ? and time < ?\n"
                     + "	group by macaddress)\n"
                     + "and time >= ? and time < ?\n"
@@ -271,14 +271,46 @@ public class LocationReportsDAO {
         Iterator iter = locationMap.keySet().iterator();
         while (iter.hasNext()) {
             String key = (String) iter.next();
-            Location loc = locationMap.get(key); 
+            Location loc = locationMap.get(key);
             topKNextPlacesList.add(loc);
         }
         //sorting of topKNextPlacesList
         Collections.sort(topKNextPlacesList, new LocationComparator());
         //returning only require K values
-        
+
         return topKNextPlacesList;
     }
 
+    public static ArrayList<String> peopleInSemanticPlace(String semanticPlace) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ArrayList<String> studentList = new ArrayList<>();
+        try {
+            conn = DBConnection.createConnection();
+            stmt = conn.prepareStatement( ""
+                    + "select macaddress from location\n"
+                    + "	where macaddress in \n"
+                    + "		(select distinct macaddress from location, locationlookup \n"
+                    + "		 where location.locationid = locationlookup.locationid \n"
+                    + "          and locationlookup.semanticplace = ?)\n"
+                    + "	and time >= ? and time < ?\n"
+                    + "	group by macaddress");
+            stmt.setString(1, semanticPlace);
+            stmt.setTimestamp(2, startDateTime);
+            stmt.setTimestamp(3, endDateTime);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                studentList.add(rs.getString("macaddress"));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, "Unable to perform request", ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            DBConnection.close(conn, stmt, rs);
+        }
+        return studentList;
+    }
 }
