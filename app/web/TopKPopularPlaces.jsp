@@ -12,7 +12,8 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <%        Integer value = (Integer) request.getAttribute("k");
+    <%        
+        Integer value = (Integer) request.getAttribute("k");
         int rank = 1;
         LinkedHashMap<String, Integer> popularPlaceList = (LinkedHashMap<String, Integer>) request.getAttribute("popularPlaces");
     %>

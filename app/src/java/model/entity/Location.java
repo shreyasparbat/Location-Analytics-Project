@@ -1,5 +1,7 @@
 package model.entity;
 
+import java.util.ArrayList;
+
 /**
  * A Location object that stores the information about the semanticPlace and
  * locationID
@@ -10,23 +12,18 @@ public class Location {
 
     //attributes
     private String semanticPlace;
-    private int locationId;
-    private String level;
+    private ArrayList<String> studentList;
 
     //constructors
     /**
-     * Constructs a new Location object with the unique location id and semantic
-     * place description
+     * Constructs a new Location object with the semantic place and initializes
+     * an empty list of student.
      *
      * @param semanticPlace String of the semantic location description
-     * @param locationId int of the location id of a semantic location
      */
-    public Location(String semanticPlace, int locationId) {
+    public Location(String semanticPlace) {
         this.semanticPlace = semanticPlace;
-        this.locationId = locationId;
-
-        //getting level
-        level = semanticPlace.substring(6, 8);
+        this.studentList = new ArrayList<>();
     }
 
     //getter
@@ -40,20 +37,31 @@ public class Location {
     }
 
     /**
-     * Returns the location id of a semantic place
+     * Returns an ArrayList of Student macaddresses located within the location
      *
-     * @return an int that represents the unique location id of a semantic place
+     * @return an ArrayList that represents macaddresses of students in the location
      */
-    public int getLocationId() {
-        return locationId;
+    public ArrayList<String> getStudents() {
+        return studentList;
     }
-
+    
     /**
-     * Returns the level of a semantic place
+     * Returns the number of Student macaddresses located within the location
      *
-     * @return a string that represents the level of a semantic place
+     * @return an Integer that represents the number of macaddresses of students in the location
      */
-    public String getLevel() {
-        return level;
+    public Integer getNumberOfStudents() {
+        return studentList.size();
+    }
+    
+    /**
+     * Adds a student into the ArrayList of Student macaddresses located within the location
+     *
+     * 
+     */
+    public void addStudent(String studentMac) {
+        if(!studentList.contains(studentMac)){
+            studentList.add(studentMac);
+        }
     }
 }

@@ -3,12 +3,21 @@
     Created on : Oct 25, 2017, 3:25:38 PM
     Author     : Ming Xuan
 --%>
+<%@page import="java.sql.Timestamp"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="model.entity.Location"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="model.utility.TopKUtility"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%
         List<String> semanticPlaces = TopKUtility.getSemanticPlaces();
+        ArrayList<Location> locationList = locationList = (ArrayList<Location>) request.getAttribute("locationList");
+        Integer k = (Integer)request.getAttribute("k");
+        int rank = 1;
+        int previousCount = 0;
+        int totalCount = 0;
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,7 +123,7 @@
                             </select>
                         </div>
                             <br> Select Place: 
-                        <select name="places">
+                        <select name="place">
                             <%
                                 for (String sp : semanticPlaces) {
                                     out.println("<option value = \"" + sp + "\">" + sp + "</option>");
@@ -156,9 +165,46 @@
         <br/>
         
         <div class="container">
+<%
+        if(locationList != null) {
+            out.println(locationList.size());
+            out.println("<br>");
+            out.println((Integer)request.getAttribute("k"));
+            out.println("<br>");
+            out.println((String)request.getAttribute("place"));
+            out.println("<br>");
+            out.println((Timestamp)request.getAttribute("time1"));
+            out.println((Timestamp)request.getAttribute("time2"));
+            out.println("<br>");
+            out.println((Timestamp)request.getAttribute("time3"));
+            out.println((Timestamp)request.getAttribute("time4"));
+            //printing table
+            out.println("<table border='1'>");
+            out.println("<tr><td> Rank </td> <td> Semantic Place</td> <td> Count</td>");
 
-            
+            Iterator iter = locationList.iterator();
+            while (iter.hasNext()) {
+                Location l = (Location)iter.next();
+                out.println("<tr>");
+                //print rank
+                out.println("<td>");
+                out.println(rank);
+                rank++;
+                out.println("</td>");
+                //print semantic place
+                out.println("<td>");
+                out.println(l.getSemanticPlace());
+                out.println("</td>");
+                //print count
+                out.println("<td>");
+                out.println(l.getNumberOfStudents());
+                out.println("</td>");
+                out.println("</tr>");
+            }
 
+            out.println("</table>");
+        }
+%>
             <hr>
 
             <footer>

@@ -16,7 +16,67 @@ public class TimeUtility {
     
     /**
      * Returns an ArrayList of two Timestamp objects based on the dateTime string passed into the function.
+     * These Timestamp objects signify the start and end of the processing window. 
+     * It takes in initial time, and processes the end time 15 minutes later.
+     * 
+     * @param dateTime a string containing 
+     * @return an ArrayList of Timestamps where timestamp at index 0 is <code>startDateTime</code> and timestamp at index 1 is <code>endDateTime</code>
+     */
+    public static ArrayList<Timestamp> getNextProcessingWindow(String dateTime) throws IllegalArgumentException {
+
+        //SQL Timestamp obj for startDateTime of processing window
+        Timestamp startDateTime = Timestamp.valueOf(dateTime);
+
+        //getting startDateTime
+        int mins = Integer.parseInt(dateTime.substring(14, 16));
+        int hrs = Integer.parseInt(dateTime.substring(11, 13));
+        int days = Integer.parseInt(dateTime.substring(8, 10));
+        int months = Integer.parseInt(dateTime.substring(5, 7));
+        int years = Integer.parseInt(dateTime.substring(0, 4));
+
+        //finding correct mins, hrs, days, months and years for endDateTime
+        for (int i = 0; i < 15; i++) {
+            mins++;
+            if (mins == 60) {
+                mins = 0;
+                hrs++;
+
+                if (hrs == 24) {
+                    hrs = 0;
+                    days++;
+
+                    if (days == 29 && months == 2) {
+                        days =1;
+                        months++;
+                    }else if(days == 31 && (months == 4 ||months == 6 || months == 9 ||months == 11)){
+                        days = 1;
+                        months++;
+                    }else if(days == 32 && months == 13){
+                        days = 1;
+                        months = 1;
+                        years++;
+                    }else if (days ==32){
+                        days = 1;
+                        months++;
+                    }
+                }
+            }
+        }
+
+        //forming endDateTime Timestamp object
+        Timestamp endDateTime = Timestamp.valueOf(getDateTimeString(mins, hrs, days, months, years));
+
+        //returning 
+        ArrayList<Timestamp> processingWindowArrayList = new ArrayList<>();
+        processingWindowArrayList.add(startDateTime);
+        processingWindowArrayList.add(endDateTime);
+        return processingWindowArrayList;
+    }
+    
+    /**
+     * Returns an ArrayList of two Timestamp objects based on the dateTime string passed into the function.
      * These Timestamp objects signify the start and end of the processing window.
+     * It takes in initial time, and processes the end time 15 minutes before.
      * 
      * @param dateTime a string containing 
      * @return an ArrayList of Timestamps where timestamp at index 0 is <code>startDateTime</code> and timestamp at index 1 is <code>endDateTime</code>

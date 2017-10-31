@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ import model.entity.Student;
 import model.utility.BreakdownUtility;
 import model.utility.DBConnection;
 import model.utility.GroupComparator;
+import model.utility.LocationComparator;
 
 /**
  *
@@ -33,11 +35,22 @@ public class LocationReportsDAO {
 
     static Timestamp startDateTime;
     static Timestamp endDateTime;
-    private BreakdownUtility bu = new BreakdownUtility();
+    static Timestamp startDateTimeTwo;
+    static Timestamp endDateTimeTwo;
+    private BreakdownUtility bu;
 
     public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
+        bu = new BreakdownUtility();
+    }
+
+    public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime, Timestamp startDateTimeTwo, Timestamp endDateTimeTwo) {
+        this.startDateTime = startDateTime;
+        this.endDateTime = endDateTime;
+        this.startDateTimeTwo = startDateTimeTwo;
+        this.endDateTimeTwo = endDateTimeTwo;
+        bu = new BreakdownUtility();
     }
 
     /**
@@ -197,18 +210,54 @@ public class LocationReportsDAO {
      * @return topKPlacesList a list of the top-k popular places in the selected
      * processing window
      */
-    public static ArrayList<Location> topkNextPlaces(int k) {
+    public static ArrayList<Location> topkNextPlaces(int k, String semanticPlace) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ArrayList<Location> topKPlacesList = new ArrayList<>();
+        ArrayList<Location> topKNextPlacesList = new ArrayList<>();
+        HashMap<String, Location> locationMap = new HashMap<>();
         try {
             conn = DBConnection.createConnection();
-            stmt = conn.prepareStatement("");
-            rs = stmt.executeQuery("something");
+            stmt = conn.prepareStatement("select macaddress, semanticplace\n"
+                    + "from location l \n"
+                    + "inner join locationlookup ll\n"
+                    + "on l.locationid = ll.locationid \n"
+                    + "where macaddress in\n"
+                    + "	(select macaddress from location\n"
+                    + "	where macaddress in \n"
+                    + "		(select distinct macaddress from location, locationlookup \n"
+                    + "		where location.locationid = locationlookup.locationid \n"
+                    + "        and locationlookup.semanticplace = ?)\n"
+                    + "	and time >= ? and time < ?\n"
+                    + "	group by macaddress)\n"
+                    + "and time >= ? and time < ?\n"
+                    + "group by macaddress, semanticplace\n"
+                    + "having min(time) < date_sub(max(time), interval 5 minute)\n"
+                    + "order by macaddress;");
+            //set params
+            stmt.setString(1, semanticPlace);
+            stmt.setTimestamp(2, startDateTime);
+            stmt.setTimestamp(3, endDateTime);
+            stmt.setTimestamp(4, startDateTimeTwo);
+            stmt.setTimestamp(5, endDateTimeTwo);
+            //execution of query
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
+                //gets semanticplace and macaddress from result set
+                String querySemanticPlace = rs.getString("semanticplace");
+                String macAddress = rs.getString("macaddress");
 
+                //Iterates though list of topKNextPlaces. If location does not exist, create new locaiton and add to list
+                //if location exists, retrieve macAddress List from the location
+                if (locationMap.containsKey(querySemanticPlace)) {
+                    Location location = locationMap.get(querySemanticPlace);
+                    location.addStudent(macAddress);
+                } else {
+                    Location location = new Location(querySemanticPlace);
+                    location.addStudent(macAddress);
+                    locationMap.put(querySemanticPlace, location);
+                }
             }
 
         } catch (SQLException ex) {
@@ -218,7 +267,23 @@ public class LocationReportsDAO {
         } finally {
             DBConnection.close(conn, stmt, rs);
         }
-        return topKPlacesList;
+        //transferring from HashMap to ArrayList
+        Iterator iter = locationMap.keySet().iterator();
+        while (iter.hasNext()) {
+            String key = (String) iter.next();
+            Location loc = locationMap.get(key); 
+            topKNextPlacesList.add(loc);
+        }
+        //sorting of topKNextPlacesList
+        Collections.sort(topKNextPlacesList, new LocationComparator());
+        //returning only require K values
+        ArrayList<Location> toReturn = new ArrayList<>();
+        int i = 0;
+        while (i < k && topKNextPlacesList.size() > 0) {
+            toReturn.add(topKNextPlacesList.get(i));
+            i++;
+        }
+        return topKNextPlacesList;
     }
 
 }

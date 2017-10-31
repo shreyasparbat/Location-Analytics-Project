@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.dao.StudentDAO;
 import model.entity.Group;
+import model.entity.Location;
 import model.entity.Student;
 import model.utility.BreakdownUtility;
 import model.utility.TimeUtility;
@@ -181,8 +182,35 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
             //Top-k next places
             case "topKNextPlaces": {
-                //int k = 0;
-                //LocationReportsDAO.topkNextPlaces(k);
+                //Error message generation
+                Timestamp startDateTimeTwo = null;
+                Timestamp endDateTimeTwo = null;
+                try {
+                    //getting first processing window
+                    ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
+                    startDateTime = processingWindowArrayList.get(0);
+                    endDateTime = processingWindowArrayList.get(1);
+                    //getting second processing window
+                    ArrayList<Timestamp> processingWindowTwoArrayList = TimeUtility.getNextProcessingWindow(dateTime);
+                    startDateTimeTwo = processingWindowTwoArrayList.get(0);
+                    endDateTimeTwo = processingWindowTwoArrayList.get(1);
+                } catch (IllegalArgumentException e) {
+                    request.setAttribute("errMessage", "Invalid date-time format");
+                    request.getRequestDispatcher("/TopKNextPlaces.jsp").forward(request, response);
+                }
+                
+                //getting K value 
+                int k = Integer.parseInt(request.getParameter("k"));
+                String semanticPlace = (String) request.getParameter("place");
+                LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime, startDateTimeTwo, endDateTimeTwo);
+                ArrayList<Location> locationList = locationReportDAO.topkNextPlaces(k, semanticPlace);
+                request.setAttribute("time1", startDateTime);
+                request.setAttribute("time2", endDateTime);
+                request.setAttribute("time3", startDateTimeTwo);
+                request.setAttribute("time4", endDateTimeTwo);
+                request.setAttribute("k", k);
+                request.setAttribute("place", semanticPlace);
+                request.setAttribute("locationList", locationList);
                 request.getRequestDispatcher("/TopKNextPlaces.jsp").forward(request, response);
                 break;
             }
