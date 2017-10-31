@@ -277,12 +277,7 @@ public class LocationReportsDAO {
         //sorting of topKNextPlacesList
         Collections.sort(topKNextPlacesList, new LocationComparator());
         //returning only require K values
-        ArrayList<Location> toReturn = new ArrayList<>();
-        int i = 0;
-        while (i < k && topKNextPlacesList.size() > 0) {
-            toReturn.add(topKNextPlacesList.get(i));
-            i++;
-        }
+        
         return topKNextPlacesList;
     }
 
