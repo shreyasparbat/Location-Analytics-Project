@@ -61,14 +61,12 @@ public class JsonTopKNextPlaces extends HttpServlet {
 
         //retrieve request parameters
         String k = request.getParameter("k");
-        int kValue = Integer.parseInt(k);
         String semanticPlace = request.getParameter("origin");
-        out.println("place" + semanticPlace);
         String date = request.getParameter("date");
         String token = request.getParameter("token");
 
         List<String> semanticPlacesList = TopKUtility.getSemanticPlaces();
-
+       
         boolean kValid = true;
         boolean semanticPlaceValid = true;
         boolean dateValid = true;
@@ -94,21 +92,20 @@ public class JsonTopKNextPlaces extends HttpServlet {
         } catch (Exception e) { // catch IllegalArgumentException && null pointer
             dateValid = false;
         }
-
+        if (!(semanticPlacesList.contains(semanticPlace))) {
+            semanticPlaceValid = false;
+        }
         JsonArray jArray = new JsonArray();
-        if (!(kValid && dateValid && tokenValid)) { // if error
+        if (!(kValid && dateValid && tokenValid&&semanticPlaceValid)) { // if error
             jsonOutput.addProperty("status", "error");
 
-            if (!(semanticPlacesList.contains(semanticPlace))) {
-                semanticPlaceValid = false;
-                if (!semanticPlaceValid) {
-                    if (semanticPlace == null) {
-                        jArray.add("missing origin");
-                    } else if (semanticPlace.trim().equals("")) {
-                        jArray.add("blank origin");
-                    } else {
-                        jArray.add("invalid origin");
-                    }
+            if (!semanticPlaceValid) {
+                if (semanticPlace == null) {
+                    jArray.add("missing origin");
+                } else if (semanticPlace.trim().equals("")) {
+                    jArray.add("blank origin");
+                } else {
+                    jArray.add("invalid origin");
                 }
             }
 
@@ -139,40 +136,44 @@ public class JsonTopKNextPlaces extends HttpServlet {
             }
             jsonOutput.add("messages", jArray);
         } else {
+
             Timestamp startDateTime = timeList.get(0);
             Timestamp endDateTime = timeList.get(1);
-            out.println("date " + startDateTime + " " + endDateTime);
-            LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
-            //why
-            ArrayList<Location> nextPlaceList = locationReportDAO.topkNextPlaces(kValue, semanticPlace);
+            //getting datetime window
+            ArrayList<Timestamp> processingWindowTwoArrayList = TimeUtility.getNextProcessingWindow(date);
+            Timestamp startDateTimeTwo = processingWindowTwoArrayList.get(0);
+            Timestamp endDateTimeTwo = processingWindowTwoArrayList.get(1);
+            
+            LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime, startDateTimeTwo, endDateTimeTwo);
+            //why kosong!!
             ArrayList<String> totalUsers = locationReportDAO.peopleInSemanticPlace(semanticPlace);
-            out.println("users" + totalUsers.size());
-            
-            out.println("nextplacelist" + nextPlaceList.size());
-            
+            ArrayList<Location> nextPlaceList = locationReportDAO.topkNextPlaces(rank, semanticPlace);
+
             Collections.sort(nextPlaceList, new LocationComparator());
             jsonOutput.addProperty("status", "success");
-            int i = 1;
+            int i = 0;
             int countTotal = 0;
             for (Location l : nextPlaceList) {
                 countTotal += l.getNumberOfStudents();
 
             }
-
             jsonOutput.addProperty("total-users", totalUsers.size());
             jsonOutput.addProperty("total-next-place-users", countTotal);
-            while (i <= rank) {
-
-                for (Location l : nextPlaceList) {
-                    int countStudents = l.getNumberOfStudents();
-                    JsonObject ranks = new JsonObject();
-                    ranks.addProperty("rank", i);
-                    ranks.addProperty("semantic-place", l.getSemanticPlace());
-                    ranks.addProperty("count", countStudents);
-                    jArray.add(ranks);
+            Iterator iter = nextPlaceList.iterator();
+            int temp = 0;
+            while (i < rank && iter.hasNext()) {
+                Location l = (Location) iter.next();
+                int countStudents = l.getNumberOfStudents();
+                if(temp != countStudents){
+                    temp = countStudents;
+                    i++;
                 }
-                i++;
-
+                JsonObject ranks = new JsonObject();
+                ranks.addProperty("rank", i);
+                ranks.addProperty("semantic-place", l.getSemanticPlace());
+                ranks.addProperty("count", countStudents);
+                jArray.add(ranks);
+                
             }
 
             jsonOutput.add("results", jArray);
