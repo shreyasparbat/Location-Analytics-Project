@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -27,6 +28,7 @@ import model.dao.AgdDAO;
 import model.dao.StudentDAO;
 import model.entity.Group;
 import model.entity.Student;
+import model.utility.AGDComparator;
 import model.utility.TimeUtility;
 
 /**
@@ -69,6 +71,8 @@ public class AgdServlet extends HttpServlet {
         StudentDAO sDAO = new StudentDAO();
         HashMap<String, Student> studentList = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
         ArrayList<Group> list = agdDao.getStudentGroups(startDateTime, endDateTime, sDAO, studentList);
+        //sort groups
+        Collections.sort(list, new AGDComparator());
         request.setAttribute("studentCount", studentList.size());
         request.setAttribute("studentGroups", list);
 

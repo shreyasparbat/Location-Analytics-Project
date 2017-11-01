@@ -5,6 +5,7 @@
 --%>
 
 
+<%@page import="java.util.TreeMap"%>
 <%@page import="model.entity.TimeIntervals"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="model.entity.TimeIntervalsList"%>
@@ -43,8 +44,7 @@
     </head>
 
     <body>
-        <%
-            Integer count = (Integer) request.getAttribute("studentCount");
+        <%            Integer count = (Integer) request.getAttribute("studentCount");
             ArrayList<Group> studentGroups = (ArrayList<Group>) request.getAttribute("studentGroups");
             String errorMsg = (String) request.getAttribute("errMessage");
         %>
@@ -102,12 +102,12 @@
             <hr>
 
             <h1>Input request parameters </h1>
-           
+
 
             <form method = "get" name ="AgdRequest_form" action="AgdServlet">
                 Date <input type="date" name="date" max = "2025-12-31" required ><br/>
                 Time <Input type ="time" name ="time" required> 
-                
+
 
                 <br/>
                 <input type="submit" value="Send">
@@ -121,39 +121,41 @@
                  */
 
             %> 
-            <%               
-                if(errorMsg!=null){
+            <%                if (errorMsg != null) {
                     out.println(errorMsg);
                 }
-                
+
                 if (count != null && studentGroups != null) {
-                    out.println("<table border='1'>");
+                    out.println("<table border='1' width='100%'>");
                     out.println("<tr> <th> Count of Students: " + count.toString() + " </th> </tr>");
                     out.println("<tr> <th> Count of groups : " + studentGroups.size() + " </th> </tr>");
+                    out.println("</table>");
+                    out.println("<table border='1'>");
                     for (Group g : studentGroups) {
                         out.println("<tr>");
                         ArrayList<Student> students = g.getGroup();
-                        HashMap<Integer, TimeIntervalsList> records = g.getRecord();
+                        TreeMap<Integer, TimeIntervalsList> records = g.getRecord();
                         Iterator<Integer> iter = records.keySet().iterator();
                         double duration = 0;
                         out.println("<td> Group size: " + students.size() + " </td>");
 
-                        out.println("<td> Students :");
+                        out.println("<td> <table width='15%'>  ");
                         for (Student s : students) {
-                            out.println(s.getMacAddress() + " " + s.getEmail() + "<br> ");
+                            out.println("<tr> <td>" + s.getEmail() + "</td> <td>" + s.getMacAddress() + "</td> </tr>");
                         }
-                        out.println("</td>");
+                        out.println(" </table> </td> ");
                         out.println("<td>");
                         while (iter.hasNext()) {
                             int place = iter.next();
                             double seconds = records.get(place).getDuration();
                             duration += seconds;
                             out.println("<h2>" + place + " " + seconds + "</h2><br>");
-                            ArrayList<TimeIntervals> timeList = records.get(place).getList();
-                            for (TimeIntervals ti : timeList) {
-                                out.println(ti.getStartTime().toString() + " - " + ti.getEndTime().toString());
-                                out.println("<br>");
-                            }
+                            // for reference *testing
+                            //ArrayList<TimeIntervals> timeList = records.get(place).getList();
+                            //for (TimeIntervals ti : timeList) {
+                              //  out.println(ti.getStartTime().toString() + " - " + ti.getEndTime().toString());
+                                //out.println("<br>");
+                            //}
                         }
                         out.println("</td>");
 

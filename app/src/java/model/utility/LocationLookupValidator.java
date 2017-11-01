@@ -61,32 +61,30 @@ public class LocationLookupValidator {
         while (iter.hasNext()) {
             String[] row = iter.next();
             ArrayList<String> errorMsgs = new ArrayList<>();
-            boolean locationIdCheck = true;
-            boolean semanticPlaceCheck = true;
-            try {
-                locationIdCheck = checkLocationID(row[0].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                locationIdCheck = false;
-            }
-            try {
-                semanticPlaceCheck = checkSemanticPlace(row[1].trim(), row[0].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                semanticPlaceCheck = false;
-            }
-            if (!locationIdCheck) {
-                if (row[0].trim().equals("")) {
-                    errorMsgs.add("blank location-id");
-                } else {
-                    errorMsgs.add("invalid location id");
+            //check row for blanks
+            errorMsgs = checkBlanks(row, errorMsgs);
+            if (errorMsgs.isEmpty()) {
+                boolean locationIdCheck = true;
+                boolean semanticPlaceCheck = true;
+                try {
+                    locationIdCheck = checkLocationID(row[0].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    locationIdCheck = false;
                 }
-            }
-            if (!semanticPlaceCheck) {
-                if (row[1].trim().equals("")) {
-                    errorMsgs.add("blank semantic place");
-                } else {
+                try {
+                    semanticPlaceCheck = checkSemanticPlace(row[1].trim(), row[0].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    semanticPlaceCheck = false;
+                }
+                if (!locationIdCheck) {
+                    errorMsgs.add("invalid location id");
+
+                }
+                if (!semanticPlaceCheck) {
                     errorMsgs.add("invalid semantic place");
                 }
             }
+
             if (errorMsgs.isEmpty()) {
                 String rowData = row[0].trim() + "," + row[1].trim();
                 numDLLRowsValidated++;
@@ -159,5 +157,23 @@ public class LocationLookupValidator {
         }
 
         return false;
+    }
+
+    /**
+     * Validates the data row for blanks, will add the error msg of blank into
+     * the errorMsgs
+     *
+     * @param row String[] representing a row of data
+     * @param errorMsgs A list of error messages in string
+     * @return the error list back
+     */
+    private static ArrayList<String> checkBlanks(String[] row, ArrayList<String> errorMsgs) {
+        if (row[0].trim().equals("")) {
+            errorMsgs.add("blank location-id");
+        }
+        if (row[1].trim().equals("")) {
+            errorMsgs.add("blank semantic place");
+        }
+        return errorMsgs;
     }
 }

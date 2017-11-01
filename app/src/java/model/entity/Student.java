@@ -1,7 +1,7 @@
 package model.entity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * A Student object that stores the information about the macAddress, name, password, email and gender
@@ -13,7 +13,7 @@ public class Student{
     private String name;
     private String email;
     private char gender;
-    private HashMap<Integer,TimeIntervalsList> locationTracker;
+    private TreeMap<Integer,TimeIntervalsList> locationTracker;
     //constructor for Student
 
     /**
@@ -28,7 +28,7 @@ public class Student{
         this.name = name;
         this.email = email;
         this.gender = gender;
-        locationTracker = new HashMap<>();
+        locationTracker = new TreeMap<>();
     }
     
     //getters
@@ -67,9 +67,9 @@ public class Student{
     
     /**
      * gets the location records of a particular student
-     * @return a hashmap of location records where key is the location id and value is the list of time intervals spent in that particular location
+     * @return a TreeMap of location records where key is the location id and value is the list of time intervals spent in that particular location
      */
-    public HashMap getLocationRecords(){
+    public TreeMap getLocationRecords(){
         return locationTracker;
     }
     
