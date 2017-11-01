@@ -201,7 +201,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 
                 //getting K value 
                 int k = Integer.parseInt(request.getParameter("k"));
-                String semanticPlace = (String) request.getParameter("place");
+                String semanticPlace = request.getParameter("place");
                 LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime, startDateTimeTwo, endDateTimeTwo);
                 ArrayList<String> allStudents = locationReportsDAO.peopleInSemanticPlace(semanticPlace);
                 ArrayList<Location> locationList = locationReportsDAO.topkNextPlaces(k, semanticPlace);

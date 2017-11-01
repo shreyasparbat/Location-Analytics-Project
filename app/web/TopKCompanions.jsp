@@ -4,6 +4,8 @@
     Author     : Ming Xuan
 --%>
 
+<%@page import="model.utility.StudentComparator"%>
+<%@page import="java.util.Collections"%>
 <%@page import="model.entity.Student"%>
 <%@page import="model.entity.Group"%>
 <%@page import="java.util.HashMap"%>
@@ -168,7 +170,7 @@
                         if (value != null && companionList != null && macAddress != null) {
                             out.println("<p> Companion to " + macAddress + "</p>");
                             out.println("<table border='1'>");
-                            out.println("<tr><td> Rank </td> <td> Students </td>");
+                            out.println("<tr><td> Rank </td> <td> Companion </td> <td> Mac-address</td>");
                             for (int i = 1; i <= value; i++) {
                                 out.println("<tr>");
                                 out.println("<td>");
@@ -176,10 +178,19 @@
                                 out.println("</td>");
                                 out.println("<td>");
                                 List<Student> students = companionList.get(i).getOtherStudentsInGroup(macAddress);
+                                //compare mac-addresses
+                                Collections.sort(students, new StudentComparator());
                                 for (Student s : students) {
-                                    out.println(s.getName() + "<br>");
+                                    out.println(s.getEmail() + "<br>");
                                 }
-                                out.println(companionList.get(i).getTotalDuration());
+                                out.println("</td>");
+                                out.println("<td>");
+                                for (Student s : students) {
+                                    out.println(s.getMacAddress()+ "<br>");
+                                }
+                                
+                                //uncomment to see time comparison
+                                //out.println(companionList.get(i).getTotalDuration());
                                 out.println("</td>");
                                 out.println("</tr>");
                             }

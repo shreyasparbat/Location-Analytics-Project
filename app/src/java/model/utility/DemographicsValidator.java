@@ -60,58 +60,46 @@ public class DemographicsValidator {
             ArrayList<String> errorMsgs = new ArrayList<>();
 
             String[] row = iter.next();
-            boolean macAddressCheck = true;
-            boolean passwordCheck = true;
-            boolean emailCheck = true;
-            boolean genderCheck = true;
+            //check for blanks
+            errorMsgs = checkBlanks(row, errorMsgs);
 
-            try {
-                macAddressCheck = checkMacAddress(row[0].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                macAddressCheck = false;
-            }
-            try {
-                passwordCheck = checkPassword(row[2].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                passwordCheck = false;
-            }
-            try {
-                emailCheck = checkEmail(row[3].trim(), row[1].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                emailCheck = false;
-            }
-            try {
-                genderCheck = checkGender(row[4].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                genderCheck = false;
-            }
+            if (errorMsgs.isEmpty()) { // no blank errors
+                boolean macAddressCheck = true;
+                boolean passwordCheck = true;
+                boolean emailCheck = true;
+                boolean genderCheck = true;
 
-            if (!macAddressCheck) {
-                if (row[0].trim().equals("")) {
-                    errorMsgs.add("blank mac address");
-                } else {
-                    errorMsgs.add("invalid mac address");
-
+                try {
+                    macAddressCheck = checkMacAddress(row[0].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    macAddressCheck = false;
                 }
-            }
-            if (!passwordCheck) {
-                if (row[2].trim().equals("")) {
-                    errorMsgs.add("blank password");
-                } else {
+                try {
+                    passwordCheck = checkPassword(row[2].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    passwordCheck = false;
+                }
+                try {
+                    emailCheck = checkEmail(row[3].trim(), row[1].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    emailCheck = false;
+                }
+                try {
+                    genderCheck = checkGender(row[4].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    genderCheck = false;
+                }
+
+                if (!macAddressCheck) {
+                    errorMsgs.add("invalid mac address");
+                }
+                if (!passwordCheck) {
                     errorMsgs.add("invalid password");
                 }
-            }
-            if (!emailCheck) {
-                if (row[3].trim().equals("")) {
-                    errorMsgs.add("blank email");
-                } else {
+                if (!emailCheck) {
                     errorMsgs.add("invalid email");
                 }
-            }
-            if (!genderCheck) {
-                if (row[4].trim().equals("")) {
-                    errorMsgs.add("blank gender");
-                } else {
+                if (!genderCheck) {
                     errorMsgs.add("invalid gender");
                 }
             }
@@ -196,5 +184,28 @@ public class DemographicsValidator {
     private static boolean checkGender(String gender) {
         gender = gender.toUpperCase();
         return (gender.equals("M") || gender.equals("F"));
+    }
+    
+    /**
+     * Validates the data row for blanks, will add the error msg of blank into the errorMsgs
+     *
+     * @param row String[] representing a row of data
+     * @param errorMsgs A list of error messages in string
+     * @return the error list back
+     */
+    private static ArrayList<String> checkBlanks(String[] row, ArrayList<String> errorMsgs) {
+        if (row[0].trim().equals("")) {
+            errorMsgs.add("blank mac address");
+        }
+        if (row[2].trim().equals("")) {
+            errorMsgs.add("blank password");
+        }
+        if (row[3].trim().equals("")) {
+            errorMsgs.add("blank email");
+        }
+        if (row[4].trim().equals("")) {
+            errorMsgs.add("blank gender");
+        }
+        return errorMsgs;
     }
 }

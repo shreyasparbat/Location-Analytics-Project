@@ -6,17 +6,19 @@
 package model.entity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeMap;
+import model.utility.StudentComparator;
 
 /**
  *
  * @author Amanda
  */
-public class Group {
+public class Group implements Comparable<Group>{
     private ArrayList<Student> sGroup;
-    private HashMap<Integer,TimeIntervalsList> locList;
+    private TreeMap<Integer,TimeIntervalsList> locList;
     
     /**
      *default constructor for Group Object
@@ -24,7 +26,7 @@ public class Group {
      */
     public Group(){
         sGroup = new ArrayList<>();
-        locList = new HashMap<>();
+        locList = new TreeMap<>();
     }
     
     /**
@@ -49,7 +51,7 @@ public class Group {
      *  Sets a new record list to the group details
      * @param locaList list of location records entered to replace the existing location records 
      */
-    public void setLocaList(HashMap<Integer,TimeIntervalsList> locaList){
+    public void setLocaList(TreeMap<Integer,TimeIntervalsList> locaList){
         locList = locaList;
     }
     
@@ -72,9 +74,9 @@ public class Group {
     
     /**
      * Returns the location records of the group
-     * @return a HashMap of location records where key is locationID and value is the list of time intervals
+     * @return a TreeMap of location records where key is locationID and value is the list of time intervals
      */
-    public HashMap<Integer,TimeIntervalsList> getRecord(){
+    public TreeMap<Integer,TimeIntervalsList> getRecord(){
         return locList;
     }
     
@@ -145,5 +147,25 @@ public class Group {
             }
         }
         return toReturn;
+    }
+
+    /**
+     * Compares one group with another group
+     * @param g2
+     * @return 
+     */
+    public int compareTo(Group g2){
+        Collections.sort(g2.sGroup, new StudentComparator());
+        Collections.sort(sGroup, new StudentComparator());
+        int size = Math.min(sGroup.size(), g2.sGroup.size());
+        int difference = 0;
+        int k =0; //starting value
+        int sizeDifference = size - 1 - k;
+        while(sizeDifference>0 &&(sGroup.get(k)!=null || g2.sGroup.get(k)!=null)&& difference==0 ){
+            difference=sGroup.get(k).getMacAddress().compareTo(g2.sGroup.get(k).getMacAddress());
+            sizeDifference = size - 1 - k;
+            k++;
+        }
+        return difference;
     }
 }

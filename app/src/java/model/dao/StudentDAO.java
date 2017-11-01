@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import model.entity.Group;
 import model.entity.TimeIntervals;
 import model.entity.TimeIntervalsList;
+import model.utility.AGDStudentComparator;
 import model.utility.DBConnection;
 
 /**
@@ -90,13 +91,13 @@ public class StudentDAO {
 
         //Iterating through student and pair students up with overlaps that last more than 12 minutes
         // location timings for student 
-        HashMap<Integer, TimeIntervalsList> currentStudentLocation = currentStudent.getLocationRecords();
+        TreeMap<Integer, TimeIntervalsList> currentStudentLocation = currentStudent.getLocationRecords();
         for (int j = 0; j < students.size(); j++) {
             Student nextStudent = students.get(j);
             if (!nextStudent.equals(currentStudent)) {
                 Group groupCheck = new Group();
                 groupCheck.addStudent(currentStudent);
-                HashMap<Integer, TimeIntervalsList> nextStudentLocation = nextStudent.getLocationRecords();
+                TreeMap<Integer, TimeIntervalsList> nextStudentLocation = nextStudent.getLocationRecords();
                 Iterator<Integer> iter = currentStudentLocation.keySet().iterator();
 
                 while (iter.hasNext()) {
@@ -140,13 +141,13 @@ public class StudentDAO {
         for (int i = 0; i < students.size(); i++) {
             Student currentStudent = students.get(i);
             // location timings for student 
-            HashMap<Integer, TimeIntervalsList> currentStudentLocation = currentStudent.getLocationRecords();
+            TreeMap<Integer, TimeIntervalsList> currentStudentLocation = currentStudent.getLocationRecords();
             for (int j = i + 1; j < students.size(); j++) {
                 //Group groupCheck = new Group(superGroup.getGroup(), superGroup.getRecord());
                 Group groupCheck = new Group();
                 groupCheck.addStudent(currentStudent);
                 Student nextStudent = students.get(j);
-                HashMap<Integer, TimeIntervalsList> nextStudentLocation = nextStudent.getLocationRecords();
+                TreeMap<Integer, TimeIntervalsList> nextStudentLocation = nextStudent.getLocationRecords();
                 Iterator<Integer> iter = currentStudentLocation.keySet().iterator();
 
                 while (iter.hasNext()) {
@@ -190,10 +191,10 @@ public class StudentDAO {
             boolean toAdd = true;
             for (Group superGroup : toReturn) {
                 if (g.contains(superGroup)) {
-                    HashMap<Integer, TimeIntervalsList> thisGroup = g.getRecord();
-                    HashMap<Integer, TimeIntervalsList> superGroupRecord = superGroup.getRecord();
+                    TreeMap<Integer, TimeIntervalsList> thisGroup = g.getRecord();
+                    TreeMap<Integer, TimeIntervalsList> superGroupRecord = superGroup.getRecord();
                     Iterator<Integer> iter = superGroupRecord.keySet().iterator();
-                    HashMap<Integer, TimeIntervalsList> newRecord = new HashMap<>();
+                    TreeMap<Integer, TimeIntervalsList> newRecord = new TreeMap<>();
 
                     double duration = 0;
                     while (iter.hasNext()) {
@@ -221,24 +222,28 @@ public class StudentDAO {
             }
 
         }
-
+        for (Group g : toReturn) {
+            Collections.sort(g.getGroup(), new AGDStudentComparator());
+        }
         return toReturn;
     }
-    
+
     /**
-     * Merge groups together based on their total duration in a given list of group objects
+     * Merge groups together based on their total duration in a given list of
+     * group objects
+     *
      * @param groups
      * @return list of merged groups
      */
-    public ArrayList<Group> mergeGroups(ArrayList<Group> groups){
+    public ArrayList<Group> mergeGroups(ArrayList<Group> groups) {
         ArrayList<Group> toReturn = new ArrayList<>();
         for (Group g : groups) {
             boolean toAdd = true;
             for (Group mergeGroup : toReturn) {
-                if(g.getTotalDuration() == mergeGroup.getTotalDuration()){
+                if (g.getTotalDuration() == mergeGroup.getTotalDuration()) {
                     mergeGroup.addGroup(g);
                     toAdd = false;
-                } 
+                }
             }
             if (toAdd) {
                 toReturn.add(g);
@@ -246,8 +251,6 @@ public class StudentDAO {
         }
         return toReturn;
     }
-
-   
 
     /**
      * inserts time interval records into each student within the given time
@@ -267,7 +270,7 @@ public class StudentDAO {
         conn = DBConnection.createConnection();
         stmt = conn.prepareStatement("select d.macaddress, time,locationid from demograph d, location l"
                 + " where d.macaddress = l.macaddress"
-                + " and  l.time between ? and ? "
+                + " and l.time >= ? and l.time < ? "
                 + " order by d.macaddress, time"
                 + " limit 1000000;");
         stmt.setTimestamp(1, startDateTime);
@@ -294,7 +297,7 @@ public class StudentDAO {
                     //create time interval of previous location id
                     //[previoustimestamp is the start, current timestamp (where location id changes) is the end
                     TimeIntervals intervalDuration = new TimeIntervals(previousTimestamp, timestamp);
-                    HashMap<Integer, TimeIntervalsList> locationTracker = student.getLocationRecords();
+                    TreeMap<Integer, TimeIntervalsList> locationTracker = student.getLocationRecords();
                     if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
                         locationTracker.put(previousLocID, new TimeIntervalsList());
                     }
@@ -314,7 +317,7 @@ public class StudentDAO {
                         Timestamp newEndTime = new Timestamp(previousTimestamp.getTime() + 5 * 60 * 1000);
                         intervalDuration = new TimeIntervals(previousTimestamp, newEndTime);
                     }
-                    HashMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
+                    TreeMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
                     if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
                         locationTracker.put(previousLocID, new TimeIntervalsList());
                     }
@@ -342,7 +345,7 @@ public class StudentDAO {
             intervalDuration = new TimeIntervals(previousTimestamp, newEndTime);
         }
 
-        HashMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
+        TreeMap<Integer, TimeIntervalsList> locationTracker = previousStudent.getLocationRecords();
         if (!locationTracker.containsKey(previousLocID)) { // if it is a new location id
             locationTracker.put(previousLocID, new TimeIntervalsList());
         }

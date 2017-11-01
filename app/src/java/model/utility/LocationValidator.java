@@ -56,73 +56,66 @@ public class LocationValidator {
         while (iter.hasNext()) {
             ArrayList<String> errorMsgs = new ArrayList<>();
             String[] row = iter.next();
-            boolean timeCheck = true;
-            boolean locationCheck = true;
-            boolean macAddressCheck = true;
-            try {
-                timeCheck = checkTime(row[0].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                timeCheck = false;
-            }
-            try {
-                locationCheck = checkLocation(row[2].trim(), conn, bootstrapProcess);
-            } catch (ArrayIndexOutOfBoundsException e) {
-                locationCheck = false;
-            }
-            try {
-                macAddressCheck = checkMacAddress(row[1].trim());
-            } catch (ArrayIndexOutOfBoundsException e) {
-                macAddressCheck = false;
-            }
-            boolean duplicateRow = false; //initially false
-            boolean invalidRow = false;
-            if (timeCheck && locationCheck && macAddressCheck) {
-                String key = row[1] + row[0];
-                if (mapCheck.containsKey(key)) {
-                    duplicateRow = true;
-                } else {
-                    if (!bootstrapProcess) { //additional step for update
-                        PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM location WHERE macaddress = ? and time = ? ");
-                        stmt.setString(1, row[1].trim());
-                        stmt.setTimestamp(2, Timestamp.valueOf(row[0].trim()));
-                        ResultSet rs = stmt.executeQuery();
-                        if (rs.next() == true) {
-                            invalidRow = true;
-                            duplicateRow = true;
+            //check blanks
+            errorMsgs = checkBlanks(row, errorMsgs);
+            if (errorMsgs.isEmpty()) {
+                boolean timeCheck = true;
+                boolean locationCheck = true;
+                boolean macAddressCheck = true;
+                try {
+                    timeCheck = checkTime(row[0].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    timeCheck = false;
+                }
+                try {
+                    locationCheck = checkLocation(row[2].trim(), conn, bootstrapProcess);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    locationCheck = false;
+                }
+                try {
+                    macAddressCheck = checkMacAddress(row[1].trim());
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    macAddressCheck = false;
+                }
+                boolean duplicateRow = false; //initially false
+                boolean invalidRow = false;
+                if (timeCheck && locationCheck && macAddressCheck) {
+                    String key = row[1] + row[0];
+                    if (mapCheck.containsKey(key)) {
+                        duplicateRow = true;
+                    } else {
+                        if (!bootstrapProcess) { //additional step for update
+                            PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM location WHERE macaddress = ? and time = ? ");
+                            stmt.setString(1, row[1].trim());
+                            stmt.setTimestamp(2, Timestamp.valueOf(row[0].trim()));
+                            ResultSet rs = stmt.executeQuery();
+                            if (rs.next() == true) {
+                                invalidRow = true;
+                                duplicateRow = true;
+                            }
+                            stmt.close();
                         }
-                        stmt.close();
+                    }
+                    if (invalidRow == false) {
+                        String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim();
+                        numDLocaRowsValidated++;
+                        mapCheck.put(key, rowData);
                     }
                 }
-                if (invalidRow == false) {
-                    String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim();
-                    numDLocaRowsValidated++;
-                    mapCheck.put(key, rowData);
-                }
-            }
-            if (!timeCheck) {
-                if (row[0].trim().equals("")) {
-                    errorMsgs.add("blank timestamp");
-                } else {
+                if (!timeCheck) {
                     errorMsgs.add("invalid timestamp");
                 }
-            }
-            if (!macAddressCheck) {
-                if(row[1].trim().equals("")){
-                    errorMsgs.add("blank mac address");
-                }else{
+                if (!macAddressCheck) {
                     errorMsgs.add("invalid mac address");
                 }
-            }
-            if (!locationCheck) {
-                if (row[2].trim().equals("")) {
-                    errorMsgs.add("blank location");
-                } else {
+                if (!locationCheck) {
                     errorMsgs.add("invalid location");
                 }
-            }           
-            if (duplicateRow) {
-                errorMsgs.add("duplicate row");
+                if (duplicateRow) {
+                    errorMsgs.add("duplicate row");
+                }
             }
+
             if (!errorMsgs.isEmpty()) {
                 locationErrors.put(index, errorMsgs);
             }
@@ -192,4 +185,24 @@ public class LocationValidator {
 
     }
 
+    /**
+     * Validates the data row for blanks, will add the error msg of blank into
+     * the errorMsgs
+     *
+     * @param row String[] representing a row of data
+     * @param errorMsgs A list of error messages in string
+     * @return the error list back
+     */
+    private static ArrayList<String> checkBlanks(String[] row, ArrayList<String> errorMsgs) {
+        if (row[0].trim().equals("")) {
+            errorMsgs.add("blank timestamp");
+        }
+        if (row[1].trim().equals("")) {
+            errorMsgs.add("blank mac address");
+        }
+        if (row[2].trim().equals("")) {
+            errorMsgs.add("blank location");
+        }
+        return errorMsgs;
+    }
 }
