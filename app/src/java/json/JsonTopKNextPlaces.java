@@ -13,6 +13,7 @@ import is203.JWTUtility;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,13 +30,16 @@ import model.entity.Student;
 import model.utility.JsonUtility;
 import model.utility.StudentComparator;
 import model.utility.TimeUtility;
+import model.entity.Location;
+import model.utility.LocationComparator;
+import model.utility.TopKUtility;
 
 /**
  *
  * @author amanda
  */
-@WebServlet(name = "JsonTopKPopularPlaces", urlPatterns = {"/json/top-k-popular-places"})
-public class JsonTopKPopularPlaces extends HttpServlet {
+@WebServlet(name = "JsonTopKNextPlaces", urlPatterns = {"/json/top-k-next-places"})
+public class JsonTopKNextPlaces extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -57,10 +61,16 @@ public class JsonTopKPopularPlaces extends HttpServlet {
 
         //retrieve request parameters
         String k = request.getParameter("k");
-        Integer kValue = Integer.parseInt(request.getParameter("k"));
+        int kValue = Integer.parseInt(k);
+        String semanticPlace = request.getParameter("origin");
+        out.println("place" + semanticPlace);
         String date = request.getParameter("date");
         String token = request.getParameter("token");
+
+        List<String> semanticPlacesList = TopKUtility.getSemanticPlaces();
+
         boolean kValid = true;
+        boolean semanticPlaceValid = true;
         boolean dateValid = true;
         boolean tokenValid = true;
         java.util.ArrayList<Timestamp> timeList = new java.util.ArrayList<>();
@@ -88,6 +98,19 @@ public class JsonTopKPopularPlaces extends HttpServlet {
         JsonArray jArray = new JsonArray();
         if (!(kValid && dateValid && tokenValid)) { // if error
             jsonOutput.addProperty("status", "error");
+
+            if (!(semanticPlacesList.contains(semanticPlace))) {
+                semanticPlaceValid = false;
+                if (!semanticPlaceValid) {
+                    if (semanticPlace == null) {
+                        jArray.add("missing origin");
+                    } else if (semanticPlace.trim().equals("")) {
+                        jArray.add("blank origin");
+                    } else {
+                        jArray.add("invalid origin");
+                    }
+                }
+            }
 
             if (!kValid) {
                 if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
@@ -118,22 +141,40 @@ public class JsonTopKPopularPlaces extends HttpServlet {
         } else {
             Timestamp startDateTime = timeList.get(0);
             Timestamp endDateTime = timeList.get(1);
+            out.println("date " + startDateTime + " " + endDateTime);
             LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
-            // key is semantic place
-            // value is the count
-            LinkedHashMap<String, Integer> popularPlacesList = locationReportDAO.topkPopularPlaces(kValue);
+            //why
+            ArrayList<Location> nextPlaceList = locationReportDAO.topkNextPlaces(kValue, semanticPlace);
+            ArrayList<String> totalUsers = locationReportDAO.peopleInSemanticPlace(semanticPlace);
+            out.println("users" + totalUsers.size());
+            
+            out.println("nextplacelist" + nextPlaceList.size());
+            
+            Collections.sort(nextPlaceList, new LocationComparator());
             jsonOutput.addProperty("status", "success");
             int i = 1;
-            Iterator<String> iter = popularPlacesList.keySet().iterator();
-            while (i <= rank && iter.hasNext()) {
-                String key = iter.next();
-                int count = popularPlacesList.get(key);
-                JsonObject ranks = new JsonObject();
-                ranks.addProperty("rank", i);
-                ranks.addProperty("semanticplace",key);
-                ranks.addProperty("count", count);
-                i++;
+            int countTotal = 0;
+            for (Location l : nextPlaceList) {
+                countTotal += l.getNumberOfStudents();
+
             }
+
+            jsonOutput.addProperty("total-users", totalUsers.size());
+            jsonOutput.addProperty("total-next-place-users", countTotal);
+            while (i <= rank) {
+
+                for (Location l : nextPlaceList) {
+                    int countStudents = l.getNumberOfStudents();
+                    JsonObject ranks = new JsonObject();
+                    ranks.addProperty("rank", i);
+                    ranks.addProperty("semantic-place", l.getSemanticPlace());
+                    ranks.addProperty("count", countStudents);
+                    jArray.add(ranks);
+                }
+                i++;
+
+            }
+
             jsonOutput.add("results", jArray);
         }
 
@@ -156,7 +197,6 @@ public class JsonTopKPopularPlaces extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
 
     /**
      * Handles the HTTP <code>POST</code> method.
