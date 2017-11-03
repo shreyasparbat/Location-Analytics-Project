@@ -4,6 +4,7 @@
     Author     : shrey
 --%>
 
+<%@page import="java.util.TreeMap"%>
 <%@page import="model.utility.BreakdownUtility"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
@@ -180,9 +181,9 @@
             <!-- Instantiating required variables -->
             <%
                 //maps
-                HashMap<String, Integer> percentageOneList = new HashMap<>();
-                HashMap<String, HashMap<String, Integer>> percentageTwoList = new HashMap<>();
-                HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList = new HashMap<>();
+                TreeMap<String, Integer> percentageOneList = new TreeMap<>();
+                TreeMap<String, TreeMap<String, Integer>> percentageTwoList = new TreeMap<>();
+                TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList = new TreeMap<>();
 
                 //List of json strings to be used for printing
                 ArrayList<String> gsonStringList = new ArrayList<>();
@@ -196,7 +197,7 @@
             <!-- Printing chart according number of options requested -->
             <%  //printing percentageOneList if it exits
                 if (request.getAttribute("percentageOneList") != null) {
-                    percentageOneList = (HashMap<String, Integer>) request.getAttribute("percentageOneList");
+                    percentageOneList = (TreeMap<String, Integer>) request.getAttribute("percentageOneList");
 
                     //making bar chart
                     try {
@@ -211,7 +212,7 @@
 
                 //printing percentageTwoList if it exits
                 if (request.getAttribute("percentageTwoList") != null) {
-                    percentageTwoList = (HashMap<String, HashMap<String, Integer>>) request.getAttribute("percentageTwoList");
+                    percentageTwoList = (TreeMap<String, TreeMap<String, Integer>>) request.getAttribute("percentageTwoList");
 
                     //getting out put list
                     ArrayList<String> outputArrayList = new ArrayList<>();
@@ -229,7 +230,7 @@
 
                 //printing percentageAllList if it exits
                 if (request.getAttribute("percentageAllList") != null) {
-                    percentageAllList = (HashMap<String, HashMap<String, HashMap<String, Integer>>>) request.getAttribute("percentageAllList");
+                    percentageAllList = (TreeMap<String, TreeMap<String, TreeMap<String, Integer>>>) request.getAttribute("percentageAllList");
 
                     //getting out put list
                     ArrayList<String> outputArrayList = new ArrayList<>();

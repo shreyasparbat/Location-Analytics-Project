@@ -151,11 +151,13 @@
                             duration += seconds;
                             out.println("<h2>" + place + " " + seconds + "</h2><br>");
                             // for reference *testing
-                            //ArrayList<TimeIntervals> timeList = records.get(place).getList();
-                            //for (TimeIntervals ti : timeList) {
-                              //  out.println(ti.getStartTime().toString() + " - " + ti.getEndTime().toString());
-                                //out.println("<br>");
-                            //}
+                            /*
+                            ArrayList<TimeIntervals> timeList = records.get(place).getList();
+                            for (TimeIntervals ti : timeList) {
+                                out.println(ti.getStartTime().toString() + " - " + ti.getEndTime().toString());
+                                out.println("<br>");  
+                            }
+                            */
                         }
                         out.println("</td>");
 

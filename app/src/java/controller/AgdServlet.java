@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
@@ -28,6 +30,8 @@ import model.dao.AgdDAO;
 import model.dao.StudentDAO;
 import model.entity.Group;
 import model.entity.Student;
+import model.entity.TimeIntervals;
+import model.entity.TimeIntervalsList;
 import model.utility.AGDComparator;
 import model.utility.TimeUtility;
 
@@ -40,7 +44,8 @@ public class AgdServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods. Returns an arraylist of groups to the view page or returns an error message if date time format is wrong
+     * methods. Returns an arraylist of groups to the view page or returns an
+     * error message if date time format is wrong
      *
      * @param request servlet request
      * @param response servlet response
@@ -69,8 +74,10 @@ public class AgdServlet extends HttpServlet {
         //out.println(dateTime);
         AgdDAO agdDao = new AgdDAO();
         StudentDAO sDAO = new StudentDAO();
-        HashMap<String, Student> studentList = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
+        TreeMap<String, Student> studentList = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
         ArrayList<Group> list = agdDao.getStudentGroups(startDateTime, endDateTime, sDAO, studentList);
+        
+        
         //sort groups
         Collections.sort(list, new AGDComparator());
         request.setAttribute("studentCount", studentList.size());
@@ -79,7 +86,6 @@ public class AgdServlet extends HttpServlet {
         RequestDispatcher fwd = request.getRequestDispatcher("AutomaticGroupIdentification.jsp");
         fwd.forward(request, response);
         return;
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static model.dao.LocationReportsDAO.startDateTime;
@@ -39,13 +40,15 @@ public class AgdDAO {
      * range
      * @return an arraylist of groups of students
      */
-    public ArrayList<Group> getStudentGroups(Timestamp startDateTime, Timestamp endDateTime, StudentDAO sDAO, HashMap<String, Student> studentList) {
+    public ArrayList<Group> getStudentGroups(Timestamp startDateTime, Timestamp endDateTime, StudentDAO sDAO, TreeMap<String, Student> studentList) {
 
         ArrayList<Group> studentGroups = new ArrayList<>();
 
         try {
-            if (startDateTime != null && endDateTime != null && !studentList.isEmpty()) {
+            if (startDateTime != null && endDateTime != null ) {
                 sDAO.importDataFromDatabase(studentList, startDateTime, endDateTime);
+                
+                
                 studentGroups = sDAO.getStudentGroups();
                 studentGroups = sDAO.getSuperGroup(studentGroups);
             }

@@ -7,9 +7,9 @@ package model.entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 import model.utility.StudentComparator;
 
 /**
@@ -148,7 +148,7 @@ public class Group implements Comparable<Group>{
         }
         return toReturn;
     }
-
+    
     /**
      * Compares one group with another group
      * @param g2

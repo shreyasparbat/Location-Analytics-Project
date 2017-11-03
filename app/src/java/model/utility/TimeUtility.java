@@ -33,7 +33,7 @@ public class TimeUtility {
         int days = Integer.parseInt(dateTime.substring(8, 10));
         int months = Integer.parseInt(dateTime.substring(5, 7));
         int years = Integer.parseInt(dateTime.substring(0, 4));
-
+        
         //finding correct mins, hrs, days, months and years for endDateTime
         for (int i = 0; i < 15; i++) {
             mins++;
@@ -83,15 +83,39 @@ public class TimeUtility {
      */
     public static ArrayList<Timestamp> getProcessingWindow(String dateTime) throws IllegalArgumentException {
 
-        //SQL Timestamp obj for endDateTime of processing window
-        Timestamp endDateTime = Timestamp.valueOf(dateTime);
-
         //getting startDateTime
         int mins = Integer.parseInt(dateTime.substring(14, 16));
         int hrs = Integer.parseInt(dateTime.substring(11, 13));
         int days = Integer.parseInt(dateTime.substring(8, 10));
         int months = Integer.parseInt(dateTime.substring(5, 7));
         int years = Integer.parseInt(dateTime.substring(0, 4));
+        int sec = Integer.parseInt(dateTime.substring(17));
+        
+        //check time format
+        if(hrs<0||hrs>23 ||mins<0||mins>59||sec<0||sec>59){
+            throw new IllegalArgumentException();
+        }
+        
+        //valid date month
+        switch (months){
+            case 2:
+                if(years%4==0){ //leap year
+                    if(days>29){  // more than 29 days
+                        throw new IllegalArgumentException();
+                    }
+                }else{
+                    if(days>28){
+                        throw new IllegalArgumentException();
+                    }
+                }
+                break;
+                
+            case 4: case 6: case 9: case 11:
+                if(days>30){
+                    throw new IllegalArgumentException();
+                }
+            break;
+        }
 
         //finding correct mins, hrs, days, months and years for startDateTime
         for (int i = 0; i < 15; i++) {
@@ -134,7 +158,9 @@ public class TimeUtility {
                 }
             }
         }
-
+        
+        //SQL Timestamp obj for endDateTime of processing window
+        Timestamp endDateTime = Timestamp.valueOf(dateTime);
         //forming startDateTime Timestamp object
         Timestamp startDateTime = Timestamp.valueOf(getDateTimeString(mins, hrs, days, months, years));
 

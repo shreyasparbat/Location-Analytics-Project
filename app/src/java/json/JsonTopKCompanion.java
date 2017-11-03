@@ -138,20 +138,23 @@ public class JsonTopKCompanion extends HttpServlet {
             jsonOutput.addProperty("status", "success");
             int i = 1;
             while (i <= rank) {
-                List<Student> students = companionList.get(i).getOtherStudentsInGroup(macAddress);
-                Collections.sort(students, new StudentComparator());                
-                for (Student s : students) {
-                    JsonObject ranks = new JsonObject();
-                    ranks.addProperty("rank", i);
-                    ranks.addProperty("companion", s.getEmail());
-                    ranks.addProperty("mac-address", s.getMacAddress());
-                    Double durationD = companionList.get(i).getTotalDuration();
-                    int duration = durationD.intValue();
-                    ranks.addProperty("time-together", duration);
-                    jArray.add(ranks);
+                Group studentGroups = companionList.get(i);
+                if (studentGroups != null) {
+                    List<Student> students = studentGroups.getOtherStudentsInGroup(macAddress);
+                    Collections.sort(students, new StudentComparator());
+                    for (Student s : students) {
+                        JsonObject ranks = new JsonObject();
+                        ranks.addProperty("rank", i);
+                        ranks.addProperty("companion", s.getEmail());
+                        ranks.addProperty("mac-address", s.getMacAddress());
+                        Double durationD = companionList.get(i).getTotalDuration();
+                        int duration = durationD.intValue();
+                        ranks.addProperty("time-together", duration);
+                        jArray.add(ranks);
+                    }
                 }
                 i++;
-                
+
             }
 
             jsonOutput.add("results", jArray);

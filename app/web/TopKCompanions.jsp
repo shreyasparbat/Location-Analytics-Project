@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <%
-        List<String[]> macAddresses = TopKUtility.getStudentMacAddress();
+        List<String> macAddresses = TopKUtility.getStudentMacAddress();
         String macAddress = (String) request.getAttribute("student");
         Integer value = (Integer) request.getAttribute("k");
         HashMap<Integer, Group> companionList = (HashMap<Integer, Group>) request.getAttribute("companions");
@@ -126,8 +126,8 @@
                             <br> Select Student: 
                             <select name="user">
                                 <%
-                                    for (String studentRow[] : macAddresses) {
-                                        out.println("<option value = \"" + studentRow[0] + "\">" + studentRow[1] + "</option>");
+                                    for (String student : macAddresses) {
+                                        out.println("<option value = \"" + student + "\">" + student + "</option>");
                                     }
                                 %>
                             </select>

@@ -17,6 +17,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -55,142 +57,124 @@ public class BreakdownReport extends HttpServlet {
         //creating gson object for output 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject jsonOutput = new JsonObject();
+        String token = request.getParameter("token");
+        String order = request.getParameter("order");
+        String date = request.getParameter("date");
+        ArrayList<Timestamp> processingWindowArrayList = new ArrayList<>();
+        boolean orderValid = true;
+        boolean dateValid = true;
+        boolean tokenValid = true;
 
         try {
-            //verify token 
-            String token = request.getParameter("token");
-            if (token != null && token.length() > 0) {
-                String verification = JWTUtility.verify(token, "secret");
-
-                if (verification != null) {
-                    //retrieve request parameters (date)
-                    String date = request.getParameter("date");
-
-                    //Make dateTime string of correct format
-                    String dateTime = date.substring(0, 10) + " " + date.substring(11, date.length());
-
-                    //get processing window
-                    ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
-                    Timestamp startDateTime = processingWindowArrayList.get(0);
-                    Timestamp endDateTime = processingWindowArrayList.get(1);
-
-                    //retrieve request parameters (order)
-                    String order = request.getParameter("order");
-                    String[] orderList = order.split(",");
-
-                    //get HashMap of all students in the SIS building during processing window
-                    StudentDAO sDAO = new StudentDAO();
-                    HashMap<String, Student> studentMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
-
-                    switch (orderList.length) {
-                        case 1:
-                            String option = orderList[0];
-                            //no errors
-                            if (isCorrectOption(option)) {
-                                //get breakdown map
-                                HashMap<String, Integer> percentageOneList = bu.percentageOneOption(option, studentMap);
-                                jsonOutput.addProperty("status", "success");
-                                jsonOutput.add("breakdown", printInnerMap(percentageOneList));
-
-                            } else {
-                                //invalid options
-                                jsonOutput.addProperty("status", "error");
-                                JsonArray jsonArray = new JsonArray();
-                                jsonArray.add("invalid order");
-                                jsonOutput.add("messages", jsonArray);
-                            }
-                            break;
-
-                        case 2:
-                            String option1 = orderList[0];
-                            String option2 = orderList[1];
-
-                            //check for correct option 
-                            if (isCorrectOption(option1) && isCorrectOption(option2)) {
-                                //check for overlap
-                                if (option1.equals(option2)) {
-                                    //invalid options
-                                    jsonOutput.addProperty("status", "error");
-                                    JsonArray jsonArray = new JsonArray();
-                                    jsonArray.add("invalid order");
-                                    jsonOutput.add("messages", jsonArray);
-                                } else {
-                                    //get breakdown map
-                                    HashMap<String, HashMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option2, studentMap);
-                                    jsonOutput.addProperty("status", "success");
-                                    jsonOutput.add("breakdown", printMiddleMap(percentageTwoList));
-                                }
-
-                            } else {
-                                //invalid options
-                                jsonOutput.addProperty("status", "error");
-                                JsonArray jsonArray = new JsonArray();
-                                jsonArray.add("invalid order");
-                                jsonOutput.add("messages", jsonArray);
-                            }
-                            break;
-
-                        case 3:
-                            String optionA = orderList[0];
-                            String optionB = orderList[1];
-                            String optionC = orderList[2];
-
-                            //check for correct option 
-                            if (isCorrectOption(optionA) && isCorrectOption(optionB) && isCorrectOption(optionC)) {
-                                //check for overlap
-                                if (optionA.equals(optionB) || optionA.equals(optionC) || optionB.equals(optionC)) {
-                                    //invalid options
-                                    jsonOutput.addProperty("status", "error");
-                                    JsonArray jsonArray = new JsonArray();
-                                    jsonArray.add("invalid order");
-                                    jsonOutput.add("messages", jsonArray);
-                                } else {
-                                    //get breakdown map
-                                    HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(optionA, optionB, optionC, studentMap);
-                                    jsonOutput.addProperty("status", "success");
-                                    jsonOutput.add("breakdown", printOuterMap(percentageAllList));
-                                }
-                            } else {
-                                //invalid options
-                                jsonOutput.addProperty("status", "error");
-                                JsonArray jsonArray = new JsonArray();
-                                jsonArray.add("invalid order");
-                                jsonOutput.add("messages", jsonArray);
-                            }
-                            break;
-                    }
-                }
-            } else {
-                // token parameter is missing or is a "" token
-                jsonOutput.addProperty("status", "error");
-                JsonArray jsonArray = new JsonArray();
-                if (token == null) {
-                    jsonArray.add("missing token");
-                } else if (token.length() == 0) {
-                    jsonArray.add("blank token");
-                }
-                jsonOutput.add("messages", jsonArray);
-            }
-
-        } catch (JWTException ex) {
-            //invalid token 
-            jsonOutput.addProperty("status", "error");
-            JsonArray jsonArray = new JsonArray();
-            jsonArray.add("invalid token");
-            jsonOutput.add("messages", jsonArray);
-        } catch (IllegalArgumentException e) {
-            //invalid date  
-            jsonOutput.addProperty("status", "error");
-            JsonArray jsonArray = new JsonArray();
-            jsonArray.add("invalid date");
-            jsonOutput.add("messages", jsonArray);
-        } finally {
-            String prettyPrint = gson.toJson(jsonOutput);
-            out.println(prettyPrint);
+            String verification = JWTUtility.verify(token, "secret");
+        } catch (Exception ex) { //catch JWTException && null pointer
+            tokenValid = false;
         }
+        try {
+            date = date.replace("T", " ");
+            processingWindowArrayList = TimeUtility.getProcessingWindow(date);
+        } catch (Exception e) { // catch IllegalArgumentException && null pointer
+            dateValid = false;
+        }
+        orderValid = isValidOption(order);
+
+        JsonArray jArray = new JsonArray();
+        if (!(orderValid && dateValid && tokenValid)) {
+            //invalid 
+            jsonOutput.addProperty("status", "error");
+            if (!orderValid) {
+                if (order == null) {
+                    jArray.add("missing order");
+                } else if (order.trim().equals("")) {
+                    jArray.add("blank order");
+                } else {
+                    jArray.add("invalid order");
+                }
+            }
+            if (!dateValid) {
+                if (date == null) {
+                    jArray.add("missing date");
+                } else if (date.trim().equals("")) {
+                    jArray.add("blank date");
+                } else {
+                    jArray.add("invalid date");
+                }
+            }
+            if (!tokenValid) {
+                if (token == null) {
+                    jArray.add("missing token");
+                } else if (token.trim().equals("")) {
+                    jArray.add("blank token");
+                } else {
+                    jArray.add("invalid token");
+                }
+            }
+            jsonOutput.add("messages", jArray);
+        } else {
+            Timestamp startDateTime = processingWindowArrayList.get(0);
+            Timestamp endDateTime = processingWindowArrayList.get(1);
+
+            String[] orderList = order.split(",");
+
+            //get HashMap of all students in the SIS building during processing window
+            StudentDAO sDAO = new StudentDAO();
+            TreeMap<String, Student> stMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
+            TreeMap<String, Student> studentMap = new TreeMap<String, Student>(stMap);
+            String option1;
+            String option2;
+            String option3;
+            switch (orderList.length) {
+                case 1:
+                    String option = orderList[0];
+                    //no errors
+                    if (isCorrectOption(option)) {
+                        //get breakdown map
+                        TreeMap<String, Integer> percentageOneList = bu.percentageOneOption(option, studentMap);
+                        jsonOutput.addProperty("status", "success");
+                        jsonOutput.add("breakdown", printInnerMap(percentageOneList,option));
+
+                    }
+                    break;
+
+                case 2:
+                    option1 = orderList[0];
+                    option2 = orderList[1];
+
+                    //check for correct option 
+                    if (isCorrectOption(option1) && isCorrectOption(option2)) {
+
+                        //get breakdown map
+                        TreeMap<String, TreeMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option2, studentMap);
+                        jsonOutput.addProperty("status", "success");
+                        jsonOutput.add("breakdown", printMiddleMap(percentageTwoList,option2,option1));
+
+                    }
+                    break;
+
+                case 3:
+                    option1 = orderList[0];
+                    option2 = orderList[1];
+                    option3 = orderList[2];
+
+                    //check for correct option 
+                    if (isCorrectOption(option1) && isCorrectOption(option2) && isCorrectOption(option3)) {
+                        //get breakdown map
+                        TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(option1, option2, option3, studentMap);
+                        jsonOutput.addProperty("status", "success");
+                        jsonOutput.add("breakdown", printOuterMap(percentageAllList,option3,option2,option1));
+
+                    }
+                    break;
+
+            }
+        }
+
+        String prettyPrint = gson.toJson(jsonOutput);
+        out.println(prettyPrint);
+
     }
 
-    public JsonArray printInnerMap(HashMap<String, Integer> innerMap) {
+    public JsonArray printInnerMap(TreeMap<String, Integer> innerMap, String option) {
         //jsonArray to be outputed
         JsonArray outputJsonArray = new JsonArray();
 
@@ -205,14 +189,15 @@ public class BreakdownReport extends HttpServlet {
 
             //adding to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            innerMapJson.addProperty(innerKey, innerMapValue);
+            innerMapJson.addProperty(option, innerKey);
+            innerMapJson.addProperty("count",innerMapValue);
             outputJsonArray.add(innerMapJson);
         }
 
         return outputJsonArray;
     }
 
-    public JsonArray printMiddleMap(HashMap<String, HashMap<String, Integer>> middleMap) {
+    public JsonArray printMiddleMap(TreeMap<String, TreeMap<String, Integer>> middleMap, String option2, String option1) {
         //jsonArray to be outputed
         JsonArray outputJsonArray = new JsonArray();
 
@@ -222,13 +207,21 @@ public class BreakdownReport extends HttpServlet {
         while (middleMapKeysIter.hasNext()) {
             //store the key into output list
             String middlekey = middleMapKeysIter.next();
-
+            
+            //getting name and count from key
+            String[] middleKeyList = middlekey.split(":");
+            String name = middleKeyList[0].trim();
+            String count = middleKeyList[1].trim();
             //get inner map
-            HashMap<String, Integer> innerMap = middleMap.get(middlekey);
+            TreeMap<String, Integer> innerMap = middleMap.get(middlekey);
+            
 
             //adding inner map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            innerMapJson.add("breakdown", printInnerMap(innerMap));
+            innerMapJson.addProperty(option2,name);
+            innerMapJson.addProperty("count",count);
+            innerMapJson.add("breakdown", printInnerMap(innerMap,option1));
+            
             outputJsonArray.add(innerMapJson);
         }
 
@@ -236,7 +229,7 @@ public class BreakdownReport extends HttpServlet {
         return outputJsonArray;
     }
 
-    public JsonArray printOuterMap(HashMap<String, HashMap<String, HashMap<String, Integer>>> outerMap) {
+    public JsonArray printOuterMap(TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> outerMap, String option3, String option2, String option1) {
         //jsonArray to be outputed
         JsonArray outputJsonArray = new JsonArray();
 
@@ -245,14 +238,21 @@ public class BreakdownReport extends HttpServlet {
 
         while (outerMapKeysIter.hasNext()) {
             //store the key into output list
-            String middlekey = outerMapKeysIter.next();
+            String outerkey = outerMapKeysIter.next();
+            
+            //getting name and count from key
+            String[] middleKeyList = outerkey.split(":");
+            String name = middleKeyList[0].trim();
+            String count = middleKeyList[1].trim();
 
             //get middle map
-            HashMap<String, HashMap<String, Integer>> middleMap = outerMap.get(middlekey);
+            TreeMap<String, TreeMap<String, Integer>> middleMap = outerMap.get(outerkey);
 
             //adding middle map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            innerMapJson.add("breakdown", printMiddleMap(middleMap));
+            innerMapJson.addProperty(option3, name);
+            innerMapJson.addProperty("count",count);
+            innerMapJson.add("breakdown", printMiddleMap(middleMap,option2,option1));
             outputJsonArray.add(innerMapJson);
         }
 
@@ -262,6 +262,27 @@ public class BreakdownReport extends HttpServlet {
 
     public boolean isCorrectOption(String option) {
         return option.equals("year") || option.equals("gender") || option.equals("school");
+    }
+
+    public boolean isValidOption(String option) {
+        if (option == null || option.endsWith(",,")) {
+            return false;
+        }
+        ArrayList<String> options = new ArrayList<>();
+        options.add("year");
+        options.add("gender");
+        options.add("school");
+
+        String[] array = option.split(",");
+        for (String words : array) { //loops the entire list
+            if (!options.contains(words)) {  //if options doesnt contain the word
+                return false;
+            } else {
+                options.remove(words); //remove from list
+            }
+        }
+
+        return true;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

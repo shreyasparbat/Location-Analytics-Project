@@ -25,15 +25,14 @@ public class TopKUtility {
      * A method that calls the database and returns a list of string array where the first entry of the array is a student mac address and second entry is name
      * @return list of student's macaddress and email
      */
-    public static List<String[]> getStudentMacAddress(){
-        List<String[]> studentMA = new ArrayList<>();
+    public static List<String> getStudentMacAddress(){
+        List<String> studentMA = new ArrayList<>();
         try {
             Connection conn = DBConnection.createConnection();
-            PreparedStatement stmt = conn.prepareStatement("select distinct macaddress,name from demograph limit 10000;");
+            PreparedStatement stmt = conn.prepareStatement("select distinct macaddress from location limit 10000;");
             ResultSet rs = stmt.executeQuery();
             while(rs.next()){
-                String[] row = new String[]{rs.getString(1),rs.getString(2)};
-                studentMA.add(row);
+                studentMA.add(rs.getString(1));
             }
             DBConnection.close(conn, stmt, rs);
         } catch (SQLException ex) {

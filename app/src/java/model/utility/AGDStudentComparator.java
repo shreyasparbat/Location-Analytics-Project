@@ -10,14 +10,17 @@ import model.entity.Student;
 
 /**
  *
- * @author Ming Xuan
+ * @author Joel Tay
  */
 public class AGDStudentComparator implements Comparator<Student>{
     
     public int compare(Student s1, Student s2){
         int difference = s1.getEmail().compareToIgnoreCase(s2.getEmail());
-        if(difference ==0){
-            difference = s1.getMacAddress().compareTo(s2.getMacAddress());
+        if(s1.getEmail().equals("")||s2.getEmail().equals("")){
+            difference = 0-difference;
+            if(difference==0){
+                difference = s1.getMacAddress().compareTo(s2.getMacAddress());
+            }
         }
         return difference;
     }

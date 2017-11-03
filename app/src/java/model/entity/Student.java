@@ -31,6 +31,18 @@ public class Student{
         locationTracker = new TreeMap<>();
     }
     
+    /**
+     * Constructs a new Student object with the unique macAddress
+     * @param macAddress String of mac address of user device
+     */
+    public Student(String macAddress){
+        this.macAddress = macAddress;
+        name="";
+        email="";
+        gender=0; //default value
+        locationTracker=new TreeMap<>();
+    }
+    
     //getters
 
     /**

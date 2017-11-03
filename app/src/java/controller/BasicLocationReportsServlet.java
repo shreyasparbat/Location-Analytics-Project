@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -91,12 +92,12 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
                 //Getting HashMap of all students in the SIS building during processing window
                 StudentDAO sDAO = new StudentDAO();
-                HashMap<String, Student> studentMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
+                TreeMap<String, Student> studentMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
 
                 //Check which function to call according to options selected
                 if (option2.equals("none2") && option3.equals("none3")) {
                     //calls one value function if only the first option is filled
-                    HashMap<String, Integer> percentageOneList = bu.percentageOneOption(option1, studentMap);
+                    TreeMap<String, Integer> percentageOneList = bu.percentageOneOption(option1, studentMap);
 
                     //send back to View page
                     request.setAttribute("percentageOneList", percentageOneList);
@@ -104,21 +105,21 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
                 } else if (!option2.equals("none2") && option3.equals("none3")) {
                     //calls 2 option function
-                    HashMap<String, HashMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option2, studentMap);
+                    TreeMap<String, TreeMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option2, studentMap);
 
                     //send back to view  page
                     request.setAttribute("percentageTwoList", percentageTwoList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 } else if (option2.equals("none2") && !option3.equals("none3")) {
                     //calls 2 option function
-                    HashMap<String, HashMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option3, studentMap);
+                    TreeMap<String, TreeMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option3, studentMap);
 
                     //send back to view  page
                     request.setAttribute("percentageTwoList", percentageTwoList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 } else {
                     //calls 3 function option
-                    HashMap<String, HashMap<String, HashMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(option1, option2, option3, studentMap);
+                    TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(option1, option2, option3, studentMap);
 
                     //send back to view  page
                     request.setAttribute("percentageAllList", percentageAllList);
@@ -127,6 +128,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
                 break;
             }
+
 
             //Top-k popular places
             case "topKPopularPlaces": {

@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.TreeMap;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,7 +32,7 @@ import model.utility.TimeUtility;
 
 /**
  *
- * @author Ming Xuan
+ * @author Joel Tay
  */
 @WebServlet(name = "JsonAGD", urlPatterns = {"/json/group_detect"})
 public class JsonAGD extends HttpServlet {
@@ -96,7 +97,7 @@ public class JsonAGD extends HttpServlet {
             Timestamp endDateTime = processingWindowArrayList.get(1);
             AgdDAO agdDao = new AgdDAO();
             StudentDAO sDAO = new StudentDAO();
-            HashMap<String, Student> studentList = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
+            TreeMap<String, Student> studentList = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
             ArrayList<Group> list = agdDao.getStudentGroups(startDateTime, endDateTime, sDAO, studentList);
 
             //sort groups

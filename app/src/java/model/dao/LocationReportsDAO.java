@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.entity.Group;
@@ -63,7 +64,7 @@ public class LocationReportsDAO {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        HashMap<String, Student> studentMap = new HashMap<>();
+        TreeMap<String, Student> studentMap = new TreeMap<>();
 
         //Getting Hashtable of all students in the SIS building during processing window
         try {
@@ -167,7 +168,7 @@ public class LocationReportsDAO {
     public HashMap<Integer, Group> topkCompanions(int k, String studentMac) {
         HashMap<Integer, Group> stList = new HashMap<>();
         StudentDAO sDAO = new StudentDAO();
-        HashMap<String, Student> sMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
+        TreeMap<String, Student> sMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
         Student s = sMap.get(studentMac);
         if (s != null) {
             try {
