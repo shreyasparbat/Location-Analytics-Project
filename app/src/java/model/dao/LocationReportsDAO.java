@@ -112,11 +112,12 @@ public class LocationReportsDAO {
      * popularity of a location is derived from the number of people located
      * there in the specified processing time window.
      *
-     * @param k number of list entries to be returned
-     * @return topKPlacesList a list of the top-k popular places in the selected
-     * processing window as a LinkedHashMap
+     * @return topKList which contains top-k popular places in the selected
+     * processing window as a LinkedHashMap. The key denotes the sematic place
+     * and the value represents the number of people in the place within the
+     * query window.
      */
-    public LinkedHashMap<String, Integer> topkPopularPlaces(int k) {
+    public LinkedHashMap<String, Integer> topkPopularPlaces() {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -132,13 +133,12 @@ public class LocationReportsDAO {
                     + "group by macadd2) as t2\n"
                     + "on t1.macAdd = t2.macadd2 and t1.ts = t2.maxts right outer join locationlookup llu\n"
                     + "on t1.locationid = llu.locationid group by llu.semanticplace\n"
-                    + "order by noOfMacAdd DESC limit ?;");
+                    + "order by noOfMacAdd DESC;");
             //setting parameters
             stmt.setTimestamp(1, startDateTime);
             stmt.setTimestamp(2, endDateTime);
             stmt.setTimestamp(3, startDateTime);
             stmt.setTimestamp(4, endDateTime);
-            stmt.setInt(5, k);
             rs = stmt.executeQuery();
             //generating result set
             while (rs.next()) {
@@ -206,41 +206,28 @@ public class LocationReportsDAO {
      * of a location is derived from the number of people likely to visit there
      * in the specified processing time window.
      *
-     * @param k number of list entries to be returned
      * @param milliSeconds to get the sql Timestamp
      * @return topKPlacesList a list of the top-k popular places in the selected
      * processing window
      */
-    public static ArrayList<Location> topkNextPlaces(int k, String semanticPlace) {
+    public static ArrayList<ArrayList<String>> topkNextPlaces() {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ArrayList<Location> topKNextPlacesList = new ArrayList<>();
-        HashMap<String, Location> locationMap = new HashMap<>();
+        ArrayList<ArrayList<String>> peopleInNextTimeWindow = new ArrayList<>();
+        String test = "";
         try {
             conn = DBConnection.createConnection();
-            stmt = conn.prepareStatement("select macaddress, semanticplace\n"
-                    + "from location l \n"
-                    + "inner join locationlookup ll\n"
-                    + "on l.locationid = ll.locationid \n"
-                    + "where macaddress in\n"
-                    + "	(select macaddress from location\n"
-                    + "	where macaddress in \n"
-                    + "		(select distinct macaddress from location, locationlookup \n"
-                    + "		 where location.locationid = locationlookup.locationid \n"
-                    + "          and locationlookup.semanticplace = ?)\n"
-                    + "	and time >= ? and time < ?\n"
-                    + "	group by macaddress)\n"
-                    + "and time >= ? and time < ?\n"
+            //selects macaddress from location within time interval and time window, and semantic place filtering by semanticplace
+            stmt = conn.prepareStatement("select macaddress, semanticplace from \n"
+                    + "(select time, macaddress,location.locationid, llu.semanticplace from location left outer join locationlookup llu on location.locationid = llu.locationid) as t\n"
+                    + "where time >= ? and time < ?\n"
                     + "group by macaddress, semanticplace\n"
-                    + "having min(time) < date_sub(max(time), interval 5 minute)\n"
+                    + "having min(time) <= date_sub(max(time), interval 5 minute)\n"
                     + "order by macaddress;");
             //set params
-            stmt.setString(1, semanticPlace);
-            stmt.setTimestamp(2, startDateTime);
-            stmt.setTimestamp(3, endDateTime);
-            stmt.setTimestamp(4, startDateTimeTwo);
-            stmt.setTimestamp(5, endDateTimeTwo);
+            stmt.setTimestamp(1, startDateTimeTwo);
+            stmt.setTimestamp(2, endDateTimeTwo);
             //execution of query
             rs = stmt.executeQuery();
 
@@ -248,17 +235,10 @@ public class LocationReportsDAO {
                 //gets semanticplace and macaddress from result set
                 String querySemanticPlace = rs.getString("semanticplace");
                 String macAddress = rs.getString("macaddress");
-
-                //Iterates though list of topKNextPlaces. If location does not exist, create new locaiton and add to list
-                //if location exists, retrieve macAddress List from the location
-                if (locationMap.containsKey(querySemanticPlace)) {
-                    Location location = locationMap.get(querySemanticPlace);
-                    location.addStudent(macAddress);
-                } else {
-                    Location location = new Location(querySemanticPlace);
-                    location.addStudent(macAddress);
-                    locationMap.put(querySemanticPlace, location);
-                }
+                ArrayList<String> stringArray = new ArrayList<>();
+                stringArray.add(querySemanticPlace);
+                stringArray.add(macAddress);
+                peopleInNextTimeWindow.add(stringArray);
             }
 
         } catch (SQLException ex) {
@@ -268,41 +248,37 @@ public class LocationReportsDAO {
         } finally {
             DBConnection.close(conn, stmt, rs);
         }
-        //transferring from HashMap to ArrayList
-        Iterator iter = locationMap.keySet().iterator();
-        while (iter.hasNext()) {
-            String key = (String) iter.next();
-            Location loc = locationMap.get(key);
-            topKNextPlacesList.add(loc);
-        }
-        //sorting of topKNextPlacesList
-        Collections.sort(topKNextPlacesList, new LocationComparator());
-        //returning only require K values
-
-        return topKNextPlacesList;
+        return peopleInNextTimeWindow;
+        //return peopleInNextTimeWindow;
     }
 
+    /**
+     * Returns the macaddresses within the time window that are within the
+     * specified semantic place. The macaddresses are obtained from the data
+     * within location.csv that matches with the specified processing time
+     * window.
+     *
+     * @param semanticPlace A String value of the semantic place of choice
+     * @return addressList as an ArrayList of macaddresss that appear in the
+     * location within the specified processing window.
+     */
     public static ArrayList<String> peopleInSemanticPlace(String semanticPlace) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ArrayList<String> studentList = new ArrayList<>();
+        ArrayList<String> addressList = new ArrayList<>();
         try {
             conn = DBConnection.createConnection();
-            stmt = conn.prepareStatement( ""
-                    + "select macaddress from location\n"
-                    + "	where macaddress in \n"
-                    + "		(select distinct macaddress from location, locationlookup \n"
-                    + "		 where location.locationid = locationlookup.locationid \n"
-                    + "          and locationlookup.semanticplace = ?)\n"
-                    + "	and time >= ? and time < ?\n"
-                    + "	group by macaddress");
-            stmt.setString(1, semanticPlace);
-            stmt.setTimestamp(2, startDateTime);
-            stmt.setTimestamp(3, endDateTime);
+            stmt = conn.prepareStatement("select distinct macaddress from location,"
+                    + " locationlookup where time >= ? and time < ? "
+                    + " and location.locationid = locationlookup.locationid"
+                    + " and semanticplace like ?;");
+            stmt.setTimestamp(1, startDateTime);
+            stmt.setTimestamp(2, endDateTime);
+            stmt.setString(3, semanticPlace);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                studentList.add(rs.getString("macaddress"));
+                addressList.add(rs.getString("macaddress"));
             }
 
         } catch (SQLException ex) {
@@ -312,6 +288,7 @@ public class LocationReportsDAO {
         } finally {
             DBConnection.close(conn, stmt, rs);
         }
-        return studentList;
+        return addressList;
     }
+
 }

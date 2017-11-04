@@ -17,8 +17,7 @@
     ArrayList<Location> locationList = (ArrayList<Location>) request.getAttribute("locationList");
     ArrayList<String> studentList =(ArrayList<String>)request.getAttribute("studentList");
     Integer k = (Integer) request.getAttribute("k");
-    int rank = 1;
-    int previousCount = 0;
+    int rank = 0;
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -167,13 +166,6 @@
 <div class="container">
     <%
         if (locationList != null) {
-            //getting K display vlaue
-            ArrayList<Location> toDisplay = new ArrayList<>();
-            int i = 0;
-            while (i < k && locationList.size() > 0) {
-                toDisplay.add(locationList.get(i));
-                i++;
-            }
             //getting total count for percentage calculations
             double totalCount = 0;
             for (Location l : locationList) {
@@ -190,14 +182,21 @@
             out.println("<table border='1'>");
             out.println("<tr><td> Rank </td> <td> Semantic Place</td> <td> Count</td><td> Percentage% </td>");
 
-            Iterator iter = toDisplay.iterator();
-            while (iter.hasNext()) {
+            Iterator iter = locationList.iterator();
+            //temp will help to regulate rank
+            int temp = 0;
+            while (rank < k && iter.hasNext()) {
+                
                 Location l = (Location) iter.next();
+                //determine the rank display
+                if(temp != l.getNumberOfStudents()){
+                    temp = l.getNumberOfStudents();
+                    rank++;
+                }
                 out.println("<tr>");
                 //print rank
                 out.println("<td>");
                 out.println(rank);
-                rank++;
                 out.println("</td>");
                 //print semantic place
                 out.println("<td>");

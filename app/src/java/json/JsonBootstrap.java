@@ -63,12 +63,14 @@ public class JsonBootstrap extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+        //   throws ServletException, IOException {    
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject jsonOutput = new JsonObject();
         // Check for file upload request
         // try {
-        
+
         if (MultipartFormDataRequest.isMultipartFormData(request)) {
             try {
                 // Uses MultipartFormDataRequest to parse the HTTP request.

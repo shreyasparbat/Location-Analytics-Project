@@ -13,9 +13,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <%        
-        Integer value = (Integer) request.getAttribute("k");
-        int rank = 1;
+        Integer k = (Integer) request.getAttribute("k");
         LinkedHashMap<String, Integer> popularPlaceList = (LinkedHashMap<String, Integer>) request.getAttribute("popularPlaces");
+        int rank = 0;
     %>
     <head>
 
@@ -152,10 +152,10 @@
             <div class="col-md-4"></div>
             <div class="jumbotron col-md-4 centre-of-page">
                 <%
-                    if (value != null && popularPlaceList != null) {
+                    if (k != null && popularPlaceList != null) {
 
                         //printing header and results parameters
-                        out.println("<h1> Top " + value + " Popular Places</h1>");
+                        out.println("<h1> Top " + k + " Popular Places</h1>");
                         out.println("<table border='1'>");
                         out.println("<tr><td>From </td><td>" + request.getAttribute("startDateTime") + "</td></tr>");
                         out.println("<tr><td>To Before </td><td>" + request.getAttribute("endDateTime") + "</td></tr>");
@@ -167,13 +167,19 @@
                         out.println("<tr><td> Rank </td> <td> Semantic Place</td> <td> Count</td>");
 
                         Iterator iter = popularPlaceList.keySet().iterator();
-                        while (iter.hasNext()) {
+                        //temp will help to regulate rank.
+                        int temp =0;
+                        while (rank < k && iter.hasNext()) {
                             String key = (String) iter.next();
+                            //determine rank output
+                            if(popularPlaceList.get(key) != temp){
+                                temp = popularPlaceList.get(key);
+                                rank++;
+                            }
                             out.println("<tr>");
                             //print rank
                             out.println("<td>");
                             out.println(rank);
-                            rank++;
                             out.println("</td>");
                             //print semantic place
                             out.println("<td>");

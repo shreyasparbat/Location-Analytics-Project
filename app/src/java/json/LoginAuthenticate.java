@@ -7,10 +7,13 @@ package json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import is203.JWTUtility;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +32,7 @@ public class LoginAuthenticate extends HttpServlet {
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
-     *  
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
@@ -44,22 +47,40 @@ public class LoginAuthenticate extends HttpServlet {
         String userName = request.getParameter("username");
         String password = request.getParameter("password");
         LoginDAO loginDao = new LoginDAO(); //creating object for LoginDao. This class contains main logic of the application.
-        String userValidate = loginDao.authenticateUser(userName, password); //Calling authenticateUser function
-        if (userValidate.equals("Invalid user credentials")) //If function returns success string then user will be rooted to Home page
-        {
-            //fails 
-            jsonOutput.addProperty("status", "error");
-            jsonOutput.addProperty("error", "invalid username/password"); 
-
-        } else {
-            //success 
-            jsonOutput.addProperty("status", "success"); 
-            jsonOutput.addProperty("token", JWTUtility.sign("secret", userName));   
+        ArrayList<String> jArray = new ArrayList<>();
+        // JsonArray jArray = new JsonArray();
+        if (userName == null) {
+            jArray.add("missing username");
+        } else if (userName.trim().equals("")) {
+            jArray.add("blank username");
         }
-        //convert gson to a string and print out output  
+
+        if (password == null) {
+            jArray.add("missing password");
+        } else if (password.trim().equals("")) {
+            jArray.add("blank password");
+        }
+
+        if (!jArray.isEmpty()) {
+            Collections.sort(jArray);
+            jsonOutput.addProperty("status", "error");
+            jsonOutput.add("messages", gson.toJsonTree(jArray));
+            
+        } else {
+            String userValidate = loginDao.authenticateUser(userName, password); //Calling authenticateUser function
+            if (!(userValidate.equals("Invalid user credentials"))) {
+                //If function returns success string then user will be rooted to Home page
+                //success 
+                jsonOutput.addProperty("status", "success");
+                jsonOutput.addProperty("token", JWTUtility.sign("secret", userName));
+            } else {
+                jsonOutput.addProperty("status", "error");
+                jsonOutput.addProperty("messages", "invalid username/password");
+
+            }
+        }
         String prettyJson = gson.toJson(jsonOutput);
         out.println(prettyJson);
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

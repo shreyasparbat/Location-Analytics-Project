@@ -66,12 +66,13 @@ public class JsonTopKNextPlaces extends HttpServlet {
         String token = request.getParameter("token");
 
         List<String> semanticPlacesList = TopKUtility.getSemanticPlaces();
-       
+
         boolean kValid = true;
         boolean semanticPlaceValid = true;
         boolean dateValid = true;
         boolean tokenValid = true;
         java.util.ArrayList<Timestamp> timeList = new java.util.ArrayList<>();
+        java.util.ArrayList<Timestamp> timeListTwo = new java.util.ArrayList<>();
         int rank = 0;
         try {
             rank = JsonUtility.jsonToInt(k);
@@ -89,6 +90,7 @@ public class JsonTopKNextPlaces extends HttpServlet {
         try {
             date = date.replace("T", " ");
             timeList = TimeUtility.getProcessingWindow(date);
+            timeListTwo = TimeUtility.getNextProcessingWindow(date);
         } catch (Exception e) { // catch IllegalArgumentException && null pointer
             dateValid = false;
         }
@@ -96,7 +98,7 @@ public class JsonTopKNextPlaces extends HttpServlet {
             semanticPlaceValid = false;
         }
         JsonArray jArray = new JsonArray();
-        if (!(kValid && dateValid && tokenValid&&semanticPlaceValid)) { // if error
+        if (!(kValid && dateValid && tokenValid && semanticPlaceValid)) { // if error
             jsonOutput.addProperty("status", "error");
 
             if (!semanticPlaceValid) {
@@ -139,32 +141,61 @@ public class JsonTopKNextPlaces extends HttpServlet {
 
             Timestamp startDateTime = timeList.get(0);
             Timestamp endDateTime = timeList.get(1);
-            //getting datetime window
-            ArrayList<Timestamp> processingWindowTwoArrayList = TimeUtility.getNextProcessingWindow(date);
-            Timestamp startDateTimeTwo = processingWindowTwoArrayList.get(0);
-            Timestamp endDateTimeTwo = processingWindowTwoArrayList.get(1);
+            //getting datetime window2|
+            Timestamp startDateTimeTwo = timeListTwo.get(0);
+            Timestamp endDateTimeTwo = timeListTwo.get(1);
             
-            LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime, startDateTimeTwo, endDateTimeTwo);
-            //why kosong!!
-            ArrayList<String> totalUsers = locationReportDAO.peopleInSemanticPlace(semanticPlace);
-            ArrayList<Location> nextPlaceList = locationReportDAO.topkNextPlaces(rank, semanticPlace);
-
-            Collections.sort(nextPlaceList, new LocationComparator());
+            //running logic for topKNextPlaces
+            LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime, startDateTimeTwo, endDateTimeTwo);
+                ArrayList<String> studentsList = locationReportsDAO.peopleInSemanticPlace(semanticPlace);
+                ArrayList<ArrayList<String>> comparisonWindow  = locationReportsDAO.topkNextPlaces();
+                HashMap<String, Location> locationMap = new HashMap<>();
+                ArrayList<Location> locationList = new ArrayList<>();
+                
+                //for each set of comparisonWindow
+                for(ArrayList<String> s : comparisonWindow){
+                    //get semantic place
+                    String sp = s.get(0);
+                    //check if semantic place is mapped. If it isn't add it to mapping
+                    if(locationMap.get(sp) == null){
+                        locationMap.put(sp, new Location(sp));
+                    }
+                    //Location l is the semantic place
+                    Location l = locationMap.get(sp);
+                    //get list of people in semantic place
+                    ArrayList<String> peopleList = l.getStudents();
+                    //if the macaddress in question is in the studentList and not in the place, add the student into the place to track his next location
+                    if((!peopleList.contains(s.get(1))) && studentsList.contains(s.get(1))){
+                        peopleList.add(s.get(1));
+                    }
+                }
+                //converts hashmap to ArrayList of location for display
+                Iterator iter = locationMap.keySet().iterator();
+                while(iter.hasNext()){
+                    String key = (String) iter.next();
+                    Location l = locationMap.get(key);
+                    locationList.add(l);
+                }
+                
+            
+            //placing output into json
             jsonOutput.addProperty("status", "success");
             int i = 0;
             int countTotal = 0;
-            for (Location l : nextPlaceList) {
+            for (Location l : locationList) {
                 countTotal += l.getNumberOfStudents();
 
             }
-            jsonOutput.addProperty("total-users", totalUsers.size());
+            jsonOutput.addProperty("total-users", studentsList.size());
             jsonOutput.addProperty("total-next-place-users", countTotal);
-            Iterator iter = nextPlaceList.iterator();
+            Iterator itera = locationList.iterator();
             int temp = 0;
-            while (i < rank && iter.hasNext()) {
-                Location l = (Location) iter.next();
+            while (i < rank && itera.hasNext()) {
+                Location l = (Location) itera.next();
                 int countStudents = l.getNumberOfStudents();
-                if(temp != countStudents){
+                //checks to increment rank counter or not. 
+                //There is a need to increment rank counter only if the past count is different from the new count
+                if (temp != countStudents) {
                     temp = countStudents;
                     i++;
                 }
@@ -173,7 +204,7 @@ public class JsonTopKNextPlaces extends HttpServlet {
                 ranks.addProperty("semantic-place", l.getSemanticPlace());
                 ranks.addProperty("count", countStudents);
                 jArray.add(ranks);
-                
+
             }
 
             jsonOutput.add("results", jArray);

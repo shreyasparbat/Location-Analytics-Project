@@ -57,7 +57,6 @@ public class JsonTopKPopularPlaces extends HttpServlet {
 
         //retrieve request parameters
         String k = request.getParameter("k");
-        Integer kValue = Integer.parseInt(request.getParameter("k"));
         String date = request.getParameter("date");
         String token = request.getParameter("token");
         boolean kValid = true;
@@ -121,18 +120,23 @@ public class JsonTopKPopularPlaces extends HttpServlet {
             LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
             // key is semantic place
             // value is the count
-            LinkedHashMap<String, Integer> popularPlacesList = locationReportDAO.topkPopularPlaces(kValue);
+            LinkedHashMap<String, Integer> popularPlacesList = locationReportDAO.topkPopularPlaces();
             jsonOutput.addProperty("status", "success");
-            int i = 1;
+            int i = 0;
+            int temp = 0;
             Iterator<String> iter = popularPlacesList.keySet().iterator();
-            while (i <= rank && iter.hasNext()) {
+            while (i < rank && iter.hasNext()) {
                 String key = iter.next();
                 int count = popularPlacesList.get(key);
+                if(temp != count){
+                    temp = count;
+                    i++;
+                }
                 JsonObject ranks = new JsonObject();
                 ranks.addProperty("rank", i);
                 ranks.addProperty("semanticplace",key);
                 ranks.addProperty("count", count);
-                i++;
+                jArray.add(ranks);
             }
             jsonOutput.add("results", jArray);
         }
