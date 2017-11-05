@@ -80,7 +80,7 @@ public class JsonTopKCompanion extends HttpServlet {
         }
         try {
             timeList = TimeUtility.getJsonProcessingWindow(date);
-        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
+        } catch (Exception e) { // catch IllegalArgumentException && null pointer
             dateValid = false;
         }
         macValid = JsonUtility.checkMacaddress(macAddress);

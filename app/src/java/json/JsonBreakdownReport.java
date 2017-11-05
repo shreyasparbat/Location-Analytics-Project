@@ -155,7 +155,7 @@ public class JsonBreakdownReport extends HttpServlet {
                         //get breakdown map
                         TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(option1, option2, option3, studentMap);
                         jsonOutput.addProperty("status", "success");
-                        jsonOutput.add("breakdown", printOuterMap(percentageAllList,option3,option2,option1));
+                        jsonOutput.add("breakdown", printOuterMap(percentageAllList,option1,option2,option3));
 
                     }
                     break;
@@ -244,7 +244,7 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding middle map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            innerMapJson.addProperty(option3, name);
+            innerMapJson.addProperty(option3, name); //most outer
             innerMapJson.addProperty("count",count);
             innerMapJson.add("breakdown", printMiddleMap(middleMap,option2,option1));
             outputJsonArray.add(innerMapJson);
@@ -254,10 +254,20 @@ public class JsonBreakdownReport extends HttpServlet {
         return outputJsonArray;
     }
 
+    /**
+     * Returns a "true" boolean value if the option input by user is correct
+     * @param takes in a String of the option input by user 
+     * @return boolean "true" is returned if input is correct, "false" if it is wrong
+     */
     public boolean isCorrectOption(String option) {
         return option.equals("year") || option.equals("gender") || option.equals("school");
     }
 
+    /**
+     * Returns a "true" boolean value if the option input by user is Valid
+     * @param takes in a String of the option input by user 
+     * @return  boolean "true" is returned if input is valid, "false" if it is not valid
+     */
     public boolean isValidOption(String option) {
         if (option == null || option.endsWith(",,")) {
             return false;

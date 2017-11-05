@@ -73,7 +73,7 @@ public class JsonTopKPopularPlaces extends HttpServlet {
         }
         try {
             timeList = TimeUtility.getJsonProcessingWindow(date);
-        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
+        } catch (Exception e) { // catch IllegalArgumentException && ull pointer
             dateValid = false;
         }
 

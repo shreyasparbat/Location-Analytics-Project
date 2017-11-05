@@ -43,7 +43,7 @@ public class BreakdownUtility {
 
     public TreeMap<String, TreeMap<String, Integer>> percentageTwoOptions(String option1, String option2, TreeMap<String, Student> studentMap) {
         TreeMap<String, TreeMap<String, Integer>> percentageTwoList = new TreeMap<>();
-
+        
         //get hash map based on first option
         TreeMap<String, Integer> percentageList = percentageOneOption(option1, studentMap);
         Iterator<String> percentageListKeyIterator = percentageList.keySet().iterator();
@@ -61,6 +61,7 @@ public class BreakdownUtility {
             }
         }
         if ("gender".equals(option1)) {
+            percentageTwoList = new TreeMap<>(Collections.reverseOrder());
             //Based on gender, first get HashMap of students, then save it in another HashMap with gender and that gender's percentage as key and the
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {
@@ -108,6 +109,7 @@ public class BreakdownUtility {
             }
         }
         if ("gender".equals(option1)) {
+            percentageAllList = new TreeMap<>(Collections.reverseOrder());
             //Based on gender, first get HashMap of students, then save it in another HashMap with gender and that gender's percentage as key and the
             //previously obtained HashMap as value
             while (percentageListKeyIterator.hasNext()) {

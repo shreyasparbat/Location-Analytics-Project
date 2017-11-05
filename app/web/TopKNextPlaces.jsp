@@ -205,7 +205,7 @@
                                 Iterator iter = locationList.iterator();
                                 //temp will help to regulate rank
                                 int temp = 0;
-                                while (rank < k && iter.hasNext()) {
+                                while (rank<k && iter.hasNext()) {
 
                                     Location l = (Location) iter.next();
                                     int countStudents = l.getNumberOfStudents();

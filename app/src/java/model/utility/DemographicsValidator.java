@@ -185,27 +185,48 @@ public class DemographicsValidator {
         gender = gender.toUpperCase();
         return (gender.equals("M") || gender.equals("F"));
     }
-    
+
     /**
-     * Validates the data row for blanks, will add the error msg of blank into the errorMsgs
+     * Validates the data row for blanks, will add the error msg of blank into
+     * the errorMsgs
      *
      * @param row String[] representing a row of data
      * @param errorMsgs A list of error messages in string
      * @return the error list back
      */
     private static ArrayList<String> checkBlanks(String[] row, ArrayList<String> errorMsgs) {
-        if (row[0].trim().equals("")) {
+        try {
+            if (row[0].trim().equals("")) {
+                errorMsgs.add("blank mac address");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank mac address");
         }
-        if (row[2].trim().equals("")) {
+
+        try {
+            if (row[2].trim().equals("")) {
+                errorMsgs.add("blank password");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank password");
         }
-        if (row[3].trim().equals("")) {
+
+        try {
+            if (row[3].trim().equals("")) {
+                errorMsgs.add("blank email");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank email");
         }
-        if (row[4].trim().equals("")) {
+
+        try {
+            if (row[4].trim().equals("")) {
+                errorMsgs.add("blank gender");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank gender");
         }
+
         return errorMsgs;
     }
 }

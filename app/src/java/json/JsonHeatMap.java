@@ -80,7 +80,7 @@ public class JsonHeatMap extends HttpServlet {
                             startDateTime = processingWindowArrayList.get(0);
                             endDateTime = processingWindowArrayList.get(1);
 
-                        } catch (IllegalArgumentException e) {
+                        } catch (Exception e) {
                             //invalid date  
                             jsonErrorArray.add("invalid date");
                         }

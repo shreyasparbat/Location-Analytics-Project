@@ -194,15 +194,30 @@ public class LocationValidator {
      * @return the error list back
      */
     private static ArrayList<String> checkBlanks(String[] row, ArrayList<String> errorMsgs) {
-        if (row[0].trim().equals("")) {
+        try {
+            if (row[0].trim().equals("")) {
+                errorMsgs.add("blank timestamp");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank timestamp");
         }
-        if (row[1].trim().equals("")) {
+
+        try {
+            if (row[1].trim().equals("")) {
+                errorMsgs.add("blank mac address");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank mac address");
         }
-        if (row[2].trim().equals("")) {
+
+        try {
+            if (row[2].trim().equals("")) {
+                errorMsgs.add("blank location");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank location");
         }
+
         return errorMsgs;
     }
 }

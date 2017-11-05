@@ -53,7 +53,7 @@ public class LocationLookupValidator {
         numDLLRowsValidated = 0;
         Iterator<String[]> iter = list.iterator();
         llErrors.clear();
-
+        locationList.clear();
         if (iter.hasNext()) {
             iter.next(); //clears buffer   
         }
@@ -168,12 +168,22 @@ public class LocationLookupValidator {
      * @return the error list back
      */
     private static ArrayList<String> checkBlanks(String[] row, ArrayList<String> errorMsgs) {
-        if (row[0].trim().equals("")) {
+        try {
+            if (row[0].trim().equals("")) {
+                errorMsgs.add("blank location-id");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank location-id");
         }
-        if (row[1].trim().equals("")) {
+
+        try {
+            if (row[1].trim().equals("")) {
+                errorMsgs.add("blank semantic place");
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
             errorMsgs.add("blank semantic place");
         }
+
         return errorMsgs;
     }
 }

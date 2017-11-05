@@ -14,12 +14,16 @@ import model.entity.Location;
  */
 public class LocationComparator implements Comparator<Location>{
     /**
-     * Compares two students in terms of their mac-address values
-     * @param s1 Student A
-     * @param s2 Student B
-     * @return an int to determine the value of the difference of two students mac addresses
+     * Compares two location in terms of their student count and semantic place
+     * @param s1 location l1
+     * @param s2 location l2
+     * @return an int to determine the value of the difference of two location
      */
     public int compare(Location l1, Location l2){
-        return l2.getNumberOfStudents().compareTo(l1.getNumberOfStudents());
+        int difference= l2.getNumberOfStudents().compareTo(l1.getNumberOfStudents());
+        if(difference == 0){
+            difference = l1.getSemanticPlace().compareTo(l2.getSemanticPlace());
+        }
+        return difference;
     }
 }

@@ -64,7 +64,7 @@ public class JsonAGD extends HttpServlet {
         }
         try {
             processingWindowArrayList = TimeUtility.getJsonProcessingWindow(dateTime);
-        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
+        } catch (Exception e) { // catch IllegalArgumentException && null pointer
             dateValid = false;
         }
         if (!(dateValid && tokenValid)) { // if error
