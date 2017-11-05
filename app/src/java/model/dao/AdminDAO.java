@@ -7,7 +7,7 @@ import model.*;
  * @author Joel Tay
  */
 public class AdminDAO{
-    private final String AID = "Admin";
+    private final String AID = "admin";
     private final String APWD = "AdminPW";
     
     

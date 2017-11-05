@@ -74,7 +74,7 @@ public class JsonTopKCompanion extends HttpServlet {
             kValid = false; //catch NumberFormatException && null pointer
         }
         try {
-            String verification = JWTUtility.verify(token, "secret");
+            String verification = JWTUtility.verify(token, "depressurization");
         } catch (Exception ex) { //catch JWTException && null pointer
             tokenValid = false;
         }

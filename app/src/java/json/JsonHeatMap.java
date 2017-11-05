@@ -57,7 +57,7 @@ public class JsonHeatMap extends HttpServlet {
             //verify token 
             String token = request.getParameter("token");
             if (token != null && token.length() > 0) {
-                String verification = JWTUtility.verify(token, "secret");
+                String verification = JWTUtility.verify(token, "depressurization");
 
                 if (verification != null) {
                     //retrieve request parameters (date)

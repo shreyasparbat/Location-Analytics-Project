@@ -59,7 +59,7 @@ public class BootstrapServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        map.clear();
         if (MultipartFormDataRequest.isMultipartFormData(request)) {
             PrintWriter out = response.getWriter();
             try {
@@ -74,10 +74,14 @@ public class BootstrapServlet extends HttpServlet {
                     Hashtable files = mrequest.getFiles();
                     if ((files != null) && (!files.isEmpty())) {
                         UploadFile file = (UploadFile) files.get("uploadfile");
-                        if (file != null) {
+                        if (file != null && file.getFileName().endsWith(".zip")) {
                             ZipInputStream zin = new ZipInputStream(file.getInpuStream());
                             unzipThis(request, response, zin);
+                        } else {
+                            request.setAttribute("errorMsg", "Invalid file type");
                         }
+                    } else {
+                        request.setAttribute("errorMsg", "Invalid file type");
                     }
                 }
             } catch (UploadException ex) {
@@ -87,6 +91,10 @@ public class BootstrapServlet extends HttpServlet {
             } catch (Exception e) {
                 out.println(e.getMessage());
             }
+            RequestDispatcher fwd = request.getRequestDispatcher("Admin.jsp");
+            fwd.forward(request, response);
+            map.clear();
+            return;
         }
 
     }
@@ -120,10 +128,9 @@ public class BootstrapServlet extends HttpServlet {
         try {
             validDAO.validating();
             //insert num of errors from each file
-            
 
         } catch (ValidatorException ex) {
-            request.setAttribute("errorMsg",ex.getMessage());
+            request.setAttribute("errorMsg", ex.getMessage());
         } finally {
             HashMap<Integer, List<String>> locationErrors = LocationValidator.locationErrors;
             if (!locationErrors.isEmpty()) {
@@ -153,10 +160,7 @@ public class BootstrapServlet extends HttpServlet {
                 int locaInsert = LocationValidator.numDLocaRowsValidated;
                 request.setAttribute("numLocaRowsInserted", locaInsert);
             }
-            RequestDispatcher fwd = request.getRequestDispatcher("Admin.jsp");
-            fwd.forward(request, response);
-            map.clear();
-            return;
+
         }
     }
 

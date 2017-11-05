@@ -25,7 +25,7 @@ import model.dao.LoginDAO;
  * @author Joleen Mok
  */
 @WebServlet(name = "LoginAuthenticate", urlPatterns = {"/json/authenticate"})
-public class LoginAuthenticate extends HttpServlet {
+public class JsonLoginAuthenticate extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -70,7 +70,7 @@ public class LoginAuthenticate extends HttpServlet {
                 //If function returns success string then user will be rooted to Home page
                 //success 
                 jsonOutput.addProperty("status", "success");
-                jsonOutput.addProperty("token", JWTUtility.sign("secret", userName));
+                jsonOutput.addProperty("token", JWTUtility.sign("depressurization", userName));
             } else {
                 jsonOutput.addProperty("status", "error");
                 jsonOutput.addProperty("messages", "invalid username/password");

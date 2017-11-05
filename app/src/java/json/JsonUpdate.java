@@ -65,7 +65,7 @@ public class JsonUpdate extends HttpServlet {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject jsonOutput = new JsonObject();
         // Check for file upload request
-        
+        map.clear();
         if (MultipartFormDataRequest.isMultipartFormData(request)) {
             try {
                 // Uses MultipartFormDataRequest to parse the HTTP request.
@@ -74,13 +74,13 @@ public class JsonUpdate extends HttpServlet {
                     // retrieving hashtable
                     String token = mrequest.getParameter("token");
                     if (token != null && token.length() > 0) {
-                        String verification = JWTUtility.verify(token, "secret");
+                        String verification = JWTUtility.verify(token, "depressurization");
 
                         Hashtable files = mrequest.getFiles();
                         if ((files != null) && (!files.isEmpty())) {
                             UploadFile file = (UploadFile) files.get("bootstrap-file");
 
-                            if (file != null) {
+                            if (file != null && file.getFileName().endsWith(".zip")) {
                                 //unzips file
                                 ZipInputStream zin = new ZipInputStream(file.getInpuStream());
                                 unzipThis(request, response, zin, jsonOutput);

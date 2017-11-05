@@ -31,7 +31,7 @@ import model.utility.TimeUtility;
  * @author Joleen Mok
  */
 @WebServlet(name = "BreakdownReport", urlPatterns = {"/json/basic-loc-report"})
-public class BreakdownReport extends HttpServlet {
+public class JsonBreakdownReport extends HttpServlet {
 
     public BreakdownUtility bu = new BreakdownUtility();
 
@@ -61,7 +61,7 @@ public class BreakdownReport extends HttpServlet {
         boolean tokenValid = true;
 
         try {
-            String verification = JWTUtility.verify(token, "secret");
+            String verification = JWTUtility.verify(token, "depressurization");
         } catch (Exception ex) { //catch JWTException && null pointer
             tokenValid = false;
         }
