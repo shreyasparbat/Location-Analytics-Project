@@ -144,48 +144,48 @@ public class JsonTopKNextPlaces extends HttpServlet {
             //getting datetime window2|
             Timestamp startDateTimeTwo = timeListTwo.get(0);
             Timestamp endDateTimeTwo = timeListTwo.get(1);
-            
+
             //running logic for topKNextPlaces
             LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime, startDateTimeTwo, endDateTimeTwo);
-                ArrayList<String> studentsList = locationReportsDAO.peopleInSemanticPlace(semanticPlace);
-                ArrayList<ArrayList<String>> comparisonWindow  = locationReportsDAO.topkNextPlaces();
-                HashMap<String, Location> locationMap = new HashMap<>();
-                ArrayList<Location> locationList = new ArrayList<>();
-                
-                //for each set of comparisonWindow
-                for(ArrayList<String> s : comparisonWindow){
-                    //get semantic place
-                    String sp = s.get(0);
-                    //check if semantic place is mapped. If it isn't add it to mapping
-                    if(locationMap.get(sp) == null){
-                        locationMap.put(sp, new Location(sp));
-                    }
-                    //Location l is the semantic place
-                    Location l = locationMap.get(sp);
-                    //get list of people in semantic place
-                    ArrayList<String> peopleList = l.getStudents();
-                    //if the macaddress in question is in the studentList and not in the place, add the student into the place to track his next location
-                    if((!peopleList.contains(s.get(1))) && studentsList.contains(s.get(1))){
-                        peopleList.add(s.get(1));
-                    }
+            ArrayList<String> studentsList = locationReportsDAO.peopleInSemanticPlace(semanticPlace);
+            ArrayList<ArrayList<String>> comparisonWindow = locationReportsDAO.topkNextPlaces();
+            HashMap<String, Location> locationMap = new HashMap<>();
+            ArrayList<Location> locationList = new ArrayList<>();
+
+            //for each set of comparisonWindow
+            for (ArrayList<String> s : comparisonWindow) {
+                //get semantic place
+                String sp = s.get(0);
+                //check if semantic place is mapped. If it isn't add it to mapping
+                if (locationMap.get(sp) == null) {
+                    locationMap.put(sp, new Location(sp));
                 }
-                //converts hashmap to ArrayList of location for display
-                Iterator iter = locationMap.keySet().iterator();
-                while(iter.hasNext()){
-                    String key = (String) iter.next();
-                    Location l = locationMap.get(key);
-                    locationList.add(l);
+                //Location l is the semantic place
+                Location l = locationMap.get(sp);
+                //get list of people in semantic place
+                ArrayList<String> peopleList = l.getStudents();
+                //if the macaddress in question is in the studentList and not in the place, add the student into the place to track his next location
+                if ((!peopleList.contains(s.get(1))) && studentsList.contains(s.get(1))) {
+                    peopleList.add(s.get(1));
                 }
-                
-            
+            }
+            //converts hashmap to ArrayList of location for display
+            Iterator iter = locationMap.keySet().iterator();
+            while (iter.hasNext()) {
+                String key = (String) iter.next();
+                Location l = locationMap.get(key);
+                locationList.add(l);
+            }
+
             //placing output into json
             jsonOutput.addProperty("status", "success");
             int i = 0;
             int countTotal = 0;
             for (Location l : locationList) {
                 countTotal += l.getNumberOfStudents();
-
             }
+            //sorting the locationlist
+            Collections.sort(locationList, new LocationComparator());
             jsonOutput.addProperty("total-users", studentsList.size());
             jsonOutput.addProperty("total-next-place-users", countTotal);
             Iterator itera = locationList.iterator();
@@ -195,15 +195,19 @@ public class JsonTopKNextPlaces extends HttpServlet {
                 int countStudents = l.getNumberOfStudents();
                 //checks to increment rank counter or not. 
                 //There is a need to increment rank counter only if the past count is different from the new count
-                if (temp != countStudents) {
-                    temp = countStudents;
+                if (countStudents > 0) {
+                    if (temp != countStudents) {
+                        temp = countStudents;
+                        i++;
+                    }
+                    JsonObject ranks = new JsonObject();
+                    ranks.addProperty("rank", i);
+                    ranks.addProperty("semantic-place", l.getSemanticPlace());
+                    ranks.addProperty("count", countStudents);
+                    jArray.add(ranks);
+                }else{
                     i++;
                 }
-                JsonObject ranks = new JsonObject();
-                ranks.addProperty("rank", i);
-                ranks.addProperty("semantic-place", l.getSemanticPlace());
-                ranks.addProperty("count", countStudents);
-                jArray.add(ranks);
 
             }
 

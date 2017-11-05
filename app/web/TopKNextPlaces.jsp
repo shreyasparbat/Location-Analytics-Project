@@ -12,10 +12,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="Protect.jsp" %> 
 
-<%
-    List<String> semanticPlaces = TopKUtility.getSemanticPlaces();
+<%    List<String> semanticPlaces = TopKUtility.getSemanticPlaces();
     ArrayList<Location> locationList = (ArrayList<Location>) request.getAttribute("locationList");
-    ArrayList<String> studentList =(ArrayList<String>)request.getAttribute("studentList");
+    ArrayList<String> studentList = (ArrayList<String>) request.getAttribute("studentList");
     Integer k = (Integer) request.getAttribute("k");
     int rank = 0;
 %>
@@ -134,12 +133,12 @@
 
                     <div class="form-group">
                         <label>Date: </label>
-                        <input class="form-control" type="date" name="date">
+                        <input class="form-control" type="date" name="date" max = "2025-12-31" required>
                     </div>
 
                     <div class="form-group">
                         <label>Time: </label>
-                        <input class="form-control" type="time" name='time'>
+                        <input class="form-control" type="time" name='time' required>
                     </div>
 
                     <input type="hidden" name="function" value="topKNextPlaces">
@@ -174,47 +173,55 @@
             //printing information table
             out.println("<table border='1'>");
             out.println("<tr><td><b> Initial Location</b></td><td>" + (String) request.getAttribute("place") + "</td></tr>");
-            out.println("<tr><td><b> Users in initial location</b></td><td>" + studentList.size()+ "</td></tr>");
+            out.println("<tr><td><b> Users in initial location</b></td><td>" + studentList.size() + "</td></tr>");
             out.println("<tr><td><b> Users that visited another place</b></td><td>" + (int) totalCount + "</td></tr>");
             out.println("</table>");
             out.println("<br>");
             //printing results table
-            out.println("<table border='1'>");
-            out.println("<tr><td> Rank </td> <td> Semantic Place</td> <td> Count</td><td> Percentage% </td>");
+            if (locationList.get(0).getNumberOfStudents() > 0) {
+                out.println("<table border='1'>");
+                out.println("<tr><td> Rank </td> <td> Semantic Place</td> <td> Count</td><td> Percentage% </td>");
 
-            Iterator iter = locationList.iterator();
-            //temp will help to regulate rank
-            int temp = 0;
-            while (rank < k && iter.hasNext()) {
-                
-                Location l = (Location) iter.next();
-                //determine the rank display
-                if(temp != l.getNumberOfStudents()){
-                    temp = l.getNumberOfStudents();
-                    rank++;
+                Iterator iter = locationList.iterator();
+                //temp will help to regulate rank
+                int temp = 0;
+                while (rank < k && iter.hasNext()) {
+
+                    Location l = (Location) iter.next();
+                    int countStudents = l.getNumberOfStudents();
+                    if (countStudents > 0) {
+                        //determine the rank display
+                        if (temp != countStudents) {
+                            temp = countStudents;
+                            rank++;
+                        }
+                        out.println("<tr>");
+                        //print rank
+                        out.println("<td>");
+                        out.println(rank);
+                        out.println("</td>");
+                        //print semantic place
+                        out.println("<td>");
+                        out.println(l.getSemanticPlace());
+                        out.println("</td>");
+                        //print count
+                        out.println("<td>");
+                        out.println(l.getNumberOfStudents());
+                        out.println("</td>");
+                        //print percentage, half rounded up
+                        out.println("<td>");
+                        out.println((int) (((l.getNumberOfStudents() / (double) studentList.size()) * 100) + 0.5));
+                        out.println("</td>");
+                        out.println("</tr>");
+                    }else{
+                        rank++;
+                    }
+
                 }
-                out.println("<tr>");
-                //print rank
-                out.println("<td>");
-                out.println(rank);
-                out.println("</td>");
-                //print semantic place
-                out.println("<td>");
-                out.println(l.getSemanticPlace());
-                out.println("</td>");
-                //print count
-                out.println("<td>");
-                out.println(l.getNumberOfStudents());
-                out.println("</td>");
-                //print percentage, half rounded up
-                out.println("<td>");
-                out.println((int) (((l.getNumberOfStudents() / (double)studentList.size()) * 100) + 0.5));
-                out.println("</td>");
 
-                out.println("</tr>");
+                out.println("</table>");
             }
 
-            out.println("</table>");
         }
     %>
     <hr>
