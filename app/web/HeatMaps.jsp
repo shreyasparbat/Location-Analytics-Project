@@ -10,8 +10,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="Protect.jsp" %>
 
-<%
-    //getting error message
+<%    //getting error message
     String message = "";
     if (request.getAttribute("errMessage") != null) {
         message = (String) request.getAttribute("errMessage");
@@ -99,11 +98,14 @@
 
         <br/>
         <br/>
+        <br/>
+        <br/>
+
         <div class="container">
 
             <div class="row">
 
-                <div class="jumbotron col-md-8 centre-of-page">
+                <div class="jumbotron col-md-10 centre-of-page">
 
                     <!-- Form get table -->
 
@@ -124,26 +126,26 @@
 
                         <div class="form-group">
                             <label>Date: </label>
-                            <input class="form-control" type="date" name="date">
+                            <input class="form-control" type="date" name="date" max="2025-12-31" required>
                         </div>
 
                         <div class="form-group">
                             <label>Time: </label>
-                            <input class="form-control" type="time" name='time'>
+                            <input class="form-control" type="time" name='time' required>
                         </div>
 
                         <div class="text-center">
-                            <button id="heat-map-button" type="submit" class="btn btn-elegant">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
+                            <button type="submit" class="btn btn-amber">Go<i class="fa fa-paper-plane-o ml-1"></i></button>
+                            <button type="reset" class="btn btn-blue-grey" name="Reset" value="Cancel">Cancel</button>  
                         </div>
-
                     </form>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <br/>
                     <%  //printing error message
                         if (!message.equals("")) {
-                            out.print("<h4 class=\"text-center red-text\">" + message + "</h4>");
+                            out.print("<br/><br/><h4 class=\"text-center red-text\">" + message + "</h4>");
                         }
                     %>
                 </div>
@@ -210,7 +212,7 @@
                 <%  //printing legends and coloring map (only if map is being printed)
                     if (level != null) {
                         //set css colour scheme according to heat values                
-                %>
+%>
 
                 <script>
                     //for colouring

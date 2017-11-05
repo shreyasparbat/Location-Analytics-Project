@@ -9,18 +9,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import is203.JWTException;
 import is203.JWTUtility;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -71,9 +66,8 @@ public class BreakdownReport extends HttpServlet {
             tokenValid = false;
         }
         try {
-            date = date.replace("T", " ");
-            processingWindowArrayList = TimeUtility.getProcessingWindow(date);
-        } catch (Exception e) { // catch IllegalArgumentException && null pointer
+            processingWindowArrayList = TimeUtility.getJsonProcessingWindow(date);
+        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
             dateValid = false;
         }
         orderValid = isValidOption(order);

@@ -9,7 +9,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    
+
     <head>
 
         <meta charset="utf-8">
@@ -83,39 +83,79 @@
 
         <br/>
         <br/>
+        <br/>
+        <br/>
 
         <div class="container">
             <div class="row">
 
                 <div class="col-md-4"></div>
 
-                <div class="jumbotron col-md-4 centre-of-page">
-                        <br>
-                        <p class="h5 text-center mb-4">Top K Functions</p>
+                <div class="jumbotron container">
+                    <h1 class="display-4 text-center">Top K Functions</h1>
+                </div>
+            </div>
 
-                        Select Function:
-                        <br>
-                        <br><a href="TopKPopularPlaces.jsp"> Top K popular places </a>
-                        <br><a href="TopKCompanions.jsp"> Top K companions </a>
-                        <br><a href="TopKNextPlaces.jsp"> Top K next places </a>
+            <!-- Row of columns -->
+            <div class="row">
 
-                    <hr>
+                <div class="col-md-4">
+                    <!--Card 1-->
+                    <div class="card">
+                        <!--Card content-->
+                        <div class="card-body text-center">
+                            <!--Title-->
+                            <h4 class="card-title">Popular Places</h4>
+                            <a href="TopKPopularPlaces.jsp" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                    <!--/.Card 1-->
+                </div>
 
-                    <footer>
-                        <p>&copy; SE G1T3</p>
-                    </footer>
-                </div> <!-- /container -->
+                <div class="col-md-4">
+                    <!--Card 2-->
+                    <div class="card">
+                        <!--Card content-->
+                        <div class="card-body text-center">
+                            <!--Title-->
+                            <h4 class="card-title">Companions</h4>
+                            <a href="TopKCompanions.jsp" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                    <!--/.Card 2-->
+                </div>
+
+                <div class="col-md-4">
+                    <!--Card 3-->
+                    <div class="card">
+                        <!--Card content-->
+                        <div class="card-body text-center">
+                            <!--Title-->
+                            <h4 class="card-title">Next Places</h4>
+                            <a href="TopKNextPlaces.jsp" class="btn btn-primary">Go</a>
+                        </div>
+                    </div>
+                    <!--/.Card 3-->
+                </div>
+            </div>
+
+            <hr>
+
+            <footer>
+                <p>&copy; SE G1T3</p>
+            </footer>
+        </div> <!-- /container -->
 
 
-                <!-- SCRIPTS
-                ================================================== -->
-                <!-- JQuery -->
-                <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-                <!-- Bootstrap tooltips -->
-                <script type="text/javascript" src="assets/js/popper.min.js"></script>
-                <!-- Bootstrap core JavaScript -->
-                <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
-                <!-- MDB core JavaScript -->
-                <script type="text/javascript" src="assets/js/mdb.min.js"></script>
-     </body>
+        <!-- SCRIPTS
+        ================================================== -->
+        <!-- JQuery -->
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Bootstrap tooltips -->
+        <script type="text/javascript" src="assets/js/popper.min.js"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="assets/js/mdb.min.js"></script>
+    </body>
 </html>

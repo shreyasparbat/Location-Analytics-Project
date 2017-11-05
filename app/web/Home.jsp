@@ -6,12 +6,13 @@
 <%@include file="Protect.jsp" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<%    String username = (String) session.getAttribute("userName");
+<%  //Get username for main jumbotron  
+    String username = (String) session.getAttribute("userName");
 %>
 
 <!DOCTYPE html>
-<html lang="en">
 
+<html lang="en">
     <head>
 
         <meta charset="utf-8">
@@ -84,16 +85,17 @@
         </nav>
         <!--/.Navbar-->
 
-        <!-- Main jumbotron -->
-        <div class="jumbotron">
-
-            <div class="container">
-
-                <h1 class="display-3">Welcome <%=username%></h1>
-            </div>
-        </div>
+        <br/>
 
         <div class="container">
+
+            <!-- Main jumbotron -->
+            <div class="jumbotron">
+
+                <div class="container">
+                    <h1 class="display-4 text-center">Welcome <i> <%=username%> </i></h1>
+                </div>
+            </div>
 
             <!-- Row of columns -->
             <div class="row">
@@ -120,7 +122,7 @@
                 <div class="col-md-4">
                     <!--Card 2-->
                     <div class="card">
-                        
+
                         <!--Card image-->
                         <img class="img-fluid" src="assets/groupidentification.jpg" alt="Card image cap">
 

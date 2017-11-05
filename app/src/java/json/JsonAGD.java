@@ -15,9 +15,7 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.TreeMap;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -65,9 +63,8 @@ public class JsonAGD extends HttpServlet {
             tokenValid = false;
         }
         try {
-            dateTime = dateTime.replace("T", " ");
-            processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
-        } catch (Exception e) { // catch IllegalArgumentException && null pointer
+            processingWindowArrayList = TimeUtility.getJsonProcessingWindow(dateTime);
+        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
             dateValid = false;
         }
         if (!(dateValid && tokenValid)) { // if error

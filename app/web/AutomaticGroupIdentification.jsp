@@ -26,7 +26,7 @@
         <meta name="author" content="">
         <link rel="icon" href="icon.jpg">
 
-        <title>Automatic group detection</title>
+        <title>Automatic Group Identification</title>
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
@@ -44,10 +44,13 @@
     </head>
 
     <body>
-        <%            Integer count = (Integer) request.getAttribute("studentCount");
+
+        <%  //Getting student groups
+            Integer count = (Integer) request.getAttribute("studentCount");
             ArrayList<Group> studentGroups = (ArrayList<Group>) request.getAttribute("studentGroups");
             String errorMsg = (String) request.getAttribute("errMessage");
         %>
+
         <!--Navbar-->
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark blue-grey">
 
@@ -94,37 +97,50 @@
 
         <br/>
         <br/>
+        <br/>
+        <br/>
 
         <div class="container">
 
+            <div class="row">
 
+                <div class="col-md-4"></div>
 
-            <hr>
+                <div class="jumbotron col-md-4 centre-of-page">
 
-            <h1>Input request parameters </h1>
+                    <!-- Form get table -->
 
+                    <p class="h5 text-center mb-4">Get Groups</p>
 
-            <form method = "get" name ="AgdRequest_form" action="AgdServlet">
-                Date <input type="date" name="date" max = "2025-12-31" required ><br/>
-                Time <Input type ="time" name ="time" required> 
+                    <form name="AgdRequest_form" action="AgdServlet">
 
+                        <div class="form-group">
+                            <label>Date: </label>
+                            <input class="form-control" type="date" name="date" max="2025-12-31" required>
+                        </div>
 
-                <br/>
-                <input type="submit" value="Send">
+                        <div class="form-group">
+                            <label>Time: </label>
+                            <input class="form-control" type="time" name='time' required>
+                        </div>
 
-            </form>  
-            <%                /*not done 
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-amber">Go<i class="fa fa-paper-plane-o ml-1"></i></button>
+                            <button type="reset" class="btn btn-blue-grey" name="Reset" value="Cancel">Cancel</button>  
+                        </div>
+                    </form>
+                </div>
 
-                if (request.getAttribute("errMessage") != null) {
-                    out.println(request.getAttribute("errMessage"));
+                <div class="col-md-4"></div>
+
+            </div>
+
+            <%  //print error message              
+                if (errorMsg != null) {
+                    out.println("<h4 class=\"text-center red-text\">" + errorMsg + "</h4>");
                 }
-                 */
 
-            %> 
-            <%                if (errorMsg != null) {
-                    out.println(errorMsg);
-                }
-
+                //printing table
                 if (count != null && studentGroups != null) {
                     out.println("<table border='1' width='100%'>");
                     out.println("<tr> <th> Count of Students: " + count.toString() + " </th> </tr>");
@@ -145,11 +161,12 @@
                         }
                         out.println(" </table> </td> ");
                         out.println("<td>");
+                        int locationRank = 1;
                         while (iter.hasNext()) {
                             int place = iter.next();
                             double seconds = records.get(place).getDuration();
                             duration += seconds;
-                            out.println("<h2>" + place + " " + seconds + "</h2><br>");
+                            out.println("Location " + locationRank + ": " + place + "<br/>Time: " + seconds + " seconds<br>");
                             // for reference *testing
                             /*
                             ArrayList<TimeIntervals> timeList = records.get(place).getList();
@@ -157,7 +174,8 @@
                                 out.println(ti.getStartTime().toString() + " - " + ti.getEndTime().toString());
                                 out.println("<br>");  
                             }
-                            */
+                             */
+                            locationRank++;
                         }
                         out.println("</td>");
 
@@ -167,6 +185,9 @@
                     out.println("</table>");
                 }
             %>
+
+            <hr>
+
             <footer>
                 <p>&copy; SE G1T3</p>
             </footer>

@@ -49,7 +49,8 @@
         <br>
 
 
-        <%            HashMap<Integer, List<String>> locationErrors = (HashMap<Integer, List<String>>) request.getAttribute("location_errors");
+        <%  //get messages from servlet          
+            HashMap<Integer, List<String>> locationErrors = (HashMap<Integer, List<String>>) request.getAttribute("location_errors");
             HashMap<Integer, List<String>> llErrors = (HashMap<Integer, List<String>>) request.getAttribute("ll_errors");
             HashMap<Integer, List<String>> demographErrors = (HashMap<Integer, List<String>>) request.getAttribute("demographics_errors");
             Integer demoRowsEntered = (Integer) request.getAttribute("numDemoRowsInserted");
@@ -58,11 +59,11 @@
             String errorMsg = (String) request.getAttribute("errorMsg");
         %>
         <p> 
-            <% 
-                if(errorMsg!=null){
+            <%
+                if (errorMsg != null) {
                     out.println("<h2>" + errorMsg + "</h2>");
                 }
-                %>
+            %>
             <% if (demoRowsEntered != null) {
             %>
         <h2> Number of rows loaded from demographics.csv <%=demoRowsEntered%></h2>

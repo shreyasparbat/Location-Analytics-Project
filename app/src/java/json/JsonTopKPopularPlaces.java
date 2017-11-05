@@ -13,21 +13,15 @@ import is203.JWTUtility;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.dao.LocationReportsDAO;
-import model.entity.Group;
-import model.entity.Student;
 import model.utility.JsonUtility;
-import model.utility.StudentComparator;
 import model.utility.TimeUtility;
 
 /**
@@ -78,9 +72,8 @@ public class JsonTopKPopularPlaces extends HttpServlet {
             tokenValid = false;
         }
         try {
-            date = date.replace("T", " ");
-            timeList = TimeUtility.getProcessingWindow(date);
-        } catch (Exception e) { // catch IllegalArgumentException && null pointer
+            timeList = TimeUtility.getJsonProcessingWindow(date);
+        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
             dateValid = false;
         }
 

@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import is203.JWTException;
 import is203.JWTUtility;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -82,9 +79,8 @@ public class JsonTopKCompanion extends HttpServlet {
             tokenValid = false;
         }
         try {
-            date = date.replace("T", " ");
-            timeList = TimeUtility.getProcessingWindow(date);
-        } catch (Exception e) { // catch IllegalArgumentException && null pointer
+            timeList = TimeUtility.getJsonProcessingWindow(date);
+        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
             dateValid = false;
         }
         macValid = JsonUtility.checkMacaddress(macAddress);

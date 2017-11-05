@@ -76,7 +76,7 @@ public class JsonHeatMap extends HttpServlet {
                         //check for invalid date
                         try {
                             //get processing window
-                            ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(date);
+                            ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getJsonProcessingWindow(date);
                             startDateTime = processingWindowArrayList.get(0);
                             endDateTime = processingWindowArrayList.get(1);
 
