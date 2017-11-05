@@ -88,10 +88,9 @@ public class JsonTopKNextPlaces extends HttpServlet {
             tokenValid = false;
         }
         try {
-            date = date.replace("T", " ");
-            timeList = TimeUtility.getProcessingWindow(date);
-            timeListTwo = TimeUtility.getNextProcessingWindow(date);
-        } catch (Exception e) { // catch IllegalArgumentException && null pointer
+            timeList = TimeUtility.getJsonProcessingWindow(date);
+            timeListTwo = TimeUtility.getJsonNextProcessingWindow(date);
+        } catch (Exception e) { // catch IllegalArgumentException
             dateValid = false;
         }
         if (!(semanticPlacesList.contains(semanticPlace))) {

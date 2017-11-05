@@ -14,14 +14,12 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="Protect.jsp" %>
 
-<%
-    BreakdownUtility bu = new BreakdownUtility();
+<%    BreakdownUtility bu = new BreakdownUtility();
     //getting error message
     String message = "";
     if (request.getAttribute("errMessage") != null) {
         message = (String) request.getAttribute("errMessage");
     }
-
 %> 
 
 <!DOCTYPE html>
@@ -104,6 +102,8 @@
 
         <br/>
         <br/>
+        <br/>
+        <br/>
 
         <div class="container">
 
@@ -149,22 +149,20 @@
 
                         <div class="form-group">
                             <label>Date: </label>
-                            <input class="form-control" type="date" name="date">
+                            <input class="form-control" type="date" name="date" max="2025-12-31" required>
                         </div>
 
                         <div class="form-group">
                             <label>Time: </label>
-                            <input class="form-control" type="time" name='time'>
+                            <input class="form-control" type="time" name='time' required>
                         </div>
 
                         <input type='hidden' name='function' value="breakdownByYearGenderSchool">
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-amber">Go <i class="fa fa-paper-plane-o ml-1"></i></button>
+                            <button type="submit" class="btn btn-amber">Go<i class="fa fa-paper-plane-o ml-1"></i></button>
+                            <button type="reset" class="btn btn-blue-grey" name="Reset" value="Cancel">Cancel</button>  
                         </div>
-
-
-
                     </form>
                 </div>
 

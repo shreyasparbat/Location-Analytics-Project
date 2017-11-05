@@ -10,8 +10,27 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="icon.jpg">
+
         <title>Basic Location Reports</title>
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+
+        <!-- Bootstrap core CSS -->
+        <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Material Design Bootstrap -->
+        <link href="assets/css/mdb.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this page -->
+
+        <!-- Icon -->
+        <link rel="icon" href="assets/logo.jpg">
     </head>
     <body>
 
@@ -59,6 +78,8 @@
         </nav>
         <!--/.Navbar-->
 
+        <br/>
+        <br/>
         <br/>
         <br/>
 
