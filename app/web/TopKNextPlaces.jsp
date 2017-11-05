@@ -178,7 +178,7 @@
             out.println("</table>");
             out.println("<br>");
             //printing results table
-            if (locationList.get(0).getNumberOfStudents() > 0) {
+            if (!locationList.isEmpty() && locationList.get(0).getNumberOfStudents() > 0) {
                 out.println("<table border='1'>");
                 out.println("<tr><td> Rank </td> <td> Semantic Place</td> <td> Count</td><td> Percentage% </td>");
 

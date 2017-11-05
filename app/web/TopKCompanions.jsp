@@ -12,7 +12,7 @@
 <%@page import="java.util.List"%>
 <%@page import="model.utility.TopKUtility"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
+<%@include file="Protect.jsp" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -101,7 +101,7 @@
 
                 <div class="col-md-4"></div>
 
-                <div class="jumbotron col-md-4 centre-of-page">
+                <div class="jumbotron col-md-5 centre-of-page">
 
                     <!-- Form get table -->
 
