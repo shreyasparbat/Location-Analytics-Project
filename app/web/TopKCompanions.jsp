@@ -22,7 +22,7 @@
         String macAddress = (String) request.getAttribute("student");
         Integer value = (Integer) request.getAttribute("k");
         HashMap<Integer, Group> companionList = (HashMap<Integer, Group>) request.getAttribute("companions");
-
+        String email = (String) request.getAttribute("studentEmail");
         //getting error message
         String message = "";
         if (request.getAttribute("errMessage") != null) {
@@ -186,9 +186,15 @@
 
                     <%
                         if (value != null && companionList.size() > 0 && macAddress != null) {
-                            out.println("<h5 class=\"text-center\">Companions to <u>" + macAddress + "</u><h5><br>");
+                            out.println("<h5 class=\"text-center\">Companions to ");
+                            if(email==null){
+                                out.println("<u>" + macAddress + "</u><h5><br>");
+                            }else{
+                                out.println("<u>" + email + "</u><h5><br>");
+                            }
+                                     
                             out.println("<table border='1'>");
-                            out.println("<tr><td> Rank </td> <td> Companion </td> <td> Mac-address</td>");
+                            out.println("<tr><td> Rank </td> <td> Companion </td> <td> Mac-address</td> <td> Total co-location time </td>");
                             for (int i = 1; i <= value; i++) {
                                 out.println("<tr>");
                                 out.println("<td>");
@@ -210,6 +216,9 @@
                                 //uncomment to see time comparison
                                 //out.println(companionList.get(i).getTotalDuration());
                                 out.println("</td>");
+                                out.println("<td>");
+                                out.println(companionList.get(i).getTotalDuration());
+                                out.println(" seconds </td>");
                                 out.println("</tr>");
                             }
                             out.println("</table>");

@@ -29,6 +29,7 @@ import model.entity.Student;
 import model.utility.BreakdownUtility;
 import model.utility.LocationComparator;
 import model.utility.TimeUtility;
+import model.utility.TopKUtility;
 
 /**
  *
@@ -132,7 +133,6 @@ public class BasicLocationReportsServlet extends HttpServlet {
                 break;
             }
 
-
             //Top-k popular places
             case "topKPopularPlaces": {
                 //Error message generation
@@ -144,7 +144,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     request.setAttribute("errMessage", "Invalid date-time format");
                     request.getRequestDispatcher("/TopKPopularPlaces.jsp").forward(request, response);
                 }
-                
+
                 //Getting Parametres to process Top K popular places request
                 int k = Integer.parseInt(request.getParameter("k"));
                 LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime);
@@ -171,16 +171,21 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     request.setAttribute("errMessage", "Invalid date-time format");
                     request.getRequestDispatcher("/TopKCompanions.jsp").forward(request, response);
                 }
-                
+
                 int k = Integer.parseInt(request.getParameter("k"));
                 String studentMacAddress = request.getParameter("user");
                 LocationReportsDAO locationReportDAO = new LocationReportsDAO(startDateTime, endDateTime);
                 // key is the rank from 1 - n
                 // value is the merged groups
                 HashMap<Integer, Group> companionList = locationReportDAO.topkCompanions(k, studentMacAddress);
+                String stuEmail = TopKUtility.getStudentEmail(studentMacAddress);
+                if (stuEmail != null) {
+                    request.setAttribute("studentEmail", stuEmail);
+                }
+                request.setAttribute("student", studentMacAddress);
+
                 request.setAttribute("k", k);
                 request.setAttribute("companions", companionList);
-                request.setAttribute("student", studentMacAddress);
                 request.getRequestDispatcher("/TopKCompanions.jsp").forward(request, response);
                 break;
             }
@@ -203,22 +208,22 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     request.setAttribute("errMessage", "Invalid date-time format");
                     request.getRequestDispatcher("/TopKNextPlaces.jsp").forward(request, response);
                 }
-                
+
                 //getting K value 
                 int k = Integer.parseInt(request.getParameter("k"));
                 String semanticPlace = request.getParameter("place");
                 LocationReportsDAO locationReportsDAO = new LocationReportsDAO(startDateTime, endDateTime, startDateTimeTwo, endDateTimeTwo);
                 ArrayList<String> studentsList = locationReportsDAO.peopleInSemanticPlace(semanticPlace);
-                ArrayList<ArrayList<String>> comparisonWindow  = locationReportsDAO.topkNextPlaces();
+                ArrayList<ArrayList<String>> comparisonWindow = locationReportsDAO.topkNextPlaces();
                 HashMap<String, Location> locationMap = new HashMap<>();
                 ArrayList<Location> locationList = new ArrayList<>();
-                
+
                 //for each set of comparisonWindow
-                for(ArrayList<String> s : comparisonWindow){
+                for (ArrayList<String> s : comparisonWindow) {
                     //get semantic place
                     String sp = s.get(0);
                     //check if semantic place is mapped. If it isn't add it to mapping
-                    if(locationMap.get(sp) == null){
+                    if (locationMap.get(sp) == null) {
                         locationMap.put(sp, new Location(sp));
                     }
                     //Location l is the semantic place
@@ -226,18 +231,18 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     //get list of people in semantic place
                     ArrayList<String> peopleList = l.getStudents();
                     //if the macaddress in question is in the studentList and not in the place, add the student into the place to track his next location
-                    if((!peopleList.contains(s.get(1))) && studentsList.contains(s.get(1))){
+                    if ((!peopleList.contains(s.get(1))) && studentsList.contains(s.get(1))) {
                         peopleList.add(s.get(1));
                     }
                 }
                 //converts hashmap to ArrayList of location for display
                 Iterator iter = locationMap.keySet().iterator();
-                while(iter.hasNext()){
+                while (iter.hasNext()) {
                     String key = (String) iter.next();
                     Location l = locationMap.get(key);
                     locationList.add(l);
                 }
-                
+
                 //sorting the locationlist
                 Collections.sort(locationList, new LocationComparator());
                 request.setAttribute("time1", startDateTimeTwo);

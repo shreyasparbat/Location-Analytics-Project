@@ -35,7 +35,18 @@ public class StudentDAO {
     public StudentDAO() {
         studentMap = new TreeMap<>();
     }
-
+    
+    /**
+     * Returns a selected student using a macaddress
+     * @param macAddress Specified student's macaddress
+     * @return Student object if macaddress is found in the student list, else null.
+     */
+    public Student getStudent(String macAddress){
+        if(macAddress!=null){
+            return studentMap.get(macAddress);
+        }
+        return null;
+    }
     //getters
     /**
      * to get students within processing window

@@ -64,5 +64,25 @@ public class TopKUtility {
         }
         return semanticPlaces;
     }
-    
+    /**
+     * A method that calls the database and returns a email using a macaddress
+     * @return list of a student's email
+     */
+    public static String getStudentEmail(String macaddress){
+        try {
+            Connection conn = DBConnection.createConnection();
+            PreparedStatement stmt = conn.prepareStatement("select distinct email from demograph where macaddress = ?;");
+            stmt.setString(1, macaddress);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()){
+                return rs.getString("email");
+            }
+            DBConnection.close(conn, stmt, rs);
+        } catch (SQLException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DBConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }
