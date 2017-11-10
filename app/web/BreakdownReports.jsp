@@ -149,12 +149,12 @@
 
                         <div class="form-group">
                             <label>Date: </label>
-                            <input class="form-control" type="date" name="date" max="2025-12-31" required>
+                            <input class="form-control" type="datetime-local" name="date" max="2025-12-31" required>
                         </div>
 
                         <div class="form-group">
                             <label>Time: </label>
-                            <input class="form-control" type="time" name='time' required>
+                            <input class="form-control" type="time" name='time' step="1" required>
                         </div>
 
                         <input type='hidden' name='function' value="breakdownByYearGenderSchool">
