@@ -209,7 +209,12 @@ public class BreakdownUtility {
         return schoolNumber;
     }
     
-    
+    /**
+     * Returns a sorted TreeMap based on the year option input, where the mac-address
+     * is the Key and the Student object takes the value
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Student></code> of students broken down by year
+    */
     public TreeMap<String, Student> getStudentsByYear(String year, TreeMap<String, Student> studentMap) {
         //creates new hashmap
         TreeMap<String, Student> studentsByYear = new TreeMap<>();
@@ -233,7 +238,12 @@ public class BreakdownUtility {
         return studentsByYear;
     }
 
-    //returns a hashtable of students based on the gender specified.
+    /**
+     * Returns a sorted TreeMap based on the gender option input, where the mac-address
+     * is the Key and the Student object takes the value
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Student></code> of students broken down by year
+    */
     public TreeMap<String, Student> getStudentsByGender(String g, TreeMap<String, Student> studentMap) {
         char requiredGender = g.charAt(0);
         TreeMap<String, Student> studentsByGender = new TreeMap<>();
@@ -253,11 +263,16 @@ public class BreakdownUtility {
             }
         }
 
-        //returns new hashtable
+        //returns new TreeMap
         return studentsByGender;
     }
 
-    //returns a hashtable of students based on the school specified.
+    /**
+     * Returns a sorted TreeMap based on the school option input, where the mac-address
+     * is the Key and the Student object takes the value
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Student></code> of students broken down by year
+    */
     public TreeMap<String, Student> getStudentsBySchool(String school, TreeMap<String, Student> studentMap) {
         //creates new hashtable
         TreeMap<String, Student> studentsBySchool = new TreeMap<>();
@@ -280,7 +295,12 @@ public class BreakdownUtility {
         return studentsBySchool;
 
     }
-
+    
+    /**
+     * Enables pretty printing of data for one Option
+     * @param percentageOneList The list of students that is already broken down
+     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+    */
     public ArrayList<String> printBarChart(TreeMap<String, Integer> percentageOneList) throws IllegalArgumentException {
 
         //strings for charts (innermost layer) to be outputed
@@ -312,7 +332,36 @@ public class BreakdownUtility {
         toReturnInner.add(gsonInnerData);
         return toReturnInner;
     }
-
+    
+    /**
+     * Enables pretty printing of data for one Option
+     * @param percentageOneList The list of students that is already broken down
+     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+    */
+    public ArrayList<String> printInner(TreeMap<String, Integer> percentageOneList) throws IllegalArgumentException{
+        //ArrayList for output
+        ArrayList<String> outputArrayList = new ArrayList<>();
+        outputArrayList.add("<br>");
+        
+        //getting innerMap keys
+        Iterator<String> innerMapValuesIter = percentageOneList.keySet().iterator();
+        double denom = getOneOptionDenominator(percentageOneList);
+        
+        while(innerMapValuesIter.hasNext()){
+            String key = innerMapValuesIter.next();
+            double value = percentageOneList.get(key);
+            //perform half rounding and add to print list
+            int percentRounded = (int)((value/denom)*100 + 0.5);
+            outputArrayList.add("<li>" + key + " , " + (int)value + " , "+ percentRounded + "%</li>");
+        }
+        return outputArrayList;
+    }
+    
+    /**
+     * Enables pretty printing of data for two Option
+     * @param percentageTwoList The list of students that is already broken down
+     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+    */
     public ArrayList<String> printMiddle(TreeMap<String, TreeMap<String, Integer>> percentageTwoList) throws IllegalArgumentException {
         //ArrayList to be outputed
         ArrayList<String> outputArrayList = new ArrayList<>();
@@ -361,7 +410,12 @@ public class BreakdownUtility {
         //returning
         return outputArrayList;
     }
-
+    
+    /**
+     * Enables pretty printing of data for three Option
+     * @param percentageAllList The list of students that is already broken down
+     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+    */
     public ArrayList<String> printOuter(TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList) throws IllegalArgumentException {
         //ArrayList to be outputed
         ArrayList<String> outputArrayList = new ArrayList<>();
@@ -430,7 +484,12 @@ public class BreakdownUtility {
         //returning
         return outputArrayList;
     }
-
+    
+    /**
+     * Gets the denominator value to calculate for percentages of all options.
+     * @param percentageAllList The list of students that is already broken down
+     * @return <code>Double</code> number to calculate percentage value.
+    */
     public double getThreeOptionDenominator(TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList) {
         double denominator = 0.0;
         Iterator<String> outerMapKeysIter = percentageAllList.keySet().iterator();
@@ -452,6 +511,11 @@ public class BreakdownUtility {
         return denominator;
     }
 
+    /**
+     * Gets the denominator value to calculate for percentages of two options.
+     * @param percentageTwoList The list of students that is already broken down
+     * @return <code>Double</code> number to calculate percentage value.
+    */
     public double getTwoOptionDenominator(TreeMap<String, TreeMap<String, Integer>> percentageTwoList) {
         double denominator = 0;
         Iterator<String> middleMapKeysIter = percentageTwoList.keySet().iterator();
@@ -467,7 +531,28 @@ public class BreakdownUtility {
         }
         return denominator;
     }
-
+    
+    /**
+     * Gets the denominator value to calculate for percentages of one option.
+     * @param percentageOneList The list of students that is already broken down
+     * @return <code>Double</code> number to calculate percentage value.
+    */
+    public double getOneOptionDenominator(TreeMap<String, Integer> percentageOneList){
+        double denominator = 0;
+        Iterator<String> innerMapKeysIter = percentageOneList.keySet().iterator();
+        while(innerMapKeysIter.hasNext()){
+            String key = innerMapKeysIter.next();
+            int value = percentageOneList.get(key);
+            denominator += value;
+        }
+        return denominator;
+    }
+    
+    /**
+     * Gets the numerator value to calculate for percentages.
+     * @param input The list of students that is already broken down
+     * @return <code>Double</code> number to calculate percentage value.
+    */
     public double getNumerator(TreeMap<String, Integer> input) {
         double numerator = 0;
         Iterator<String> inputIter = input.keySet().iterator();

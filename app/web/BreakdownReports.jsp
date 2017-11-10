@@ -191,16 +191,24 @@
             <%  //printing percentageOneList if it exits
                 if (request.getAttribute("percentageOneList") != null) {
                     percentageOneList = (TreeMap<String, Integer>) request.getAttribute("percentageOneList");
-
+                    //getting output list
+                    ArrayList<String> outputArrayList = new ArrayList<>();
                     //making bar chart
                     try {
                         gsonStringList = bu.printBarChart(percentageOneList);
+                        outputArrayList = bu.printInner(percentageOneList);
                         out.print("<canvas id=\"inner\"></canvas>");
 
                         //error handling
                     } catch (IllegalArgumentException e) {
                         out.print("<h4 class=\"text-center red-text\">Records Not Found!</h4>");
                     }
+
+                    //printing outputList
+                    for (String output : outputArrayList) {
+                        out.print(output);
+                    }
+                    
                 }
 
                 //printing percentageTwoList if it exits
@@ -240,7 +248,7 @@
                 }
             %>
 
-            <!-- Bar-chart script -->
+            <!-- Bar-chart script for pretty interface-->
             <script>
                 var ctx = document.getElementById("inner");
                 var myChart = new Chart(ctx, {
