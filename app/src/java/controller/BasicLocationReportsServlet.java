@@ -9,6 +9,7 @@ import model.dao.LocationReportsDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,11 +58,8 @@ public class BasicLocationReportsServlet extends HttpServlet {
 
         //retrieve request parameters
         String function = request.getParameter("function");
-        String date = request.getParameter("date");
-        String time = request.getParameter("time");
+        String dateTime = request.getParameter("datetime");
 
-        //Make dateTime string of correct format
-        String dateTime = date + " " + time + ":00";
 
         //Obtaining SQL Timestamp objects for start and end time of processing window
         Timestamp startDateTime = null;
@@ -78,7 +76,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
                     startDateTime = processingWindowArrayList.get(0);
                     endDateTime = processingWindowArrayList.get(1);
-                } catch (IllegalArgumentException e) {
+                } catch (DateTimeParseException e) {
                     request.setAttribute("errMessage", "Invalid date-time format");
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
                 }
@@ -106,6 +104,8 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     //send back to View page
                     request.setAttribute("percentageOneList", percentageOneList);
                     request.getRequestDispatcher("/BreakdownReports.jsp").forward(request, response);
+                    request.setAttribute("time1", startDateTime);
+                    request.setAttribute("time2", endDateTime);
 
                 } else if (!option2.equals("none2") && option3.equals("none3")) {
                     //calls 2 option function
@@ -140,7 +140,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
                     startDateTime = processingWindowArrayList.get(0);
                     endDateTime = processingWindowArrayList.get(1);
-                } catch (IllegalArgumentException e) {
+                } catch (DateTimeParseException e) {
                     request.setAttribute("errMessage", "Invalid date-time format");
                     request.getRequestDispatcher("/TopKPopularPlaces.jsp").forward(request, response);
                 }
@@ -167,7 +167,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
                     startDateTime = processingWindowArrayList.get(0);
                     endDateTime = processingWindowArrayList.get(1);
-                } catch (IllegalArgumentException e) {
+                } catch (DateTimeParseException e) {
                     request.setAttribute("errMessage", "Invalid date-time format");
                     request.getRequestDispatcher("/TopKCompanions.jsp").forward(request, response);
                 }
@@ -204,7 +204,7 @@ public class BasicLocationReportsServlet extends HttpServlet {
                     ArrayList<Timestamp> processingWindowTwoArrayList = TimeUtility.getNextProcessingWindow(dateTime);
                     startDateTimeTwo = processingWindowTwoArrayList.get(0);
                     endDateTimeTwo = processingWindowTwoArrayList.get(1);
-                } catch (IllegalArgumentException e) {
+                } catch (DateTimeParseException e) {
                     request.setAttribute("errMessage", "Invalid date-time format");
                     request.getRequestDispatcher("/TopKNextPlaces.jsp").forward(request, response);
                 }

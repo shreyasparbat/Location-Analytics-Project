@@ -112,16 +112,11 @@
 
                     <p class="h5 text-center mb-4">Get Groups</p>
 
-                    <form name="AgdRequest_form" action="AgdServlet">
+                    <form name="AgiRequest_form" action="AgiServlet">
 
                         <div class="form-group">
-                            <label>Date: </label>
-                            <input class="form-control" type="date" name="date" max="2025-12-31" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Time: </label>
-                            <input class="form-control" type="time" name='time' required>
+                            <label>DateTime: </label>
+                            <input class="form-control" type="datetime-local" name="datetime" min ="2010-01-01T00:00:00" max="2025-12-31T23:59:59" step="1" required>
                         </div>
 
                         <div class="text-center">

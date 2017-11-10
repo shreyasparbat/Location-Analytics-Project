@@ -11,6 +11,7 @@ import static java.lang.System.out;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -39,8 +40,8 @@ import model.utility.TimeUtility;
  *
  * @author amanda
  */
-@WebServlet(name = "AgdServlet", urlPatterns = {"/AgdServlet"})
-public class AgdServlet extends HttpServlet {
+@WebServlet(name = "AgiServlet", urlPatterns = {"/AgiServlet"})
+public class AgiServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -55,9 +56,8 @@ public class AgdServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         //to take in user inputs
-        String date = request.getParameter("date");
-        String time = request.getParameter("time");
-        String dateTime = date + " " + time + ":00";
+        String dateTime = request.getParameter("datetime");
+        
 
         Timestamp startDateTime = null;
         Timestamp endDateTime = null;
@@ -66,7 +66,7 @@ public class AgdServlet extends HttpServlet {
             ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
             startDateTime = processingWindowArrayList.get(0);
             endDateTime = processingWindowArrayList.get(1);
-        } catch (IllegalArgumentException e) {
+        } catch (DateTimeParseException e) {
             request.setAttribute("errMessage", "Invalid date-time format");
             request.getRequestDispatcher("AutomaticGroupIdentification.jsp").forward(request, response);
         }

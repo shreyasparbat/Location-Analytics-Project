@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,11 +48,8 @@ public class HeatMapServlet extends HttpServlet {
 
         //retrieve request parameters
         String level = request.getParameter("level");
-        String date = request.getParameter("date");
-        String time = request.getParameter("time");
-
-        //Make dateTime string of correct format
-        String dateTime = date + " " + time + ":00";
+        String dateTime = request.getParameter("datetime");
+        
 
         //Obtaining SQL Timestamp objects for start and end time of processing window
         Timestamp startDateTime = null;
@@ -62,7 +60,7 @@ public class HeatMapServlet extends HttpServlet {
             ArrayList<Timestamp> processingWindowArrayList = TimeUtility.getProcessingWindow(dateTime);
             startDateTime = processingWindowArrayList.get(0);
             endDateTime = processingWindowArrayList.get(1);
-        } catch (IllegalArgumentException e) {
+        } catch (DateTimeParseException e) {
             request.setAttribute("errMessage", "Invalid date-time format");
             request.getRequestDispatcher("/HeatMaps.jsp").forward(request, response);
         }

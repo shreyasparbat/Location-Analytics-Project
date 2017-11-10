@@ -24,7 +24,13 @@ public class BreakdownUtility {
     private final String[] YEAR_LIST = {"2013", "2014", "2015", "2016", "2017"};
     private final String[] GENDER_LIST = {"M", "F"};
     private final String[] SCHOOL_LIST = {"sis", "law", "accountancy", "economics", "business", "socsc"};
-
+    
+    /**
+     * Returns a sorted TreeMap based on the option input by the user
+     * @param option Choice of breakdown report 
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Integer></code>
+     */
     public TreeMap<String, Integer> percentageOneOption(String option, TreeMap<String, Student> studentMap) {
         TreeMap<String, Integer> percentageOneList = new TreeMap<>();
 
@@ -40,7 +46,14 @@ public class BreakdownUtility {
 
         return percentageOneList;
     }
-
+    
+    /**
+     * Returns a sorted TreeMap based on the two option inputs by the user
+     * @param option1 Choice of breakdown report 
+     * @param option2 Choice of breakdown report 
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Integer></code>
+     */
     public TreeMap<String, TreeMap<String, Integer>> percentageTwoOptions(String option1, String option2, TreeMap<String, Student> studentMap) {
         TreeMap<String, TreeMap<String, Integer>> percentageTwoList = new TreeMap<>();
         
@@ -88,7 +101,14 @@ public class BreakdownUtility {
 
         return percentageTwoList;
     }
-
+    /**
+     * Returns a sorted TreeMap based on the three option inputs by the user
+     * @param option1 Choice of breakdown report 
+     * @param option2 Choice of breakdown report 
+     * @param option3 Choice of breakdown report 
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Integer></code>
+     */
     public TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllOptions(String option1, String option2, String option3, TreeMap<String, Student> studentMap) {
         TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList = new TreeMap<>();
 
@@ -102,9 +122,6 @@ public class BreakdownUtility {
             while (percentageListKeyIterator.hasNext()) {
                 String year = percentageListKeyIterator.next();
                 int number = numberList.get(year);
-                //half rounding
-                //int rounded = (int) (percentageList.get(year) + 0.5);
-
                 percentageAllList.put(year + " : " + number, percentageTwoOptions(option2, option3, getStudentsByYear(year, studentMap)));
             }
         }
@@ -115,9 +132,6 @@ public class BreakdownUtility {
             while (percentageListKeyIterator.hasNext()) {
                 String gender = percentageListKeyIterator.next();
                 int number = numberList.get(gender);
-
-                //half rounding
-                //int rounded = (int) (percentageList.get(gender) + 0.5);
                 percentageAllList.put(gender + " : " + number, percentageTwoOptions(option2, option3, getStudentsByGender(gender, studentMap)));
             }
         }
@@ -127,18 +141,19 @@ public class BreakdownUtility {
             while (percentageListKeyIterator.hasNext()) {
                 String school = percentageListKeyIterator.next();
                 int number = numberList.get(school);
-                //half rounding
-                //int rounded = (int) (percentageList.get(school) + 0.5);
-
                 percentageAllList.put(school + " : " + number, percentageTwoOptions(option2, option3, getStudentsBySchool(school, studentMap)));
             }
         }
 
         return percentageAllList;
     }
-
-    //returns a hashmap of number of students breakdown by year in a key value pair
-    // key = year, value = number of students by year
+    
+    /**
+     * Returns a sorted TreeMap based on the year option input, where the year
+     * is the Key and the number of Students takes an Integer Value 
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Integer></code> of students broken down by year
+    */
     public TreeMap<String, Integer> byYear(TreeMap<String, Student> studentMap) {
         TreeMap<String, Integer> yearNumber = new TreeMap<>();
 
@@ -153,8 +168,12 @@ public class BreakdownUtility {
         return yearNumber;
     }
 
-    //returns a hashtable of number of students by gender in a key value pair
-    // key = gender, value = number of students
+    /**
+     * Returns a sorted TreeMap based on the gender option input, where the gender
+     * is the Key and the number of Students takes an Integer Value 
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Integer></code> of students broken down by gender
+    */
     public TreeMap<String, Integer> byGender(TreeMap<String, Student> studentMap) {
         //initializing hashmap for conversion into raw numbers
         TreeMap<String, Integer> yearNumber = new TreeMap<>(Collections.reverseOrder());
@@ -169,8 +188,12 @@ public class BreakdownUtility {
         return yearNumber;
     }
 
-    //returns a hashtable of number of students breakdown by school in a key value pair
-    // key = school, value = number of students by school
+    /**
+     * Returns a sorted TreeMap based on the school option input, where the school
+     * is the Key and the number of Students takes an Integer Value 
+     * @param studentMap The list of students to be broken down
+     * @return <code>TreeMap<String, Integer></code> of students broken down by school
+    */
     public TreeMap<String, Integer> bySchool(TreeMap<String, Student> studentMap) {
         //initializing hashmap for conversion into raw numbers
         TreeMap<String, Integer> schoolNumber = new TreeMap<>();
@@ -185,7 +208,8 @@ public class BreakdownUtility {
         //returning
         return schoolNumber;
     }
-
+    
+    
     public TreeMap<String, Student> getStudentsByYear(String year, TreeMap<String, Student> studentMap) {
         //creates new hashmap
         TreeMap<String, Student> studentsByYear = new TreeMap<>();
@@ -205,7 +229,7 @@ public class BreakdownUtility {
             }
         }
 
-        //returns new hashtable
+        //returns new TreeMap
         return studentsByYear;
     }
 
