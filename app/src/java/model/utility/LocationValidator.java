@@ -238,6 +238,14 @@ public class LocationValidator {
         return errorMsgs;
     }
     
+    /**
+     * Gets nearest duplicate row number
+     * 
+     * @param index current row number
+     * @param list the list of data
+     * @param currentRecord the current row data
+     * @return nearest largest row number which has duplicate mac address and timestamp records as current row. Else 0. 
+     */
     public static int getNearestDuplicate(int index, List<String[]> list, String[] currentRecord){
         for(int i = index-2; i>=0; i--){
             String[] rowRecord = list.get(i); 

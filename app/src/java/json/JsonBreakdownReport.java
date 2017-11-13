@@ -256,7 +256,7 @@ public class JsonBreakdownReport extends HttpServlet {
 
     /**
      * Returns a "true" boolean value if the option input by user is correct
-     * @param takes in a String of the option input by user 
+     * @param option takes in a String of the option input by user 
      * @return boolean "true" is returned if input is correct, "false" if it is wrong
      */
     public boolean isCorrectOption(String option) {
@@ -265,7 +265,7 @@ public class JsonBreakdownReport extends HttpServlet {
 
     /**
      * Returns a "true" boolean value if the option input by user is Valid
-     * @param takes in a String of the option input by user 
+     * @param option takes in a String of the option input by user 
      * @return  boolean "true" is returned if input is valid, "false" if it is not valid
      */
     public boolean isValidOption(String option) {

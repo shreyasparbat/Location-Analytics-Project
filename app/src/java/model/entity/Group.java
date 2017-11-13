@@ -151,8 +151,8 @@ public class Group implements Comparable<Group>{
     
     /**
      * Compares one group with another group
-     * @param g2
-     * @return 
+     * @param g2 second group to compare with
+     * @return 1 if group 1, -1 if group 2 else 0 if no difference
      */
     public int compareTo(Group g2){
         Collections.sort(g2.sGroup, new StudentComparator());

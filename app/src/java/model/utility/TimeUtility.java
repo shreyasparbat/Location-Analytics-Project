@@ -67,7 +67,17 @@ public class TimeUtility {
         return processingWindowArrayList;
     }
 
-
+    /**
+     * Returns an ArrayList of two Timestamp objects based on the dateTime
+     * string passed into the function. These Timestamp objects signify the
+     * start and end of the processing window. It takes in initial time, and
+     * processes the end time 15 minutes before.
+     * @param dateTime a string containing dateTime 
+     * @return an ArrayList of Timestamps where 
+     * timestamp at index 0 is <code>startDateTime</code> 
+     * and timestamp at index 1 is <code>endDateTime</code>
+     * @throws IllegalArgumentException invalid format of date
+     */
     public static ArrayList<Timestamp> getJsonProcessingWindow(String date) throws IllegalArgumentException {
         //checking whether patter is correct using regex
         if (date.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d")) {
@@ -82,6 +92,19 @@ public class TimeUtility {
         }
     }
     
+    /**
+     *
+     * Returns an ArrayList of two Timestamp objects based on the dateTime
+     * string passed into the function. These Timestamp objects signify the
+     * start and end of the processing window. It takes in initial time, and
+     * processes the end time 15 minutes later.
+     *
+     * @param dateTime a string containing dateTime from HTML form
+     * @return an ArrayList of Timestamps where 
+     * timestamp at index 0 is <code>startDateTime</code> 
+     * and timestamp at index 1 is <code>endDateTime</code>
+     * @throws IllegalArgumentException invalid format of date
+     */
     public static ArrayList<Timestamp> getJsonNextProcessingWindow(String date) throws IllegalArgumentException {
         //checking whether patter is correct using regex
         if (date.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d")) {

@@ -56,7 +56,7 @@ public class Location {
     
     /**
      * Adds a student into the ArrayList of Student macaddresses located within the location
-     *
+     * @param studentMac macAddress of a student
      * 
      */
     public void addStudent(String studentMac) {
