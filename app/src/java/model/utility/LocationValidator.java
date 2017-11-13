@@ -98,7 +98,7 @@ public class LocationValidator {
                     }
                     if (invalidRow == false) {
                         String rowData = row[0].trim() + "," + row[1].trim() + "," + row[2].trim();
-                        numDLocaRowsValidated++;
+                        
                         mapCheck.put(key, rowData);
                     }
                 }
@@ -125,6 +125,7 @@ public class LocationValidator {
         //Once run finish, the mapCheck should contain all the updated and correct rows
         //Getting values
         Collection<String> listValues = mapCheck.values();
+        numDLocaRowsValidated = mapCheck.size();
 
         //Creating an ArrayList of values
         correctList = new ArrayList<String>(listValues);
@@ -141,6 +142,9 @@ public class LocationValidator {
      */
     private static boolean checkTime(String time) {
         try {
+            if(time == null || time.length()!= 19){
+                return false;
+            }
             Timestamp ts = Timestamp.valueOf(time);
 
         } catch (IllegalArgumentException e) {
