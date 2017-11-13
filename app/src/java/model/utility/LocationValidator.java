@@ -82,7 +82,20 @@ public class LocationValidator {
                 if (timeCheck && locationCheck && macAddressCheck) {
                     String key = row[1] + row[0];
                     if (mapCheck.containsKey(key)) {
-                        duplicateRow = true;
+                        //duplicateRow = true;
+                        int duplicateRowNum = getNearestDuplicate(index, list, row); 
+                       
+                        if(duplicateRowNum!= 0){
+                            if(locationErrors.containsKey(duplicateRowNum)){
+                                List<String> eList = locationErrors.get(duplicateRowNum); 
+                                eList.add("duplicate row"); 
+                                locationErrors.put(duplicateRowNum,eList); 
+                            } else{
+                                List<String> eList = new ArrayList<String>(); 
+                                eList.add("duplicate row"); 
+                                locationErrors.put(duplicateRowNum, eList); 
+                            }
+                        }
                     } else {
                         if (!bootstrapProcess) { //additional step for update
                             PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM location WHERE macaddress = ? and time = ? ");
@@ -223,5 +236,16 @@ public class LocationValidator {
         }
 
         return errorMsgs;
+    }
+    
+    public static int getNearestDuplicate(int index, List<String[]> list, String[] currentRecord){
+        for(int i = index-2; i>=0; i--){
+            String[] rowRecord = list.get(i); 
+            if(rowRecord[0].equals(currentRecord[0]) && rowRecord[1].equals(currentRecord[1])){
+                return i + 1; 
+            }
+        }      
+        
+        return 0;
     }
 }
