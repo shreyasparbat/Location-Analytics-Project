@@ -163,8 +163,10 @@ public class DemographicsValidator {
             int year = Integer.parseInt(schEmailYear);
             isYearValid = (year >= 2013 && year <= 2017);
             String emailName = schEmailName.substring(0, schEmailName.lastIndexOf("."));
-            name = name.replaceAll(" ", ".").toLowerCase();
-            isStudentValid = emailName.equals(name);
+            System.out.println(emailName); 
+            isStudentValid = emailName.matches("[a-zA-Z0-9\\.]+");
+            //name = name.replaceAll(" ", ".").toLowerCase();
+            //isStudentValid = emailName.equals(name);
 
         } catch (NullPointerException e) {
             return false;
