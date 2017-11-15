@@ -57,7 +57,7 @@ public class LocationReportsDAO {
     /**
      * Incomplete
      *
-     * @param option1 
+     * @param option1
      * @param option2
      * @param option3
      */
@@ -170,10 +170,11 @@ public class LocationReportsDAO {
         HashMap<Integer, Group> stList = new HashMap<>();
         StudentDAO sDAO = new StudentDAO();
         TreeMap<String, Student> sMap = sDAO.getAllStudentsWithinProcessingWindow(startDateTime, endDateTime);
-        Student s = sMap.get(studentMac);
-        if (s != null) {
-            try {
-                sDAO.importDataFromDatabase(sMap, startDateTime, endDateTime);
+
+        try {
+            sDAO.importDataFromDatabase(sMap, startDateTime, endDateTime);
+            Student s = sMap.get(studentMac);
+            if (s != null) {
                 //gets groups of two
                 ArrayList<Group> studentGroup = sDAO.getStudentGroups(s);
                 //sort groups by their duration (Highest to lowest)
@@ -190,12 +191,12 @@ public class LocationReportsDAO {
                         continue;
                     }
                 }
-
-            } catch (SQLException ex) {
-                Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LocationReportsDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return stList;
