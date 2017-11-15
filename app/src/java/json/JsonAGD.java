@@ -119,7 +119,7 @@ public class JsonAGD extends HttpServlet {
                 JsonArray location = new JsonArray();
                 for(int id: g.getRecord().keySet()){
                     JsonObject locationInfo = new JsonObject();
-                    locationInfo.addProperty("location", id);
+                    locationInfo.addProperty("location", id + "");
                     Double locationTime = g.getRecord().get(id).getDuration();
                     locationInfo.addProperty("time-spent", locationTime.intValue());
                     location.add(locationInfo);
