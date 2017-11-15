@@ -206,7 +206,6 @@ public class JsonBootstrap extends HttpServlet {
                 //second array - output errors based on the file
                 JsonArray jsonArrayError = new JsonArray();
                 if (!demoErrors.isEmpty()) {
-
                     List<Integer> listOfErrorLines = new ArrayList<Integer>(demoErrors.size());
                     listOfErrorLines.addAll(demoErrors.keySet());
                     Collections.sort(listOfErrorLines);
@@ -218,21 +217,6 @@ public class JsonBootstrap extends HttpServlet {
                         int line = iter.next();
                         demoError = listErrors(demoError, demoErrors, line);
                         jsonArrayError.add(demoError);
-                    }
-
-                }
-                if (!locationErrors.isEmpty()) {
-
-                    List<Integer> listOfErrorLines = new ArrayList<Integer>(locationErrors.size());
-                    listOfErrorLines.addAll(locationErrors.keySet());
-                    Collections.sort(listOfErrorLines);
-                    Iterator<Integer> iter = listOfErrorLines.iterator();
-                    while (iter.hasNext()) {
-                        int line = iter.next();
-                        JsonObject locaError = new JsonObject();
-                        locaError.addProperty("file", "location.csv");
-                        locaError = listErrors(locaError, locationErrors, line);
-                        jsonArrayError.add(locaError);
                     }
 
                 }
@@ -250,6 +234,20 @@ public class JsonBootstrap extends HttpServlet {
                     }
                 }
 
+                if (!locationErrors.isEmpty()) {
+                    List<Integer> listOfErrorLines = new ArrayList<Integer>(locationErrors.size());
+                    listOfErrorLines.addAll(locationErrors.keySet());
+                    Collections.sort(listOfErrorLines);
+                    Iterator<Integer> iter = listOfErrorLines.iterator();
+                    while (iter.hasNext()) {
+                        int line = iter.next();
+                        JsonObject locaError = new JsonObject();
+                        locaError.addProperty("file", "location.csv");
+                        locaError = listErrors(locaError, locationErrors, line);
+                        jsonArrayError.add(locaError);
+                    }
+
+                }
                 jsonOutput.add("error", jsonArrayError);
             }
         } catch (ValidatorException ex) {
@@ -276,7 +274,7 @@ public class JsonBootstrap extends HttpServlet {
         for (String error : lineErrors) {
             lineArray.add(error);
         }
-        obj.add("message", lineArray);
+        obj.add("messages", lineArray);
 
         return obj;
 
