@@ -127,7 +127,7 @@ public class JsonTopKPopularPlaces extends HttpServlet {
                 }
                 JsonObject ranks = new JsonObject();
                 ranks.addProperty("rank", i);
-                ranks.addProperty("semanticplace",key);
+                ranks.addProperty("semantic-place",key);
                 ranks.addProperty("count", count);
                 jArray.add(ranks);
             }

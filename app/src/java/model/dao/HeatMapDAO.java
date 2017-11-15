@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.sql.Timestamp;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.utility.DBConnection;
@@ -21,19 +22,19 @@ import model.utility.DBConnection;
  */
 public class HeatMapDAO {
 
-    private HashMap<String, Integer> semanticPlaceHeat;
+    private TreeMap<String, Integer> semanticPlaceHeat;
     private Timestamp startDateTime;
     private Timestamp endDateTime;
     private String level;
 
     public HeatMapDAO(Timestamp startDateTime, Timestamp endDateTime, String level) {
-        semanticPlaceHeat = new HashMap<>();
+        semanticPlaceHeat = new TreeMap<>();
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         this.level = level;
     }
 
-    public HashMap<String, Integer> getSemanticPlaceHeatFromSpecificFloor() {
+    public TreeMap<String, Integer> getSemanticPlaceHeatFromSpecificFloor() {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -91,7 +92,7 @@ public class HeatMapDAO {
             DBConnection.close(conn, stmt, rs);
         }
 
-        //returning required hashmap
+        //returning required treemap
         return semanticPlaceHeat;
     }
 }

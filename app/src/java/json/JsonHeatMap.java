@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -139,7 +140,7 @@ public class JsonHeatMap extends HttpServlet {
 
                         //get semanticPlaceHeat HashMap and its iterator
                         HeatMapDAO heatMapDAO = new HeatMapDAO(startDateTime, endDateTime, level);
-                        HashMap<String, Integer> semanticPlaceHeat = heatMapDAO.getSemanticPlaceHeatFromSpecificFloor();
+                        TreeMap<String, Integer> semanticPlaceHeat = heatMapDAO.getSemanticPlaceHeatFromSpecificFloor();
                         Iterator<String> semanticPlaceHeatKeysIterator = semanticPlaceHeat.keySet().iterator();
 
                         //create Json Array to be used for printing heat map
