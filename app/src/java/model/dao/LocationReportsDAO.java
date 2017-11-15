@@ -310,9 +310,17 @@ public class LocationReportsDAO {
         ArrayList<String> addressList = new ArrayList<>();
         try {
             conn = DBConnection.createConnection();
-            /*
-            stmt = conn.prepareStatement("something");
-*/
+            stmt = conn.prepareStatement("select l.macaddress \n"
+                    + "from location l inner join locationlookup llu \n"
+                    + "on l.locationid = llu.locationid inner join \n"
+                    + "(select max(time) as lastestTime, macaddress \n"
+                    + "from location l, locationlookup llu \n"
+                    + "where l.locationid=llu.locationid\n"
+                    + "and time >= ? and time < ?\n"
+                    + "group by macaddress) t \n"
+                    + "on l.time = t.lastestTime \n"
+                    + "and l.macaddress = t.macaddress \n"
+                    + "and semanticplace= ?;");
             stmt.setTimestamp(1, startDateTime);
             stmt.setTimestamp(2, endDateTime);
             stmt.setString(3, semanticPlace);
