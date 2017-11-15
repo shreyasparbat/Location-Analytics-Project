@@ -82,10 +82,8 @@ public class TimeUtility {
         //checking whether patter is correct using regex
         if (date.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d")) {
             //Make dateTime string of correct format
-            String dateTime = date.substring(0, 10) + " " + date.substring(11, date.length());
-
             //get processing window and return it
-            return getProcessingWindow(dateTime);
+            return getProcessingWindow(date);
         } else {
             //incorrect pattern    
             throw new IllegalArgumentException();
@@ -109,10 +107,8 @@ public class TimeUtility {
         //checking whether patter is correct using regex
         if (date.matches("\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d")) {
             //Make dateTime string of correct format
-            String dateTime = date.substring(0, 10) + " " + date.substring(11, date.length());
-
             //get processing window and return it
-            return getNextProcessingWindow(dateTime);
+            return getNextProcessingWindow(date);
         } else {
             //incorrect pattern    
             throw new IllegalArgumentException();
