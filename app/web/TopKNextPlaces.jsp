@@ -13,7 +13,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="Protect.jsp" %> 
 
-<%  //getting location and student lists  
+<%  //getting location and student lists
     List<String> semanticPlaces = TopKUtility.getSemanticPlaces();
     ArrayList<Location> locationList = (ArrayList<Location>) request.getAttribute("locationList");
     ArrayList<String> studentList = (ArrayList<String>) request.getAttribute("studentList");
