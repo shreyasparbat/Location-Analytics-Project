@@ -177,12 +177,15 @@
                             Iterator iter = popularPlaceList.keySet().iterator();
                             //temp will help to regulate rank.
                             int temp = 0;
-                            while (rank < k && iter.hasNext()) {
+                            while (rank <= k && iter.hasNext()) {
                                 String key = (String) iter.next();
                                 //determine rank output
-                                if (popularPlaceList.get(key) != temp) {
+                                if (popularPlaceList.get(key) != temp && rank < k) {
                                     temp = popularPlaceList.get(key);
                                     rank++;
+                                }
+                                if(rank == k && popularPlaceList.get(key) < temp){
+                                    break;
                                 }
                                 out.println("<tr>");
                                 //print rank

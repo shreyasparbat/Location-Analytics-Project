@@ -13,7 +13,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="Protect.jsp" %> 
 
-<%  //getting location and student lists  
+<%  //getting location and student lists
     List<String> semanticPlaces = TopKUtility.getSemanticPlaces();
     ArrayList<Location> locationList = (ArrayList<Location>) request.getAttribute("locationList");
     ArrayList<String> studentList = (ArrayList<String>) request.getAttribute("studentList");
@@ -200,15 +200,18 @@
                                 Iterator iter = locationList.iterator();
                                 //temp will help to regulate rank
                                 int temp = 0;
-                                while (rank<k && iter.hasNext()) {
+                                while (rank < k && iter.hasNext()) {
 
                                     Location l = (Location) iter.next();
                                     int countStudents = l.getNumberOfStudents();
                                     if (countStudents > 0) {
-                                        //determine the rank display
-                                        if (temp != countStudents) {
-                                            temp = countStudents;
+                                        //determine rank output
+                                        if (l.getStudents().size() != temp && rank < k) {
+                                            temp = l.getStudents().size();
                                             rank++;
+                                        }
+                                        if (rank == k && l.getStudents().size() < temp) {
+                                            break;
                                         }
                                         out.println("<tr>");
                                         //print rank
