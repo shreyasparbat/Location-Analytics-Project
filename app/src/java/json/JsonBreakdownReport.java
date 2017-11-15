@@ -168,6 +168,12 @@ public class JsonBreakdownReport extends HttpServlet {
 
     }
 
+    /**
+     *
+     * @param innerMap stores the TreeMap of a String and Integer variable 
+     * @param option string option 
+     * @return
+     */
     public JsonArray printInnerMap(TreeMap<String, Integer> innerMap, String option) {
         //jsonArray to be outputed
         JsonArray outputJsonArray = new JsonArray();
@@ -195,6 +201,13 @@ public class JsonBreakdownReport extends HttpServlet {
         return outputJsonArray;
     }
 
+    /**
+     *
+     * @param middleMap stores the TreeMap of the variable and its count together with the inner values 
+     * @param option2 first option
+     * @param option1 last option  
+     * @return
+     */
     public JsonArray printMiddleMap(TreeMap<String, TreeMap<String, Integer>> middleMap, String option2, String option1) {
         //jsonArray to be outputed
         JsonArray outputJsonArray = new JsonArray();
@@ -231,6 +244,14 @@ public class JsonBreakdownReport extends HttpServlet {
         return outputJsonArray;
     }
 
+    /**
+     *
+     * @param outerMap stores the TreeMap of the variable and its count together with the inner values 
+     * @param option3 most outer option
+     * @param option2 middle option
+     * @param option1 last option 
+     * @return
+     */
     public JsonArray printOuterMap(TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> outerMap, String option3, String option2, String option1) {
         //jsonArray to be outputed
         JsonArray outputJsonArray = new JsonArray();
