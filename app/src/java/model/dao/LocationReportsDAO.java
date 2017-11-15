@@ -40,13 +40,25 @@ public class LocationReportsDAO {
     static Timestamp startDateTimeTwo;
     static Timestamp endDateTimeTwo;
     private BreakdownUtility bu;
-
+    
+    /**
+     * A primary constructor for LocationReportsDAO 
+     * @param startDateTime TimeStamp Object specifying the start date and time.
+     * @param endDateTime TimeStamp Object specifying the end date and time.
+     */
     public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         bu = new BreakdownUtility();
     }
 
+    /**
+     * A secondary constructor for LocationReportsDAO 
+     * @param startDateTime TimeStamp Object specifying the start date and time.
+     * @param endDateTime TimeStamp Object specifying the end date and time.
+     * @param startDateTimeTwo TimeStamp Object specifying another start date and time.
+     * @param endDateTimeTwo TimeStamp Object specifying another end date and time.
+     */
     public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime, Timestamp startDateTimeTwo, Timestamp endDateTimeTwo) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -56,11 +68,11 @@ public class LocationReportsDAO {
     }
 
     /**
-     * Incomplete
-     *
-     * @param option1 
-     * @param option2
-     * @param option3
+     * Breakdown by Year, Gender and School function taking in options specified
+     * by the user.
+     * @param option1 String first breakdown option
+     * @param option2 String second breakdown option
+     * @param option3 String third breakdown option
      */
     public void breakdownByYearAndGender(String option1, String option2, String option3) {
         Connection conn = null;
