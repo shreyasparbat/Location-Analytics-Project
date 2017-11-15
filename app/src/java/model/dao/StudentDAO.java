@@ -329,7 +329,13 @@ public class StudentDAO {
                     interval = new TimeIntervals(previousTimestamp, previousTimestamp);
                     //after adding, the end time becomes the start time of the current location id unless a change is spotted
                 } else {
-                    interval.setEndTime(timestamp);
+                    double timeDiff = (timestamp.getTime() - interval.getEndTime().getTime())/60000; // time difference in minutes
+                    if(timeDiff <= 5){
+                         interval.setEndTime(timestamp);
+                    } else{
+                        interval.setEndTime(new Timestamp(interval.getEndTime().getTime() + 5 * 60 * 1000)); 
+                    }
+                   
                 }
 
             } else { //enter the last location of the previous student
