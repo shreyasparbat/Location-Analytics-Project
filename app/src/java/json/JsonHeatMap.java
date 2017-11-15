@@ -204,6 +204,11 @@ public class JsonHeatMap extends HttpServlet {
         }
     }
 
+    /**
+     * gives a crowd density value based on the number of users of a particular semantic place 
+     * @param numOfMacAdd number of users 
+     * @return a heatmap value from 0-6 based on the input values 
+     */
     public int getHeatValue(int numOfMacAdd) {
         if (numOfMacAdd == 0) {
             return 0;
