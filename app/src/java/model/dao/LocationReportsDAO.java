@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,13 +40,25 @@ public class LocationReportsDAO {
     static Timestamp startDateTimeTwo;
     static Timestamp endDateTimeTwo;
     private BreakdownUtility bu;
-
+    
+    /**
+     * A primary constructor for LocationReportsDAO 
+     * @param startDateTime TimeStamp Object specifying the start date and time.
+     * @param endDateTime TimeStamp Object specifying the end date and time.
+     */
     public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
         bu = new BreakdownUtility();
     }
 
+    /**
+     * A secondary constructor for LocationReportsDAO 
+     * @param startDateTime TimeStamp Object specifying the start date and time.
+     * @param endDateTime TimeStamp Object specifying the end date and time.
+     * @param startDateTimeTwo TimeStamp Object specifying another start date and time.
+     * @param endDateTimeTwo TimeStamp Object specifying another end date and time.
+     */
     public LocationReportsDAO(Timestamp startDateTime, Timestamp endDateTime, Timestamp startDateTimeTwo, Timestamp endDateTimeTwo) {
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
@@ -55,11 +68,19 @@ public class LocationReportsDAO {
     }
 
     /**
+<<<<<<< HEAD
+     * Breakdown by Year, Gender and School function taking in options specified
+     * by the user.
+     * @param option1 String first breakdown option
+     * @param option2 String second breakdown option
+     * @param option3 String third breakdown option
+=======
      * Incomplete
      *
      * @param option1
      * @param option2
      * @param option3
+>>>>>>> e1f5d79761252bc58da037ca5ab57c5a715c5ce2
      */
     public void breakdownByYearAndGender(String option1, String option2, String option3) {
         Connection conn = null;
@@ -134,7 +155,7 @@ public class LocationReportsDAO {
                     + "group by macadd2) as t2\n"
                     + "on t1.macAdd = t2.macadd2 and t1.ts = t2.maxts right outer join locationlookup llu\n"
                     + "on t1.locationid = llu.locationid group by llu.semanticplace\n"
-                    + "order by noOfMacAdd DESC;");
+                    + "order by noOfMacAdd DESC, semanticplace;");
             //setting parameters
             stmt.setTimestamp(1, startDateTime);
             stmt.setTimestamp(2, endDateTime);
@@ -203,30 +224,35 @@ public class LocationReportsDAO {
     }
 
     /**
-     *
      * Returns the top-k next places within a processing window. The popularity
      * of a location is derived from the number of people likely to visit there
      * in the specified processing time window.
      *
-     * @param milliSeconds to get the sql Timestamp
-     * @return topKPlacesList a list of the top-k popular places in the selected
-     * processing window
+     * @param macAddList A list of MacAddresses who is previously tracked.
+     * @return a HashMap of the top-k popular places in the selected
+     * processing window with:
+     * Key - String(Semantic Place)
+     * Value - Location Object
      */
-    public static ArrayList<ArrayList<String>> topkNextPlaces() {
+    public static HashMap<String, Location> topkNextPlaces(ArrayList<String> macAddList) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        ArrayList<ArrayList<String>> peopleInNextTimeWindow = new ArrayList<>();
-        String test = "";
+        //Hashmap<SemanticPlace, ArrayList<macAddresses>>
+        HashMap<String, Location> map = new HashMap<>();
+        LocalTime endTime = endDateTimeTwo.toLocalDateTime().toLocalTime();
+        String tempLocation = null;
+        LocalTime tempTime = null;
+        String tempMacAddress = null;
         try {
             conn = DBConnection.createConnection();
             //selects macaddress from location within time interval and time window, and semantic place filtering by semanticplace
-            stmt = conn.prepareStatement("select macaddress, semanticplace from \n"
-                    + "(select time, macaddress,location.locationid, llu.semanticplace from location left outer join locationlookup llu on location.locationid = llu.locationid) as t\n"
+            stmt = conn.prepareStatement("select time, macaddress, semanticplace from\n"
+                    + "(select time, macaddress,location.locationid, llu.semanticplace "
+                    + "from location left outer join locationlookup llu "
+                    + "on location.locationid = llu.locationid) as t\n"
                     + "where time >= ? and time < ?\n"
-                    + "group by macaddress, semanticplace\n"
-                    + "having min(time) <= date_sub(max(time), interval 5 minute)\n"
-                    + "order by macaddress;");
+                    + "order by time desc, macaddress desc");
             //set params
             stmt.setTimestamp(1, startDateTimeTwo);
             stmt.setTimestamp(2, endDateTimeTwo);
@@ -235,12 +261,46 @@ public class LocationReportsDAO {
 
             while (rs.next()) {
                 //gets semanticplace and macaddress from result set
+                String time = rs.getString("time");
+                //checks if the time is within 5 min time window
+                Timestamp rsTime = Timestamp.valueOf(time);
+                LocalTime rsLocalTime = rsTime.toLocalDateTime().toLocalTime();
+                LocalTime timeTest = rsLocalTime.plusMinutes(5);
+                //if (timeTest.isAfter(endTime) || timeTest.equals(endTime)) {
+                if (timeTest.isAfter(endTime)) {
+                    continue;
+                }
                 String querySemanticPlace = rs.getString("semanticplace");
                 String macAddress = rs.getString("macaddress");
-                ArrayList<String> stringArray = new ArrayList<>();
-                stringArray.add(querySemanticPlace);
-                stringArray.add(macAddress);
-                peopleInNextTimeWindow.add(stringArray);
+                //checks if macAddress is within tracked users
+                if (macAddList.indexOf(macAddress) == -1) {
+                    continue;
+                }
+                //check if tempTime is not null and temp location is not null for recurring locations by semantic place
+                if (tempTime != null && tempLocation != null && tempMacAddress != null) {
+                    //check if macAddress is the same
+                    if (tempMacAddress.equals(macAddress)) {
+                        //check for latest time for macAddress given
+                        if (rsLocalTime.isBefore(tempTime)) {
+                            continue;
+                        }
+                    }
+
+                }
+                //if the location already exists in the map
+                if (map.containsKey(querySemanticPlace)) {
+                    Location l = map.get(querySemanticPlace);
+                    l.addStudent(macAddress);
+                } else {
+                //location does not exist in the map
+                    Location l = new Location(querySemanticPlace);
+                    l.addStudent(macAddress);
+                    map.put(querySemanticPlace, l);
+                }
+                //sets the temp variables
+                tempTime = rsLocalTime;
+                tempLocation = querySemanticPlace;
+                tempMacAddress = macAddress;
             }
 
         } catch (SQLException ex) {
@@ -250,18 +310,18 @@ public class LocationReportsDAO {
         } finally {
             DBConnection.close(conn, stmt, rs);
         }
-        return peopleInNextTimeWindow;
+        return map;
         //return peopleInNextTimeWindow;
     }
 
-    /**
-     * Returns the macaddresses within the time window that are within the
-     * specified semantic place. The macaddresses are obtained from the data
+   /**
+     * Returns the mac-addresses within the time window that are within the
+     * specified semantic place. The mac-addresses are obtained from the data
      * within location.csv that matches with the specified processing time
      * window.
      *
      * @param semanticPlace A String value of the semantic place of choice
-     * @return addressList as an ArrayList of macaddresss that appear in the
+     * @return addressList as an ArrayList of mac-addresss that appear in the
      * location within the specified processing window.
      */
     public static ArrayList<String> peopleInSemanticPlace(String semanticPlace) {
@@ -271,10 +331,17 @@ public class LocationReportsDAO {
         ArrayList<String> addressList = new ArrayList<>();
         try {
             conn = DBConnection.createConnection();
-            stmt = conn.prepareStatement("select distinct macaddress from location,"
-                    + " locationlookup where time >= ? and time < ? "
-                    + " and location.locationid = locationlookup.locationid"
-                    + " and semanticplace like ?;");
+            stmt = conn.prepareStatement("select l.macaddress \n"
+                    + "from location l inner join locationlookup llu \n"
+                    + "on l.locationid = llu.locationid inner join \n"
+                    + "(select max(time) as lastestTime, macaddress \n"
+                    + "from location l, locationlookup llu \n"
+                    + "where l.locationid=llu.locationid\n"
+                    + "and time >= ? and time < ?\n"
+                    + "group by macaddress) t \n"
+                    + "on l.time = t.lastestTime \n"
+                    + "and l.macaddress = t.macaddress \n"
+                    + "and semanticplace= ?;");
             stmt.setTimestamp(1, startDateTime);
             stmt.setTimestamp(2, endDateTime);
             stmt.setString(3, semanticPlace);
