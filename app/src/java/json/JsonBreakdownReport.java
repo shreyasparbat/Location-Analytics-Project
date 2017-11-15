@@ -183,7 +183,11 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            innerMapJson.addProperty(option, innerKey);
+            if(option.equals("year")){
+                innerMapJson.addProperty(option, Integer.parseInt(innerKey)); 
+            } else{
+                innerMapJson.addProperty(option, innerKey);
+            }
             innerMapJson.addProperty("count",innerMapValue);
             outputJsonArray.add(innerMapJson);
         }
@@ -212,8 +216,12 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding inner map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            innerMapJson.addProperty(option2,name);
-            innerMapJson.addProperty("count",count);
+            if(option2.equals("year")){
+                innerMapJson.addProperty(option2, Integer.parseInt(name)); 
+            } else {
+                  innerMapJson.addProperty(option2,name);
+            }
+            innerMapJson.addProperty("count",Integer.parseInt(count));
             innerMapJson.add("breakdown", printInnerMap(innerMap,option1));
             
             outputJsonArray.add(innerMapJson);
@@ -244,12 +252,16 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding middle map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            innerMapJson.addProperty(option3, name); //most outer
-            innerMapJson.addProperty("count",count);
+            if(option3.equals("year")){
+                innerMapJson.addProperty(option3, Integer.parseInt(name));
+            } else {
+                innerMapJson.addProperty(option3, name); //most outer
+            }
+            
+            innerMapJson.addProperty("count",Integer.parseInt(count));
             innerMapJson.add("breakdown", printMiddleMap(middleMap,option2,option1));
             outputJsonArray.add(innerMapJson);
         }
-
         //returning
         return outputJsonArray;
     }

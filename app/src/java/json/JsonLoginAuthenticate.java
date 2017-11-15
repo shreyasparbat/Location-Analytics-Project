@@ -7,6 +7,7 @@ package json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import is203.JWTUtility;
 import java.io.IOException;
@@ -45,8 +46,7 @@ public class JsonLoginAuthenticate extends HttpServlet {
         String userName = request.getParameter("username");
         String password = request.getParameter("password");
         LoginDAO loginDao = new LoginDAO(); //creating object for LoginDao. This class contains main logic of the application.
-        ArrayList<String> jArray = new ArrayList<>();
-        // JsonArray jArray = new JsonArray();
+        JsonArray jArray = new JsonArray();
         if (userName == null) {
             jArray.add("missing username");
         } else if (userName.trim().equals("")) {
@@ -59,10 +59,9 @@ public class JsonLoginAuthenticate extends HttpServlet {
             jArray.add("blank password");
         }
 
-        if (!jArray.isEmpty()) {
-            Collections.sort(jArray);
+        if (jArray.size() != 0) {
             jsonOutput.addProperty("status", "error");
-            jsonOutput.add("messages", gson.toJsonTree(jArray));
+            jsonOutput.add("messages", jArray);
             
         } else {
             String userValidate = loginDao.authenticateUser(userName, password); //Calling authenticateUser function
@@ -73,7 +72,8 @@ public class JsonLoginAuthenticate extends HttpServlet {
                 jsonOutput.addProperty("token", JWTUtility.sign("depressurization", userName));
             } else {
                 jsonOutput.addProperty("status", "error");
-                jsonOutput.addProperty("messages", "invalid username/password");
+                jArray.add("invalid username/password");
+                jsonOutput.add("messages", jArray);
 
             }
         }
