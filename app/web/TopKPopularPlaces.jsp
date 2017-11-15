@@ -180,10 +180,12 @@
                             while (rank <= k && iter.hasNext()) {
                                 String key = (String) iter.next();
                                 //determine rank output
+                                //before k rank
                                 if (popularPlaceList.get(key) != temp && rank < k) {
                                     temp = popularPlaceList.get(key);
                                     rank++;
                                 }
+                                // for k rank cases onwards
                                 if(rank == k && popularPlaceList.get(key) < temp){
                                     break;
                                 }

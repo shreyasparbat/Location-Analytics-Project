@@ -135,7 +135,7 @@ public class LocationReportsDAO {
                     + "group by macadd2) as t2\n"
                     + "on t1.macAdd = t2.macadd2 and t1.ts = t2.maxts right outer join locationlookup llu\n"
                     + "on t1.locationid = llu.locationid group by llu.semanticplace\n"
-                    + "order by noOfMacAdd DESC;");
+                    + "order by noOfMacAdd DESC, semanticplace;");
             //setting parameters
             stmt.setTimestamp(1, startDateTime);
             stmt.setTimestamp(2, endDateTime);
