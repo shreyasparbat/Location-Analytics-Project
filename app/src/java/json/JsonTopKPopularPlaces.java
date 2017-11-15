@@ -118,12 +118,15 @@ public class JsonTopKPopularPlaces extends HttpServlet {
             int i = 0;
             int temp = 0;
             Iterator<String> iter = popularPlacesList.keySet().iterator();
-            while (i < rank && iter.hasNext()) {
+            while (i <= rank && iter.hasNext()) {
                 String key = iter.next();
                 int count = popularPlacesList.get(key);
-                if(temp != count){
+                if(count != temp && i < rank){
                     temp = count;
                     i++;
+                }
+                if( i == rank && count < temp){
+                    break; 
                 }
                 JsonObject ranks = new JsonObject();
                 ranks.addProperty("rank", i);
