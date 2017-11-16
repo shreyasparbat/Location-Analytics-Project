@@ -15,9 +15,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.Iterator;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -138,9 +137,9 @@ public class JsonHeatMap extends HttpServlet {
                     //if no errors
                     if (jsonErrorArray.size() == 0) {
 
-                        //get semanticPlaceHeat HashMap and its iterator
+                        //get semanticPlaceHeat TreeMap and its iterator
                         HeatMapDAO heatMapDAO = new HeatMapDAO(startDateTime, endDateTime, level);
-                        TreeMap<String, Integer> semanticPlaceHeat = heatMapDAO.getSemanticPlaceHeatFromSpecificFloor();
+                        TreeMap<String, int[]> semanticPlaceHeat = heatMapDAO.getSemanticPlaceHeatFromSpecificFloor();
                         Iterator<String> semanticPlaceHeatKeysIterator = semanticPlaceHeat.keySet().iterator();
 
                         //create Json Array to be used for printing heat map
@@ -154,7 +153,8 @@ public class JsonHeatMap extends HttpServlet {
                             String semanticPlace = semanticPlaceHeatKeysIterator.next();
 
                             //get number of mac addresses and correspinding heat value
-                            int noOfMacAdd = semanticPlaceHeat.get(semanticPlace);
+                            int[] informationArray = semanticPlaceHeat.get(semanticPlace);
+                            int noOfMacAdd = informationArray[0];
                             int heatValue = getHeatValue(noOfMacAdd);
 
                             //adding required "properties" to jsonObject
@@ -204,11 +204,6 @@ public class JsonHeatMap extends HttpServlet {
         }
     }
 
-    /**
-     * gives a crowd density value based on the number of users of a particular semantic place 
-     * @param numOfMacAdd number of users 
-     * @return a heatmap value from 0-6 based on the input values 
-     */
     public int getHeatValue(int numOfMacAdd) {
         if (numOfMacAdd == 0) {
             return 0;

@@ -10,6 +10,10 @@ package exception;
  * @author amanda
  */
 public class JsonException extends Exception{
+
+    /**
+     * creates a default JsonException
+     */
     public JsonException(){
         super("");
     }

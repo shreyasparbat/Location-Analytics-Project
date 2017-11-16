@@ -65,13 +65,16 @@ public class HeatMapServlet extends HttpServlet {
             request.getRequestDispatcher("/HeatMaps.jsp").forward(request, response);
         }
 
-        //get semanticPlaceHeat HashMap and its iterator
+        //get semanticPlaceHeat TreeMap and its iterator
         HeatMapDAO heatMapDAO = new HeatMapDAO(startDateTime, endDateTime, level);
-        TreeMap<String, Integer> semanticPlaceHeat = heatMapDAO.getSemanticPlaceHeatFromSpecificFloor();
+        TreeMap<String, int[]> semanticPlaceHeat = heatMapDAO.getSemanticPlaceHeatFromSpecificFloor();
         Iterator<String> semanticPlaceHeatKeysIterator = semanticPlaceHeat.keySet().iterator();
 
         //create Json Array to be used for printing heat map
         JsonArray heatMapJsonArray = new JsonArray();
+        
+        //to send info to view page for easily printing table
+        TreeMap<String, int[]> tableInfo = new TreeMap<>();
 
         while (semanticPlaceHeatKeysIterator.hasNext()) {
             //making json object to be added to array
@@ -81,21 +84,23 @@ public class HeatMapServlet extends HttpServlet {
             String semanticPlace = semanticPlaceHeatKeysIterator.next();
 
             //get number of mac addresses and correspinding heat value
-            int noOfMacAdd = semanticPlaceHeat.get(semanticPlace);
+            int[] informationArray = semanticPlaceHeat.get(semanticPlace);
+            int noOfMacAdd = informationArray[0];
+            int locationId = informationArray[1];
             int heatValue = getHeatValue(noOfMacAdd);
-            
-            //semanticplaces corresponding to SRs have "." in them, which lead to problems in the svg file
-            //because the "id" attribute of a path/shape cannot have a "."
-            //thus here we replace the dot with "n"
-            semanticPlace = semanticPlace.replace('.', 'n');
 
             //adding required "properties" to jsonObject
             jsonObject.addProperty("semantic-place", semanticPlace);
             jsonObject.addProperty("num-macAdd", noOfMacAdd);
+            jsonObject.addProperty("location-id", locationId);
             jsonObject.addProperty("heat-value", heatValue);
-
+            
             //adding jsonObject to heatmap json array
             heatMapJsonArray.add(jsonObject);
+            
+            //adding information for table printing
+            informationArray[1] = heatValue;
+            tableInfo.put(semanticPlace, informationArray);
         }
 
         //Store array in new "result" jsonObj
@@ -106,6 +111,7 @@ public class HeatMapServlet extends HttpServlet {
         //send result back to view page
         request.setAttribute("level", level);
         request.setAttribute("result", result);
+        request.setAttribute("tableInfo", tableInfo);
         request.getRequestDispatcher("/HeatMaps.jsp").forward(request, response);
 
        
