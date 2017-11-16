@@ -4,6 +4,8 @@
     Author     : shrey
 --%>
 
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.TreeMap"%>
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="com.google.gson.GsonBuilder"%>
 <%@page import="com.google.gson.Gson"%>
@@ -42,6 +44,7 @@
 
         <!-- Custom styles for this page -->
         <link rel="stylesheet" href="assets/css/heatmapCSS.css">
+        <link rel="stylesheet" href="assets/css/heatmapTableCss.css">
 
         <!-- Icon -->
         <link rel="icon" href="assets/logo.jpg">
@@ -207,11 +210,10 @@
                 <%  //printing legends and coloring map (only if map is being printed)
                     if (level != null) {
                         //set css colour scheme according to heat values                
-%>
+                %>
 
                 <script>
                     //for colouring
-                    //var colors = ['#ffffd4', '#fee391', '#fec44f', '#fe9929', '#ec7014', '#cc4c02', '#8c2d04'];
                     var colors = ['#ffffb2', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#b10026'];
 
                     //getting json obj
@@ -220,7 +222,7 @@
                     //looping through it
                     result.heatMapJsonArray.forEach(function (location) {
                         //retrieving objs
-                        var id = location['semantic-place'];
+                        var id = location['location-id'];
                         var heatValue = location['heat-value'];
 
                         //colouring
@@ -271,17 +273,75 @@
                         </li>
                     </ul>
                 </div>
-
-                <%  }
-                %>
             </div>
+                    
+            <br/>
+            <br/>
 
-            <hr>
+            <%  }
 
-            <footer>
-                <p>&copy; SE G1T3</p>
-            </footer>
+                //getting tableInfo map for table printing
+                TreeMap<String, int[]> tableInfo = (TreeMap<String, int[]>) request.getAttribute("tableInfo");
+
+                //setting colours
+                String[] colStrings = new String[7];
+                colStrings[0] = "C0";
+                colStrings[1] = "C1";
+                colStrings[2] = "C2";
+                colStrings[3] = "C3";
+                colStrings[4] = "C4";
+                colStrings[5] = "C5";
+                colStrings[6] = "C6";
+
+                //checking if any value has been passed or not
+                if (tableInfo != null) {
+            %>
+
+            <div class="row">
+                <div class="col-md-9">
+                    <!--Table-->
+                    <table class="table">
+
+                        <!--Table head-->
+                        <thead class="mdb-color darken-3">
+                            <tr class="text-white">
+                                <th>Semantic Place</th>
+                                <th>Number of people</th>
+                                <th>Density</th>
+                            </tr>
+                        </thead>
+                        <!--Table head-->
+
+                        <!--Table body-->
+                        <tbody>
+                            <%  //printing table
+                                Iterator<String> semanticPlacesIterator = tableInfo.keySet().iterator();
+                                while (semanticPlacesIterator.hasNext()) {
+                                    String semanticPlace = semanticPlacesIterator.next();
+                                    int[] information = tableInfo.get(semanticPlace);
+
+                                    //printing rows
+                                    out.print("<tr>");
+                                    out.print("<th scope=\"row\">" + semanticPlace + "</th>");
+                                    out.print("<td>" + information[0] + "</td>");
+                                    out.print("<td class=\"" + colStrings[information[1]] + "\"><h1>" + information[1] + "</h1></td>");
+                                    out.print("</tr>");
+                                }
+                            %>
+                        </tbody>
+                        <!--Table body-->
+                    </table>
+                    <!--Table-->
+                </div>
+            </div>
+            <%  }
+            %>
         </div>
+        <hr>
+
+        <footer>
+            <p>&copy; SE G1T3</p>
+        </footer>
 
         <!-- SCRIPTS
         ================================================== -->       

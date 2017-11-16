@@ -27,6 +27,12 @@ public class HeatMapDAO {
     private Timestamp endDateTime;
     private String level;
 
+    /**
+     *
+     * @param startDateTime start date time
+     * @param endDateTime end date time 
+     * @param level level of the building 
+     */
     public HeatMapDAO(Timestamp startDateTime, Timestamp endDateTime, String level) {
         semanticPlaceHeat = new TreeMap<>();
         this.startDateTime = startDateTime;
@@ -34,6 +40,10 @@ public class HeatMapDAO {
         this.level = level;
     }
 
+    /**
+     *
+     * @return Treemap of a string and integer 
+     */
     public TreeMap<String, Integer> getSemanticPlaceHeatFromSpecificFloor() {
         Connection conn = null;
         PreparedStatement stmt = null;
