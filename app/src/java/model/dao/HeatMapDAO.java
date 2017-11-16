@@ -9,9 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.sql.Timestamp;
 import java.util.TreeMap;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.utility.DBConnection;
@@ -22,17 +21,11 @@ import model.utility.DBConnection;
  */
 public class HeatMapDAO {
 
-    private TreeMap<String, Integer> semanticPlaceHeat;
+    private TreeMap<String, int[]> semanticPlaceHeat;
     private Timestamp startDateTime;
     private Timestamp endDateTime;
     private String level;
 
-    /**
-     *
-     * @param startDateTime start date time
-     * @param endDateTime end date time 
-     * @param level level of the building 
-     */
     public HeatMapDAO(Timestamp startDateTime, Timestamp endDateTime, String level) {
         semanticPlaceHeat = new TreeMap<>();
         this.startDateTime = startDateTime;
@@ -40,20 +33,16 @@ public class HeatMapDAO {
         this.level = level;
     }
 
-    /**
-     *
-     * @return Treemap of a string and integer 
-     */
-    public TreeMap<String, Integer> getSemanticPlaceHeatFromSpecificFloor() {
+    public TreeMap<String, int[]> getSemanticPlaceHeatFromSpecificFloor() {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        //Getting HashMap of all students in the SIS building during processing window
+        //Getting TreeMap of all students in the SIS building during processing window
         try {
             conn = DBConnection.createConnection();
             stmt = conn.prepareStatement(
-                    "select t3.sp as 'semanticplace', count(t1.macadd) as 'noOfMacAdd' "
+                    "select t3.sp as 'semanticplace', count(t1.macadd) as 'noOfMacAdd', t3.lid2 as 'locationid' "
                     + "from "
                     + "( "
                     + "select macaddress as 'macadd', time as 'ts', locationid as 'lid' "
@@ -88,10 +77,12 @@ public class HeatMapDAO {
             while (rs.next()) {
                 //getting query results
                 String semanticPlace = rs.getString("semanticplace");
-                int noOfMacAdd = rs.getInt("noOfMacAdd"); //NOTE: no need to check for null cause getInt() returns 0 if value in table is NULL
+                int[] informationArray = new int[2];
+                informationArray[0] = rs.getInt("noOfMacAdd"); //NOTE: no need to check for null cause getInt() returns 0 if value in table is NULL
+                informationArray[1] = rs.getInt("locationid");
 
                 //put into toReturnMap
-                semanticPlaceHeat.put(semanticPlace, noOfMacAdd);
+                semanticPlaceHeat.put(semanticPlace, informationArray);
             }
 
         } catch (SQLException ex) {
