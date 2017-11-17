@@ -72,7 +72,7 @@ public class TimeUtility {
      * string passed into the function. These Timestamp objects signify the
      * start and end of the processing window. It takes in initial time, and
      * processes the end time 15 minutes before.
-     * @param dateTime a string containing dateTime 
+     * @param date a string containing dateTime 
      * @return an ArrayList of Timestamps where 
      * timestamp at index 0 is <code>startDateTime</code> 
      * and timestamp at index 1 is <code>endDateTime</code>
@@ -96,8 +96,7 @@ public class TimeUtility {
      * string passed into the function. These Timestamp objects signify the
      * start and end of the processing window. It takes in initial time, and
      * processes the end time 15 minutes later.
-     *
-     * @param dateTime a string containing dateTime from HTML form
+     * @param date a string containing dateTime from HTML form
      * @return an ArrayList of Timestamps where 
      * timestamp at index 0 is <code>startDateTime</code> 
      * and timestamp at index 1 is <code>endDateTime</code>

@@ -23,6 +23,9 @@ public class DemographicsValidator {
      */
     public static HashMap<Integer, List<String>> demographErrors = new HashMap<>();
 
+    /**
+     * Counter for correct rows
+     */
     public static int numDemoRowsValidated;
     /**
      * A list of school email to verify

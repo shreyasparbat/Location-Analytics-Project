@@ -110,6 +110,7 @@ public class BootstrapServlet extends HttpServlet {
      * @throws IOException
      * @throws ClassNotFoundException
      * @throws SQLException
+     * @throws javax.servlet.ServletException
      */
     protected void unzipThis(HttpServletRequest request, HttpServletResponse response, ZipInputStream zin) throws IOException, ClassNotFoundException, SQLException, ServletException {
         ZipEntry entry;

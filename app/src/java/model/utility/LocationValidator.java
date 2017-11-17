@@ -27,6 +27,9 @@ public class LocationValidator {
      */
     public static HashMap<Integer, List<String>> locationErrors = new HashMap<>();
 
+    /**
+     * Counter for number of correct Location Rows validated
+     */
     public static int numDLocaRowsValidated;
 
     static {
@@ -41,6 +44,8 @@ public class LocationValidator {
      * bootstrap[True] or upload [False]
      * @param conn Connection object
      * @return the correct list of content from the file
+     * @throws java.lang.ClassNotFoundException
+     * @throws java.sql.SQLException
      */
     public static List<String> validateLocation(List<String[]> list, boolean bootstrapProcess, Connection conn) throws ClassNotFoundException, SQLException {
         numDLocaRowsValidated = 0;

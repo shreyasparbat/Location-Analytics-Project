@@ -245,6 +245,7 @@ public class DBConnection {
      * Bootstraps location data into the database under the table location
      *
      * @param contents the contents of the location
+     * @param bootstrap boolean to see whether is the upload a bootstrap function or upload
      * @param conn Connection object
      * @throws SQLException SQL exception to database
      * @throws ClassNotFoundException

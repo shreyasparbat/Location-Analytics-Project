@@ -29,7 +29,7 @@ public class BreakdownUtility {
      * Returns a sorted TreeMap based on the option input by the user
      * @param option Choice of breakdown report 
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Integer></code>
+     * @return Treemap containing the inner details
      */
     public TreeMap<String, Integer> percentageOneOption(String option, TreeMap<String, Student> studentMap) {
         TreeMap<String, Integer> percentageOneList = new TreeMap<>();
@@ -52,7 +52,7 @@ public class BreakdownUtility {
      * @param option1 Choice of breakdown report 
      * @param option2 Choice of breakdown report 
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Integer></code>
+     * @return Treemap containing the two options
      */
     public TreeMap<String, TreeMap<String, Integer>> percentageTwoOptions(String option1, String option2, TreeMap<String, Student> studentMap) {
         TreeMap<String, TreeMap<String, Integer>> percentageTwoList = new TreeMap<>();
@@ -107,7 +107,7 @@ public class BreakdownUtility {
      * @param option2 Choice of breakdown report 
      * @param option3 Choice of breakdown report 
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Integer></code>
+     * @return Treemap of all options breakdown
      */
     public TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllOptions(String option1, String option2, String option3, TreeMap<String, Student> studentMap) {
         TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList = new TreeMap<>();
@@ -152,7 +152,7 @@ public class BreakdownUtility {
      * Returns a sorted TreeMap based on the year option input, where the year
      * is the Key and the number of Students takes an Integer Value 
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Integer></code> of students broken down by year
+     * @return Treemap of students broken down by year
     */
     public TreeMap<String, Integer> byYear(TreeMap<String, Student> studentMap) {
         TreeMap<String, Integer> yearNumber = new TreeMap<>();
@@ -172,7 +172,7 @@ public class BreakdownUtility {
      * Returns a sorted TreeMap based on the gender option input, where the gender
      * is the Key and the number of Students takes an Integer Value 
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Integer></code> of students broken down by gender
+     * @return Treemap of students broken down by gender
     */
     public TreeMap<String, Integer> byGender(TreeMap<String, Student> studentMap) {
         //initializing hashmap for conversion into raw numbers
@@ -192,7 +192,7 @@ public class BreakdownUtility {
      * Returns a sorted TreeMap based on the school option input, where the school
      * is the Key and the number of Students takes an Integer Value 
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Integer></code> of students broken down by school
+     * @return Treemap of students broken down by school
     */
     public TreeMap<String, Integer> bySchool(TreeMap<String, Student> studentMap) {
         //initializing hashmap for conversion into raw numbers
@@ -212,8 +212,9 @@ public class BreakdownUtility {
     /**
      * Returns a sorted TreeMap based on the year option input, where the mac-address
      * is the Key and the Student object takes the value
+     * @param year a particular admission year
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Student></code> of students broken down by year
+     * @return Treemap of students broken down by year
     */
     public TreeMap<String, Student> getStudentsByYear(String year, TreeMap<String, Student> studentMap) {
         //creates new hashmap
@@ -241,8 +242,9 @@ public class BreakdownUtility {
     /**
      * Returns a sorted TreeMap based on the gender option input, where the mac-address
      * is the Key and the Student object takes the value
+     * @param g gender of a student
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Student></code> of students broken down by year
+     * @return Treemap of students broken down by year
     */
     public TreeMap<String, Student> getStudentsByGender(String g, TreeMap<String, Student> studentMap) {
         char requiredGender = g.charAt(0);
@@ -270,8 +272,9 @@ public class BreakdownUtility {
     /**
      * Returns a sorted TreeMap based on the school option input, where the mac-address
      * is the Key and the Student object takes the value
+     * @param school a particular school in smu 
      * @param studentMap The list of students to be broken down
-     * @return <code>TreeMap<String, Student></code> of students broken down by year
+     * @return Treemap of students broken down by year
     */
     public TreeMap<String, Student> getStudentsBySchool(String school, TreeMap<String, Student> studentMap) {
         //creates new hashtable
@@ -299,7 +302,7 @@ public class BreakdownUtility {
     /**
      * Enables pretty printing of data for one Option
      * @param percentageOneList The list of students that is already broken down
-     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+     * @return Breakdown results to be printed out.
     */
     public ArrayList<String> printBarChart(TreeMap<String, Integer> percentageOneList) throws IllegalArgumentException {
 
@@ -336,7 +339,7 @@ public class BreakdownUtility {
     /**
      * Enables pretty printing of data for one Option
      * @param percentageOneList The list of students that is already broken down
-     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+     * @return Breakdown results to be printed out.
     */
     public ArrayList<String> printInner(TreeMap<String, Integer> percentageOneList) throws IllegalArgumentException{
         //ArrayList for output
@@ -360,7 +363,7 @@ public class BreakdownUtility {
     /**
      * Enables pretty printing of data for two Option
      * @param percentageTwoList The list of students that is already broken down
-     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+     * @return Breakdown results to be printed out.
     */
     public ArrayList<String> printMiddle(TreeMap<String, TreeMap<String, Integer>> percentageTwoList) throws IllegalArgumentException {
         //ArrayList to be outputed
@@ -414,7 +417,7 @@ public class BreakdownUtility {
     /**
      * Enables pretty printing of data for three Option
      * @param percentageAllList The list of students that is already broken down
-     * @return <code>ArrayList<String></code> Broken down results to be printed out.
+     * @return Breakdown results to be printed out.
     */
     public ArrayList<String> printOuter(TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList) throws IllegalArgumentException {
         //ArrayList to be outputed

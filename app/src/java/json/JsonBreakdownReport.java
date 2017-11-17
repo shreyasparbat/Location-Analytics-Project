@@ -33,6 +33,9 @@ import model.utility.TimeUtility;
 @WebServlet(name = "BreakdownReport", urlPatterns = {"/json/basic-loc-report"})
 public class JsonBreakdownReport extends HttpServlet {
 
+    /**
+     * Creates a new breakdown utility object for location reports usage
+     */
     public BreakdownUtility bu = new BreakdownUtility();
 
     /**

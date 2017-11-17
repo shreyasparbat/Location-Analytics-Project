@@ -39,6 +39,9 @@ import model.utility.TopKUtility;
 @WebServlet(name = "BasicLocationReportsServlet", urlPatterns = {"/BasicLocationReportsServlet"})
 public class BasicLocationReportsServlet extends HttpServlet {
 
+    /**
+     * Creates a new breakdown utility object for location reports usage
+     */
     public BreakdownUtility bu = new BreakdownUtility();
 
     /**

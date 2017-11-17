@@ -44,6 +44,7 @@ public class ValidatorDAO {
      *
      * @throws SQLException
      * @throws ClassNotFoundException
+     * @throws exception.ValidatorException
      */
     public void validating() throws SQLException, ClassNotFoundException, ValidatorException {
         List<String> validLocList;
