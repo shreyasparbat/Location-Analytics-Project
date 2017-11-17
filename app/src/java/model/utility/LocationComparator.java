@@ -15,8 +15,8 @@ import model.entity.Location;
 public class LocationComparator implements Comparator<Location>{
     /**
      * Compares two location in terms of their student count and semantic place
-     * @param s1 location l1
-     * @param s2 location l2
+     * @param l1 location l1
+     * @param l2 location l2
      * @return an int to determine the value of the difference of two location
      */
     public int compare(Location l1, Location l2){

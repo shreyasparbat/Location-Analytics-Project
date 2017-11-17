@@ -90,8 +90,9 @@ public class StudentDAO {
 
     /**
      * process student to return groups of students that spent a minimum of 12
-     * mins together
+     * mins together with a particular student
      *
+     * @param currentStudent a particular student as reference point
      * @return ArrayList of Groups
      */
     public ArrayList<Group> getStudentGroups(Student currentStudent) {

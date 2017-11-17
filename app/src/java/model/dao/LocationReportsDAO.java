@@ -68,19 +68,11 @@ public class LocationReportsDAO {
     }
 
     /**
-<<<<<<< HEAD
      * Breakdown by Year, Gender and School function taking in options specified
      * by the user.
      * @param option1 String first breakdown option
      * @param option2 String second breakdown option
      * @param option3 String third breakdown option
-=======
-     * Incomplete
-     *
-     * @param option1
-     * @param option2
-     * @param option3
->>>>>>> e1f5d79761252bc58da037ca5ab57c5a715c5ce2
      */
     public void breakdownByYearAndGender(String option1, String option2, String option3) {
         Connection conn = null;

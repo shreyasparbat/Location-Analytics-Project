@@ -27,6 +27,9 @@ public class LocationLookupValidator {
      */
     public static ArrayList<String> locationList = new ArrayList<String>();
 
+    /**
+     * Counter for number of correct Location lookup row datas
+     */
     public static int numDLLRowsValidated;
     
 

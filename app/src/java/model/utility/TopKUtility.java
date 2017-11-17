@@ -66,6 +66,7 @@ public class TopKUtility {
     }
     /**
      * A method that calls the database and returns a email using a macaddress
+     * @param macaddress mac address of a user
      * @return list of a student's email
      */
     public static String getStudentEmail(String macaddress){

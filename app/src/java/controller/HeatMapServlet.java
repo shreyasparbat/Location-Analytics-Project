@@ -118,6 +118,11 @@ public class HeatMapServlet extends HttpServlet {
        out.close();
     }
 
+    /**
+     * Returns a heat map crowd density value based on the number of mac adddresses input
+     * @param numOfMacAdd number of student mac address in a particular location 
+     * @return a heat value of 0-6 depending of number of mac addresses
+     */
     public int getHeatValue(int numOfMacAdd) {
         if (numOfMacAdd == 0) {
             return 0;
