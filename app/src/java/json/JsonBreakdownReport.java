@@ -58,7 +58,7 @@ public class JsonBreakdownReport extends HttpServlet {
         String token = request.getParameter("token");
         String order = request.getParameter("order");
         String date = request.getParameter("date");
-        ArrayList<Timestamp> processingWindowArrayList = new ArrayList<>();
+        java.util.ArrayList<Timestamp> processingWindowArrayList = new java.util.ArrayList<>();
         boolean orderValid = true;
         boolean dateValid = true;
         boolean tokenValid = true;
@@ -70,7 +70,7 @@ public class JsonBreakdownReport extends HttpServlet {
         }
         try {
             processingWindowArrayList = TimeUtility.getJsonProcessingWindow(date);
-        } catch (IllegalArgumentException e) { // catch IllegalArgumentException
+        } catch (Exception e) { // catch IllegalArgumentException
             dateValid = false;
         }
         orderValid = isValidOption(order);
@@ -79,15 +79,6 @@ public class JsonBreakdownReport extends HttpServlet {
         if (!(orderValid && dateValid && tokenValid)) {
             //invalid 
             jsonOutput.addProperty("status", "error");
-            if (!orderValid) {
-                if (order == null) {
-                    jArray.add("missing order");
-                } else if (order.trim().equals("")) {
-                    jArray.add("blank order");
-                } else {
-                    jArray.add("invalid order");
-                }
-            }
             if (!dateValid) {
                 if (date == null) {
                     jArray.add("missing date");
@@ -95,6 +86,15 @@ public class JsonBreakdownReport extends HttpServlet {
                     jArray.add("blank date");
                 } else {
                     jArray.add("invalid date");
+                }
+            }
+            if (!orderValid) {
+                if (order == null) {
+                    jArray.add("missing order");
+                } else if (order.trim().equals("")) {
+                    jArray.add("blank order");
+                } else {
+                    jArray.add("invalid order");
                 }
             }
             if (!tokenValid) {
@@ -174,10 +174,10 @@ public class JsonBreakdownReport extends HttpServlet {
     /**
      *
      * @param innerMap stores the TreeMap of a String and Integer variable 
-     * @param option string option 
+     * @param option1 string option 
      * @return
      */
-    public JsonArray printInnerMap(TreeMap<String, Integer> innerMap, String option) {
+    public JsonArray printInnerMap(TreeMap<String, Integer> innerMap, String option1) {
         //jsonArray to be outputed
         JsonArray outputJsonArray = new JsonArray();
 
@@ -192,10 +192,10 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            if(option.equals("year")){
-                innerMapJson.addProperty(option, Integer.parseInt(innerKey)); 
+            if(option1.equals("year")){
+                innerMapJson.addProperty(option1, Integer.parseInt(innerKey)); 
             } else{
-                innerMapJson.addProperty(option, innerKey);
+                innerMapJson.addProperty(option1, innerKey);
             }
             innerMapJson.addProperty("count",innerMapValue);
             outputJsonArray.add(innerMapJson);
@@ -232,13 +232,13 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding inner map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            if(option2.equals("year")){
-                innerMapJson.addProperty(option2, Integer.parseInt(name)); 
+            if(option1.equals("year")){
+                innerMapJson.addProperty(option1, Integer.parseInt(name)); 
             } else {
-                  innerMapJson.addProperty(option2,name);
+                  innerMapJson.addProperty(option1,name);
             }
             innerMapJson.addProperty("count",Integer.parseInt(count));
-            innerMapJson.add("breakdown", printInnerMap(innerMap,option1));
+            innerMapJson.add("breakdown", printInnerMap(innerMap,option2));
             
             outputJsonArray.add(innerMapJson);
         }
@@ -305,7 +305,7 @@ public class JsonBreakdownReport extends HttpServlet {
      * @return  boolean "true" is returned if input is valid, "false" if it is not valid
      */
     public boolean isValidOption(String option) {
-        if (option == null || option.endsWith(",,")) {
+        if (option == null || option.endsWith(",")) {
             return false;
         }
         ArrayList<String> options = new ArrayList<>();

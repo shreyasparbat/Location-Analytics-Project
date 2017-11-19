@@ -99,24 +99,6 @@ public class JsonTopKNextPlaces extends HttpServlet {
         JsonArray jArray = new JsonArray();
         if (!(kValid && dateValid && tokenValid && semanticPlaceValid)) { // if error
             jsonOutput.addProperty("status", "error");
-
-            if (!semanticPlaceValid) {
-                if (semanticPlace == null) {
-                    jArray.add("missing origin");
-                } else if (semanticPlace.trim().equals("")) {
-                    jArray.add("blank origin");
-                } else {
-                    jArray.add("invalid origin");
-                }
-            }
-
-            if (!kValid) {
-                if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
-                    jArray.add("blank k");
-                } else {
-                    jArray.add("invalid k");
-                }
-            }
             if (!dateValid) {
                 if (date == null) {
                     jArray.add("missing date");
@@ -124,6 +106,22 @@ public class JsonTopKNextPlaces extends HttpServlet {
                     jArray.add("blank date");
                 } else {
                     jArray.add("invalid date");
+                }
+            }
+            if (!kValid) {
+                if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
+                    jArray.add("blank k");
+                } else {
+                    jArray.add("invalid k");
+                }
+            }
+            if (!semanticPlaceValid) {
+                if (semanticPlace == null) {
+                    jArray.add("missing origin");
+                } else if (semanticPlace.trim().equals("")) {
+                    jArray.add("blank origin");
+                } else {
+                    jArray.add("invalid origin");
                 }
             }
             if (!tokenValid) {
