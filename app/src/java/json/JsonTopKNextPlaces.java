@@ -99,31 +99,6 @@ public class JsonTopKNextPlaces extends HttpServlet {
         JsonArray jArray = new JsonArray();
         if (!(kValid && dateValid && tokenValid && semanticPlaceValid)) { // if error
             jsonOutput.addProperty("status", "error");
-            if (!dateValid) {
-                if (date == null) {
-                    jArray.add("missing date");
-                } else if (date.trim().equals("")) {
-                    jArray.add("blank date");
-                } else {
-                    jArray.add("invalid date");
-                }
-            }
-            if (!kValid) {
-                if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
-                    jArray.add("blank k");
-                } else {
-                    jArray.add("invalid k");
-                }
-            }
-            if (!semanticPlaceValid) {
-                if (semanticPlace == null) {
-                    jArray.add("missing origin");
-                } else if (semanticPlace.trim().equals("")) {
-                    jArray.add("blank origin");
-                } else {
-                    jArray.add("invalid origin");
-                }
-            }
             if (!tokenValid) {
                 if (token == null) {
                     jArray.add("missing token");
@@ -131,6 +106,39 @@ public class JsonTopKNextPlaces extends HttpServlet {
                     jArray.add("blank token");
                 } else {
                     jArray.add("invalid token");
+                }
+            } else {
+                ArrayList<String> j2Array = new ArrayList<>();
+                if (!dateValid) {
+                    if (date == null) {
+                        j2Array.add("missing date");
+                    } else if (date.trim().equals("")) {
+                        j2Array.add("blank date");
+                    } else {
+                        j2Array.add("invalid date");
+                    }
+                }
+                if (!kValid) {
+                    if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
+                        j2Array.add("blank k");
+                    } else {
+                        j2Array.add("invalid k");
+                    }
+                }
+                if (!semanticPlaceValid) {
+                    if (semanticPlace == null) {
+                        j2Array.add("missing origin");
+                    } else if (semanticPlace.trim().equals("")) {
+                        j2Array.add("blank origin");
+                    } else {
+                        j2Array.add("invalid origin");
+                    }
+                }
+                if(!j2Array.isEmpty()){
+                    Collections.sort(j2Array);
+                    for(String errorMsg : j2Array){
+                        jArray.add(errorMsg);
+                    }
                 }
             }
             jsonOutput.add("messages", jArray);

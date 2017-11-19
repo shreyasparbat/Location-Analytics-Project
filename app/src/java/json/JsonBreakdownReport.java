@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeMap;
 import javax.servlet.ServletException;
@@ -79,24 +80,6 @@ public class JsonBreakdownReport extends HttpServlet {
         if (!(orderValid && dateValid && tokenValid)) {
             //invalid 
             jsonOutput.addProperty("status", "error");
-            if (!dateValid) {
-                if (date == null) {
-                    jArray.add("missing date");
-                } else if (date.trim().equals("")) {
-                    jArray.add("blank date");
-                } else {
-                    jArray.add("invalid date");
-                }
-            }
-            if (!orderValid) {
-                if (order == null) {
-                    jArray.add("missing order");
-                } else if (order.trim().equals("")) {
-                    jArray.add("blank order");
-                } else {
-                    jArray.add("invalid order");
-                }
-            }
             if (!tokenValid) {
                 if (token == null) {
                     jArray.add("missing token");
@@ -105,7 +88,34 @@ public class JsonBreakdownReport extends HttpServlet {
                 } else {
                     jArray.add("invalid token");
                 }
+            } else {
+                ArrayList<String> j2Array = new ArrayList<>();
+                if (!dateValid) {
+                    if (date == null) {
+                        j2Array.add("missing date");
+                    } else if (date.trim().equals("")) {
+                        j2Array.add("blank date");
+                    } else {
+                        j2Array.add("invalid date");
+                    }
+                }
+                if (!orderValid) {
+                    if (order == null) {
+                        j2Array.add("missing order");
+                    } else if (order.trim().equals("")) {
+                        j2Array.add("blank order");
+                    } else {
+                        j2Array.add("invalid order");
+                    }
+                }
+                if(!j2Array.isEmpty()){
+                    Collections.sort(j2Array);
+                    for(String errorMsg : j2Array){
+                        jArray.add(errorMsg);
+                    }
+                }
             }
+
             jsonOutput.add("messages", jArray);
         } else {
             Timestamp startDateTime = processingWindowArrayList.get(0);
@@ -128,7 +138,7 @@ public class JsonBreakdownReport extends HttpServlet {
                         //get breakdown map
                         TreeMap<String, Integer> percentageOneList = bu.percentageOneOption(option, studentMap);
                         jsonOutput.addProperty("status", "success");
-                        jsonOutput.add("breakdown", printInnerMap(percentageOneList,option));
+                        jsonOutput.add("breakdown", printInnerMap(percentageOneList, option));
 
                     }
                     break;
@@ -143,7 +153,7 @@ public class JsonBreakdownReport extends HttpServlet {
                         //get breakdown map
                         TreeMap<String, TreeMap<String, Integer>> percentageTwoList = bu.percentageTwoOptions(option1, option2, studentMap);
                         jsonOutput.addProperty("status", "success");
-                        jsonOutput.add("breakdown", printMiddleMap(percentageTwoList,option2,option1));
+                        jsonOutput.add("breakdown", printMiddleMap(percentageTwoList, option2, option1));
 
                     }
                     break;
@@ -158,7 +168,7 @@ public class JsonBreakdownReport extends HttpServlet {
                         //get breakdown map
                         TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> percentageAllList = bu.percentageAllOptions(option1, option2, option3, studentMap);
                         jsonOutput.addProperty("status", "success");
-                        jsonOutput.add("breakdown", printOuterMap(percentageAllList,option1,option2,option3));
+                        jsonOutput.add("breakdown", printOuterMap(percentageAllList, option1, option2, option3));
 
                     }
                     break;
@@ -173,8 +183,8 @@ public class JsonBreakdownReport extends HttpServlet {
 
     /**
      *
-     * @param innerMap stores the TreeMap of a String and Integer variable 
-     * @param option1 string option 
+     * @param innerMap stores the TreeMap of a String and Integer variable
+     * @param option1 string option
      * @return
      */
     public JsonArray printInnerMap(TreeMap<String, Integer> innerMap, String option1) {
@@ -192,12 +202,12 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            if(option1.equals("year")){
-                innerMapJson.addProperty(option1, Integer.parseInt(innerKey)); 
-            } else{
+            if (option1.equals("year")) {
+                innerMapJson.addProperty(option1, Integer.parseInt(innerKey));
+            } else {
                 innerMapJson.addProperty(option1, innerKey);
             }
-            innerMapJson.addProperty("count",innerMapValue);
+            innerMapJson.addProperty("count", innerMapValue);
             outputJsonArray.add(innerMapJson);
         }
 
@@ -206,9 +216,10 @@ public class JsonBreakdownReport extends HttpServlet {
 
     /**
      *
-     * @param middleMap stores the TreeMap of the variable and its count together with the inner values 
+     * @param middleMap stores the TreeMap of the variable and its count
+     * together with the inner values
      * @param option2 first option
-     * @param option1 last option  
+     * @param option1 last option
      * @return
      */
     public JsonArray printMiddleMap(TreeMap<String, TreeMap<String, Integer>> middleMap, String option2, String option1) {
@@ -221,25 +232,24 @@ public class JsonBreakdownReport extends HttpServlet {
         while (middleMapKeysIter.hasNext()) {
             //store the key into output list
             String middlekey = middleMapKeysIter.next();
-            
+
             //getting name and count from key
             String[] middleKeyList = middlekey.split(":");
             String name = middleKeyList[0].trim();
             String count = middleKeyList[1].trim();
             //get inner map
             TreeMap<String, Integer> innerMap = middleMap.get(middlekey);
-            
 
             //adding inner map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            if(option1.equals("year")){
-                innerMapJson.addProperty(option1, Integer.parseInt(name)); 
+            if (option1.equals("year")) {
+                innerMapJson.addProperty(option2, Integer.parseInt(name));
             } else {
-                  innerMapJson.addProperty(option1,name);
+                innerMapJson.addProperty(option2, name);
             }
-            innerMapJson.addProperty("count",Integer.parseInt(count));
-            innerMapJson.add("breakdown", printInnerMap(innerMap,option2));
-            
+            innerMapJson.addProperty("count", Integer.parseInt(count));
+            innerMapJson.add("breakdown", printInnerMap(innerMap, option1));
+
             outputJsonArray.add(innerMapJson);
         }
 
@@ -249,10 +259,11 @@ public class JsonBreakdownReport extends HttpServlet {
 
     /**
      *
-     * @param outerMap stores the TreeMap of the variable and its count together with the inner values 
+     * @param outerMap stores the TreeMap of the variable and its count together
+     * with the inner values
      * @param option3 most outer option
      * @param option2 middle option
-     * @param option1 last option 
+     * @param option1 last option
      * @return
      */
     public JsonArray printOuterMap(TreeMap<String, TreeMap<String, TreeMap<String, Integer>>> outerMap, String option3, String option2, String option1) {
@@ -265,7 +276,7 @@ public class JsonBreakdownReport extends HttpServlet {
         while (outerMapKeysIter.hasNext()) {
             //store the key into output list
             String outerkey = outerMapKeysIter.next();
-            
+
             //getting name and count from key
             String[] middleKeyList = outerkey.split(":");
             String name = middleKeyList[0].trim();
@@ -276,14 +287,14 @@ public class JsonBreakdownReport extends HttpServlet {
 
             //adding middle map breakdown to jsonArray
             JsonObject innerMapJson = new JsonObject();
-            if(option3.equals("year")){
+            if (option3.equals("year")) {
                 innerMapJson.addProperty(option3, Integer.parseInt(name));
             } else {
                 innerMapJson.addProperty(option3, name); //most outer
             }
-            
-            innerMapJson.addProperty("count",Integer.parseInt(count));
-            innerMapJson.add("breakdown", printMiddleMap(middleMap,option2,option1));
+
+            innerMapJson.addProperty("count", Integer.parseInt(count));
+            innerMapJson.add("breakdown", printMiddleMap(middleMap, option2, option1));
             outputJsonArray.add(innerMapJson);
         }
         //returning
@@ -292,8 +303,10 @@ public class JsonBreakdownReport extends HttpServlet {
 
     /**
      * Returns a "true" boolean value if the option input by user is correct
-     * @param option takes in a String of the option input by user 
-     * @return boolean "true" is returned if input is correct, "false" if it is wrong
+     *
+     * @param option takes in a String of the option input by user
+     * @return boolean "true" is returned if input is correct, "false" if it is
+     * wrong
      */
     public boolean isCorrectOption(String option) {
         return option.equals("year") || option.equals("gender") || option.equals("school");
@@ -301,8 +314,10 @@ public class JsonBreakdownReport extends HttpServlet {
 
     /**
      * Returns a "true" boolean value if the option input by user is Valid
-     * @param option takes in a String of the option input by user 
-     * @return  boolean "true" is returned if input is valid, "false" if it is not valid
+     *
+     * @param option takes in a String of the option input by user
+     * @return boolean "true" is returned if input is valid, "false" if it is
+     * not valid
      */
     public boolean isValidOption(String option) {
         if (option == null || option.endsWith(",")) {

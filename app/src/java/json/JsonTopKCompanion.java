@@ -87,32 +87,6 @@ public class JsonTopKCompanion extends HttpServlet {
         JsonArray jArray = new JsonArray();
         if (!(kValid && macValid && dateValid && tokenValid)) { // if error
             jsonOutput.addProperty("status", "error");
-
-            if (!kValid) {
-                if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
-                    jArray.add("blank k");
-                } else {
-                    jArray.add("invalid k");
-                }
-            }
-            if (!macValid) {
-                if (macAddress == null) {
-                    jArray.add("missing macAddress");
-                } else if (macAddress.trim().equals("")) {
-                    jArray.add("blank mac address");
-                } else {
-                    jArray.add("invalid mac address");
-                }
-            }
-            if (!dateValid) {
-                if (date == null) {
-                    jArray.add("missing date");
-                } else if (date.trim().equals("")) {
-                    jArray.add("blank date");
-                } else {
-                    jArray.add("invalid date");
-                }
-            }
             if (!tokenValid) {
                 if (token == null) {
                     jArray.add("missing token");
@@ -120,6 +94,39 @@ public class JsonTopKCompanion extends HttpServlet {
                     jArray.add("blank token");
                 } else {
                     jArray.add("invalid token");
+                }
+            } else {
+                ArrayList<String> j2Array = new ArrayList<>();
+                if (!kValid) {
+                    if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
+                        j2Array.add("blank k");
+                    } else {
+                        j2Array.add("invalid k");
+                    }
+                }
+                if (!macValid) {
+                    if (macAddress == null) {
+                        j2Array.add("missing macAddress");
+                    } else if (macAddress.trim().equals("")) {
+                        j2Array.add("blank mac address");
+                    } else {
+                        j2Array.add("invalid mac address");
+                    }
+                }
+                if (!dateValid) {
+                    if (date == null) {
+                        j2Array.add("missing date");
+                    } else if (date.trim().equals("")) {
+                        j2Array.add("blank date");
+                    } else {
+                        j2Array.add("invalid date");
+                    }
+                }
+                if(!j2Array.isEmpty()){
+                    Collections.sort(j2Array);
+                    for(String errorMsg : j2Array){
+                        jArray.add(errorMsg);
+                    }
                 }
             }
             jsonOutput.add("messages", jArray);

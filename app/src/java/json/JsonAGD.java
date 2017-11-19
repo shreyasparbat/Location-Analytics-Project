@@ -69,16 +69,6 @@ public class JsonAGD extends HttpServlet {
         }
         if (!(dateValid && tokenValid)) { // if error
             jsonOutput.addProperty("status", "error");
-
-            if (!dateValid) {
-                if (dateTime == null) {
-                    jArray.add("missing date");
-                } else if (dateTime.trim().equals("")) {
-                    jArray.add("blank date");
-                } else {
-                    jArray.add("invalid date");
-                }
-            }
             if (!tokenValid) {
                 if (token == null) {
                     jArray.add("missing token");
@@ -86,6 +76,23 @@ public class JsonAGD extends HttpServlet {
                     jArray.add("blank token");
                 } else {
                     jArray.add("invalid token");
+                }
+            } else {
+                ArrayList<String> j2Array = new ArrayList<>();
+                if (!dateValid) {
+                    if (dateTime == null) {
+                        j2Array.add("missing date");
+                    } else if (dateTime.trim().equals("")) {
+                        j2Array.add("blank date");
+                    } else {
+                        j2Array.add("invalid date");
+                    }
+                }
+                if(!j2Array.isEmpty()){
+                    Collections.sort(j2Array);
+                    for(String errorMsg : j2Array){
+                        jArray.add(errorMsg);
+                    }
                 }
             }
             jsonOutput.add("messages", jArray);
@@ -99,25 +106,25 @@ public class JsonAGD extends HttpServlet {
 
             //sort groups
             Collections.sort(list, new AGDComparator());
-            
+
             jsonOutput.addProperty("status", "success");
             jsonOutput.addProperty("total-users", studentList.size());
             jsonOutput.addProperty("total-groups", list.size());
-            for(Group g : list){
+            for (Group g : list) {
                 JsonObject group = new JsonObject();
                 group.addProperty("size", g.getGroup().size());
                 Double time = g.getTotalDuration();
                 group.addProperty("total-time-spent", time.intValue());
                 JsonArray members = new JsonArray();
-                for(Student s : g.getGroup()){
+                for (Student s : g.getGroup()) {
                     JsonObject studentInfo = new JsonObject();
-                    studentInfo.addProperty("email",s.getEmail());
-                    studentInfo.addProperty("mac-address",s.getMacAddress());
+                    studentInfo.addProperty("email", s.getEmail());
+                    studentInfo.addProperty("mac-address", s.getMacAddress());
                     members.add(studentInfo);
                 }
                 group.add("members", members);
                 JsonArray location = new JsonArray();
-                for(int id: g.getRecord().keySet()){
+                for (int id : g.getRecord().keySet()) {
                     JsonObject locationInfo = new JsonObject();
                     locationInfo.addProperty("location", id + "");
                     Double locationTime = g.getRecord().get(id).getDuration();

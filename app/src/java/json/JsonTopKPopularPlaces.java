@@ -13,6 +13,8 @@ import is203.JWTUtility;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import javax.servlet.ServletException;
@@ -80,23 +82,6 @@ public class JsonTopKPopularPlaces extends HttpServlet {
         JsonArray jArray = new JsonArray();
         if (!(kValid && dateValid && tokenValid)) { // if error
             jsonOutput.addProperty("status", "error");
-
-            if (!kValid) {
-                if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
-                    jArray.add("blank k");
-                } else {
-                    jArray.add("invalid k");
-                }
-            }
-            if (!dateValid) {
-                if (date == null) {
-                    jArray.add("missing date");
-                } else if (date.trim().equals("")) {
-                    jArray.add("blank date");
-                } else {
-                    jArray.add("invalid date");
-                }
-            }
             if (!tokenValid) {
                 if (token == null) {
                     jArray.add("missing token");
@@ -104,6 +89,30 @@ public class JsonTopKPopularPlaces extends HttpServlet {
                     jArray.add("blank token");
                 } else {
                     jArray.add("invalid token");
+                }
+            } else {
+                ArrayList<String> j2Array = new ArrayList<>();
+                if (!kValid) {
+                    if (k.trim().equals("")) { //cos can be unspecified but cannot be blank
+                        j2Array.add("blank k");
+                    } else {
+                        j2Array.add("invalid k");
+                    }
+                }
+                if (!dateValid) {
+                    if (date == null) {
+                        j2Array.add("missing date");
+                    } else if (date.trim().equals("")) {
+                        j2Array.add("blank date");
+                    } else {
+                        j2Array.add("invalid date");
+                    }
+                }
+                if(!j2Array.isEmpty()){
+                    Collections.sort(j2Array);
+                    for(String errorMsg : j2Array){
+                        jArray.add(errorMsg);
+                    }
                 }
             }
             jsonOutput.add("messages", jArray);
@@ -121,16 +130,16 @@ public class JsonTopKPopularPlaces extends HttpServlet {
             while (i <= rank && iter.hasNext()) {
                 String key = iter.next();
                 int count = popularPlacesList.get(key);
-                if(count != temp && i < rank){
+                if (count != temp && i < rank) {
                     temp = count;
                     i++;
                 }
-                if( i == rank && count < temp){
-                    break; 
+                if (i == rank && count < temp) {
+                    break;
                 }
                 JsonObject ranks = new JsonObject();
                 ranks.addProperty("rank", i);
-                ranks.addProperty("semantic-place",key);
+                ranks.addProperty("semantic-place", key);
                 ranks.addProperty("count", count);
                 jArray.add(ranks);
             }
@@ -156,7 +165,6 @@ public class JsonTopKPopularPlaces extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
     }
-
 
     /**
      * Handles the HTTP <code>POST</code> method.
