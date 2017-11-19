@@ -47,22 +47,25 @@ public class JsonLoginAuthenticate extends HttpServlet {
         String password = request.getParameter("password");
         LoginDAO loginDao = new LoginDAO(); //creating object for LoginDao. This class contains main logic of the application.
         JsonArray jArray = new JsonArray();
+        ArrayList<String> j2Array = new ArrayList<String>();
         if (userName == null) {
-            jArray.add("missing username");
+            j2Array.add("missing username");
         } else if (userName.trim().equals("")) {
-            jArray.add("blank username");
+            j2Array.add("blank username");
         }
 
         if (password == null) {
-            jArray.add("missing password");
+            j2Array.add("missing password");
         } else if (password.trim().equals("")) {
-            jArray.add("blank password");
+            j2Array.add("blank password");
         }
-
-        if (jArray.size() != 0) {
+        if (!j2Array.isEmpty()) {
             jsonOutput.addProperty("status", "error");
+            Collections.sort(j2Array);
+            for (String errorMsg : j2Array) {
+                jArray.add(errorMsg);
+            }
             jsonOutput.add("messages", jArray);
-            
         } else {
             String userValidate = loginDao.authenticateUser(userName, password); //Calling authenticateUser function
             if (!(userValidate.equals("Invalid user credentials"))) {

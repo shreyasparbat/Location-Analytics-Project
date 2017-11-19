@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeMap;
 import java.util.Iterator;
 import javax.servlet.ServletException;
@@ -49,7 +50,7 @@ public class JsonHeatMap extends HttpServlet {
         //creating gson object for output 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject jsonOutput = new JsonObject();
-
+        ArrayList<String> jsonErrorArray2 = new ArrayList<String>();
         //json array for indicating errors
         JsonArray jsonErrorArray = new JsonArray();
 
@@ -69,9 +70,9 @@ public class JsonHeatMap extends HttpServlet {
 
                     //check for missing or blank date
                     if (date == null) {
-                        jsonErrorArray.add("missing date");
+                        jsonErrorArray2.add("missing date");
                     } else if (date.equals("")) {
-                        jsonErrorArray.add("blank date");
+                        jsonErrorArray2.add("blank date");
                     } else {
                         //check for invalid date
                         try {
@@ -82,7 +83,7 @@ public class JsonHeatMap extends HttpServlet {
 
                         } catch (Exception e) {
                             //invalid date  
-                            jsonErrorArray.add("invalid date");
+                            jsonErrorArray2.add("invalid date");
                         }
                     }
 
@@ -94,9 +95,9 @@ public class JsonHeatMap extends HttpServlet {
 
                     //check for missing or blank floor
                     if (floorString == null) {
-                        jsonErrorArray.add("missing floor");
+                        jsonErrorArray2.add("missing floor");
                     } else if (floorString.equals("")) {
-                        jsonErrorArray.add("blank floor");
+                        jsonErrorArray2.add("blank floor");
                     } else {
                         //not missing or blank
                         int floor = Integer.parseInt(request.getParameter("floor"));
@@ -129,13 +130,13 @@ public class JsonHeatMap extends HttpServlet {
 
                             default:
                                 //incorrect floor
-                                jsonErrorArray.add("invalid floor");
+                                jsonErrorArray2.add("invalid floor");
                                 break;
                         }
                     }
 
                     //if no errors
-                    if (jsonErrorArray.size() == 0) {
+                    if (jsonErrorArray2.isEmpty()) {
 
                         //get semanticPlaceHeat TreeMap and its iterator
                         HeatMapDAO heatMapDAO = new HeatMapDAO(startDateTime, endDateTime, level);
@@ -173,6 +174,10 @@ public class JsonHeatMap extends HttpServlet {
                     } else {
                         //add error array to output json object
                         jsonOutput.addProperty("status", "error");
+                        Collections.sort(jsonErrorArray2);
+                        for (String errorMsg : jsonErrorArray2) {
+                            jsonErrorArray.add(errorMsg);
+                        }
                         jsonOutput.add("messages", jsonErrorArray);
                     }
                 }
@@ -195,7 +200,11 @@ public class JsonHeatMap extends HttpServlet {
         } catch (NumberFormatException e) {
             //invalid floor 
             jsonOutput.addProperty("status", "error");
-            jsonErrorArray.add("invalid floor");
+            jsonErrorArray2.add("invalid floor");
+            Collections.sort(jsonErrorArray2);
+            for (String errorMsg : jsonErrorArray2) {
+                jsonErrorArray.add(errorMsg);
+            }
             jsonOutput.add("messages", jsonErrorArray);
         } finally {
             String prettyPrint = gson.toJson(jsonOutput);
@@ -205,8 +214,10 @@ public class JsonHeatMap extends HttpServlet {
     }
 
     /**
-     * Returns a heat map crowd density value based on the number of mac adddresses input
-     * @param numOfMacAdd number of student mac address in a particular location 
+     * Returns a heat map crowd density value based on the number of mac
+     * adddresses input
+     *
+     * @param numOfMacAdd number of student mac address in a particular location
      * @return a heat value of 0-6 depending of number of mac addresses
      */
     public int getHeatValue(int numOfMacAdd) {
